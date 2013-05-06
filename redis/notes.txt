@@ -1,0 +1,45 @@
+#1 install
+wget http://redis.googlecode.com/files/redis-2.6.13.tar.gz
+tar -xvzf redis-2.6.13.tar.gz
+make
+runtests
+
+#2 run server and client 
+cd src
+./run-server 
+
+[4756] 05 May 20:44:01.094 # Warning: no config file specified, using the default config. In order to specify a config file use ./redis-server /path/to/redis.conf
+[4756] 05 May 20:44:01.096 # Unable to set the max number of files limit to 10032 (Operation not permitted), setting the max clients configuration to 3984.
+                _._                                                  
+           _.-``__ ''-._                                             
+      _.-``    `.  `_.  ''-._           Redis 2.6.13 (00000000/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._                                   
+ (    '      ,       .-`  | `,    )     Running in stand alone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 6379
+ |    `-._   `._    /     _.-'    |     PID: 4756
+  `-._    `-._  `-./  _.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |           http://redis.io        
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |                                  
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+      `-._    `-.__.-'    _.-'                                       
+          `-._        _.-'                                           
+              `-.__.-'                                               
+
+[4756] 05 May 20:44:01.098 # Server started, Redis version 2.6.13
+[4756] 05 May 20:44:01.098 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+[4756] 05 May 20:44:01.098 * The server is now ready to accept connections on port 6379
+
+open another terminal
+./run-cli
+
+
+redis 127.0.0.1:6379> select 1
+OK
+redis 127.0.0.1:6379[1]> set users:vijay "{name: vijay, profession:coder, likes: [music,movies]}"
+OK
+redis 127.0.0.1:6379[1]> get users:vijay
+"{name: vijay, profession:coder, likes: [music,movies]}"
+redis 127.0.0.1:6379[1]> 
