@@ -38,8 +38,34 @@ open another terminal
 
 redis 127.0.0.1:6379> select 1
 OK
+
+#key-value data structure
 redis 127.0.0.1:6379[1]> set users:vijay "{name: vijay, profession:coder, likes: [music,movies]}"
 OK
 redis 127.0.0.1:6379[1]> get users:vijay
 "{name: vijay, profession:coder, likes: [music,movies]}"
 redis 127.0.0.1:6379[1]> 
+#hash datastructure
+redis 127.0.0.1:6379> hset users:rekha name rekha 
+(integer) 1
+redis 127.0.0.1:6379> hget users:rekha name
+"rekha"
+redis 127.0.0.1:6379> hset users:rekha prof admin
+(integer) 1
+4edis 127.0.0.1:6379> hget users:rekha prof
+"admin"
+redis 127.0.0.1:6379> hgetall users:rekha
+1) "name"
+2) "rekha"
+3) "prof"
+4) "admin"
+redis 127.0.0.1:6379> hkeys users:rekha
+1) "name"
+2) "prof"
+redis 127.0.0.1:6379> hdel users:rekha prof
+(integer) 1
+redis 127.0.0.1:6379> hgetall users:rekha
+1) "name"
+2) "rekha"
+
+
