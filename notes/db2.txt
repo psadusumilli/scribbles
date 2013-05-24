@@ -1,52 +1,54 @@
 
-####Isolation levels
-------------------------------
-An isolation level specifies how much one transaction is isolated from other transactions in a multiple-connection environment. DB2® Everyplace® supports the following ANSI SQL isolation levels.
-
-Note: The levels are listed with their DB2 Version 9.1 equivalents in decreasing order of performance impact, but in increasing order of care required when accessing and updating data (for example, the potential for deadlock situations varies with the isolation level). Details about each level follow the table.
-
-[Table 1. Isolation levels]
-
-ANSI SQL Isolation Level	DB2 Version 9.1 equivalent
-------------------------------------------------------------
-SERIALIZABLE				Repeatable read (RR)
-REPEATABLE READ				Read stability (RS)
-READ COMMITTED (default)	Cursor stability (CS)
-READ UNCOMMITTED			Uncommitted read (UR)
 
 
-#1 SERIALIZABLE :(DB2 Version 9.1: Repeatable Read)
-----------------------------------------------------
-Locks the table within a unit of work. An application can retrieve and operate on rows in the table as many times as needed. However, the entire table is locked, not just the rows that are retrieved. Until the unit of work completes, no other application can update, delete, or insert a row that would affect the table.
-SERIALIZABLE applications cannot see uncommitted changes made by other applications. Therefore, a SELECT statement issued repeatedly within the unit of work gives the same result each time. Lost updates, access to uncommitted data, and phantom rows are not possible.
 
-REPEATABLE READ (DB2 Version 9.1: Read Stability)
-----------------------------------------------------
-Because DB2 Everyplace locks entire tables (not specific rows), REPEATABLE READ behaves exactly like SERIALIZABLE.
+#------------------------------------------------------------------
+#BASICS:
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+In a multi-user database environment, transactions are usually executed simultaneously. Each transaction has the potential to interfere with any other transaction that is running. Without any appropriate locking mechanism, the following undesirable effects may occur:
+#Lost updates: 
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
 
-READ COMMITTED (DB2 Version 9.1: Cursor Stability)
-----------------------------------------------------
-The entire table is locked. Shared locks are released when the associated cursors are closed (isolation levels higher than READ COMMITTED hold shared locks until the end of a transaction). Exclusive locks are held until the end of the transaction.
-No other application can perform any DML operation on a table while an open cursor is accessing it. READ COMMITTED applications cannot see uncommitted changes of other applications. Both nonrepeatable reads and phantom reads are possible. READ COMMITTED is the default isolation level, allowing maximum concurrency while seeing only committed rows from other applications.
+#Non-repeatable reads:
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+Some applications involve the following sequence of events: 
+Application A reads a row from the database, then goes on to process other SQL requests.In the meantime, application B either modifies or deletes the row and commits the change.
+Later, when application A attempts to read the original row again, it receives the modified row or discovers that the original row has been deleted.
+#Phantom reads: 
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+The phantom read phenomenon occurs when:
+Your application executes a query that reads a set of rows based on some search criterion.Another application inserts new data or updates existing data that would satisfy your application's query.
+Your application repeats the query from the first step (within the same unit of work). Now some additional phantom rows are returned as part of the result set that were not returned when the query was initially executed in the first step.One way DB2 UDB enforces concurrency is through the use of isolation levels, which determine how data used in one transaction is locked or isolated from other transactions while the first transaction accesses it.
 
-READ UNCOMMITTED (DB2 Version 9.1: Uncommitted Read)
-----------------------------------------------------
-An application can access some uncommitted changes of other transactions: tables and indexes that are being created or dropped by other transactions are not available while the transaction is processing. Any other changes can be read before they are committed or rolled back.At this level, the application does not lock other applications out of the table it is reading.
 
-The following table summarizes isolation levels in terms of their undesirable effects.
-
-[Table 2. Summary of isolation levels]
-Isolation Level	Access to uncommitted data	Nonrepeatable reads	Phantom read phenomenon
-SERIALIZABLE	Not possible	Not possible	Not possible
-REPEATABLE READ	Not possible	Possible	Possible
-READ COMMITTED	Not possible	Possible	Possible
-READ UNCOMMITTED	Possible	Possible	Possible
-
-The following table can help you choose an initial isolation level for your applications. Consider this table a starting point, and refer to the previous discussions of the various levels for factors that might make another isolation level more appropriate.
-
-[Table 3. Guidelines for choosing an isolation level]
-Application Type	High data stability required	High data stability not required
-Read-write transactions	REPEATABLE READ	READ COMMITTED
-Read-only transactions	SERIALIZABLE or REPEATABLE READ	READ UNCOMMITTED
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------
+#ISOLATION LEVELS IN DB2:
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+DB2 Universal Database provides different levels of protection to isolate the data from each of the database applications while it is being accessed. These levels of protection are known as isolation levels, or locking strategies. Choosing an appropriate isolation level ensures data integrity and also avoids unnecessary locking. The isolation levels supported by DB2 are listed below, ordered in terms of concurrency, starting with the maximum:
+#Uncommitted Read: 
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+The Uncommitted Read (UR) isolation level, also known as "dirty read," is the lowest level of isolation supported by DB2. It can be used to access uncommitted data changes of other applications. For example, an application using the Uncommitted Read isolation level will return all of the matching rows for the query, even if that data is in the process of being modified and may not be committed to the database. You need to be aware that if you are using Uncommitted Read, two identical queries may get different results, even if they are issued within a unit of work, since other concurrent applications can change or modify those rows that the first query retrieves.
+Uncommitted Read transactions will hold very few locks. Thus they are not likely to wait for other transactions to release locks. If you are accessing read-only tables or it is acceptable for the application to retrieve uncommitted data updated by another application, use this isolation level, because it is most preferable in terms of performance.
+#Cursor Stability: 
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+The Cursor Stability (CS) isolation level is the default isolation level and locks any row on which the cursor is positioned during a unit of work. The lock on the row is held until the next row is fetched or the unit of work is terminated. If a row has been updated, the lock is held until the unit of work is terminated. A unit of work is terminated when either a COMMIT or ROLLBACK statement is executed.
+An application using Cursor Stability cannot read uncommitted data. In addition, the application locks the row that has been currently fetched, and no other application can modify the contents of the current row. As the application locks only the row on which the cursor is positioned, two identical queries may still get different results even if they are issued within a unit of work.
+When you want the maximum concurrency while seeing only committed data from concurrent applications, choose this isolation level.
+#Read Stability: 
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+The Read Stability (RS) isolation level locks those rows that are part of a result set. If you have a table containing 100,000 rows and the query returns 10 rows, then only 10 rows are locked until the end of the unit of work.
+An application using Read Stability cannot read uncommitted data. Instead of locking a single row, it locks all rows that are part of the result set. No other application can change or modify these rows. This means that if you issue a query twice within a unit of work, the second run can retrieve the same answer set as the first. However, you may get additional rows, as another concurrent application can insert rows that match to the query.
+#Repeatable Read:
+#------------------------------------------------------------------
+Two applications, A and B, might both read the same row from the database, and both calculate new values for one of its columns based on the data these applications read. If A updates the row with its new value and B then also updates the row, the update performed by A is lost.Access to uncommitted data: Application A might update a value in the database, and application B might read that value before it was committed. Then, if the value of A is not later committed, but backed out, the calculations performed by B are based on uncommitted (and presumably invalid) data.
+The Repeatable Read (RR) isolation level is the highest isolation level available in DB2. It locks all rows that an application references within a unit of work, no matter how large the result set. In some cases, the optimizer decides during plan generation that it may get a table level lock instead of locking individual rows, since an application using Repeatable Read may acquire and hold a considerable number of locks. The values of the LOCKLIST and MAXLOCKS database configuration parameters will affect this decision.
+An application using Repeatable Read cannot read uncommitted data of a concurrent application. As the name implies, this isolation level ensures the repeatable read to applications, meaning that a repeated query will get the same record set as long as it is executed in the same unit of work. Since an application using this isolation level holds more locks on rows of a table, or even locks the entire table, the application may decrease concurrency. You should use this isolation level only when changes to your result set within a unit of work are unacceptable.
