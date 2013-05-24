@@ -1,0 +1,52 @@
+
+####Isolation levels
+------------------------------
+An isolation level specifies how much one transaction is isolated from other transactions in a multiple-connection environment. DB2® Everyplace® supports the following ANSI SQL isolation levels.
+
+Note: The levels are listed with their DB2 Version 9.1 equivalents in decreasing order of performance impact, but in increasing order of care required when accessing and updating data (for example, the potential for deadlock situations varies with the isolation level). Details about each level follow the table.
+
+[Table 1. Isolation levels]
+
+ANSI SQL Isolation Level	DB2 Version 9.1 equivalent
+------------------------------------------------------------
+SERIALIZABLE				Repeatable read (RR)
+REPEATABLE READ				Read stability (RS)
+READ COMMITTED (default)	Cursor stability (CS)
+READ UNCOMMITTED			Uncommitted read (UR)
+
+
+#1 SERIALIZABLE :(DB2 Version 9.1: Repeatable Read)
+----------------------------------------------------
+Locks the table within a unit of work. An application can retrieve and operate on rows in the table as many times as needed. However, the entire table is locked, not just the rows that are retrieved. Until the unit of work completes, no other application can update, delete, or insert a row that would affect the table.
+SERIALIZABLE applications cannot see uncommitted changes made by other applications. Therefore, a SELECT statement issued repeatedly within the unit of work gives the same result each time. Lost updates, access to uncommitted data, and phantom rows are not possible.
+
+REPEATABLE READ (DB2 Version 9.1: Read Stability)
+----------------------------------------------------
+Because DB2 Everyplace locks entire tables (not specific rows), REPEATABLE READ behaves exactly like SERIALIZABLE.
+
+READ COMMITTED (DB2 Version 9.1: Cursor Stability)
+----------------------------------------------------
+The entire table is locked. Shared locks are released when the associated cursors are closed (isolation levels higher than READ COMMITTED hold shared locks until the end of a transaction). Exclusive locks are held until the end of the transaction.
+No other application can perform any DML operation on a table while an open cursor is accessing it. READ COMMITTED applications cannot see uncommitted changes of other applications. Both nonrepeatable reads and phantom reads are possible. READ COMMITTED is the default isolation level, allowing maximum concurrency while seeing only committed rows from other applications.
+
+READ UNCOMMITTED (DB2 Version 9.1: Uncommitted Read)
+----------------------------------------------------
+An application can access some uncommitted changes of other transactions: tables and indexes that are being created or dropped by other transactions are not available while the transaction is processing. Any other changes can be read before they are committed or rolled back.At this level, the application does not lock other applications out of the table it is reading.
+
+The following table summarizes isolation levels in terms of their undesirable effects.
+
+[Table 2. Summary of isolation levels]
+Isolation Level	Access to uncommitted data	Nonrepeatable reads	Phantom read phenomenon
+SERIALIZABLE	Not possible	Not possible	Not possible
+REPEATABLE READ	Not possible	Possible	Possible
+READ COMMITTED	Not possible	Possible	Possible
+READ UNCOMMITTED	Possible	Possible	Possible
+
+The following table can help you choose an initial isolation level for your applications. Consider this table a starting point, and refer to the previous discussions of the various levels for factors that might make another isolation level more appropriate.
+
+[Table 3. Guidelines for choosing an isolation level]
+Application Type	High data stability required	High data stability not required
+Read-write transactions	REPEATABLE READ	READ COMMITTED
+Read-only transactions	SERIALIZABLE or REPEATABLE READ	READ UNCOMMITTED
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
