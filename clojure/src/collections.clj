@@ -17,7 +17,11 @@
  )
 
 ;list is done by adding a ' or mention 'list'
-(def bots '("Stan" "Cartman" "Kyle" "Kenny"))
-(println "is any token?"(some #(= % "Token") bots))
-(println "is any kenny?"(some #(= % "Kenny") bots))
-(contains? (set bots) "Kenny")
+(def bots '("Stan1" "Cartman1" "Kyle1" "Kenny1"))
+(println "is any token?"(some #(= % "Token1") bots))
+(println "is any kenny?"(some #(= % "Kenny1") bots))
+(contains? (set bots) "Kenny1")
+(remove #(= % "Kenny1") bots)
+(def all-boys (into boyz bots))
+(println all-boys)
+
