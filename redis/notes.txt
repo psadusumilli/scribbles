@@ -3,7 +3,7 @@ wget http://redis.googlecode.com/files/redis-2.6.13.tar.gz
 tar -xvzf redis-2.6.13.tar.gz
 make
 runtests
-
+#-----------------------------------------------------------------------------
 #2 run server and client 
 cd src
 ./run-server 
@@ -34,26 +34,51 @@ cd src
 
 open another terminal
 ./run-cli
-
-
 redis 127.0.0.1:6379> select 1
 OK
 
-#key-value data structure
+#-----------------------------------------------------------------------------
+#KEY-VALUE DATASTRUCTURE
+#-----------------------------------------------------------------------------
 redis 127.0.0.1:6379[1]> set users:vijay "{name: vijay, profession:coder, likes: [music,movies]}"
 OK
 redis 127.0.0.1:6379[1]> get users:vijay
 "{name: vijay, profession:coder, likes: [music,movies]}"
-redis 127.0.0.1:6379[1]> 
-#hash datastructure
+redis 127.0.0.1:6379> strlen users:vijay
+(integer) 63
+redis 127.0.0.1:6379> getrange users:vijay 3 30
+"me: vijay, profession:coder,"
+ redis 127.0.0.1:6379> append users:vijay "to remove"
+(integer) 72
+redis 127.0.0.1:6379> get users:vijay
+"{name: vijay, profession:coder, likes: [music,movies]}somethingto remove"
+
+
+ 
+redis 127.0.0.1:6379> incr homepage:visit
+(integer) 1
+redis 127.0.0.1:6379> incr homepage:visit
+(integer) 2
+redis 127.0.0.1:6379> incrby homepage:visit 4 
+(integer) 6
+
+#-----------------------------------------------------------------------------
+#HASH DATASTRUCTURE
+#-----------------------------------------------------------------------------
 redis 127.0.0.1:6379> hset users:rekha name rekha 
 (integer) 1
 redis 127.0.0.1:6379> hget users:rekha name
 "rekha"
+
 redis 127.0.0.1:6379> hset users:rekha prof admin
 (integer) 1
 4edis 127.0.0.1:6379> hget users:rekha prof
 "admin"
+
+#multi field set
+redis 127.0.0.1:6379> hmset users:rekha name rekha prof admin
+OK
+
 redis 127.0.0.1:6379> hgetall users:rekha
 1) "name"
 2) "rekha"
@@ -67,5 +92,72 @@ redis 127.0.0.1:6379> hdel users:rekha prof
 redis 127.0.0.1:6379> hgetall users:rekha
 1) "name"
 2) "rekha"
+#-----------------------------------------------------------------------------
+#LIST - DATASTRUCTURE
+#-----------------------------------------------------------------------------
+redis 127.0.0.1:6379> lpush family rekha
+(integer) 1
+redis 127.0.0.1:6379> lpush family shravan
+(integer) 2
+redis 127.0.0.1:6379> lpush family mom
+(integer) 3
+redis 127.0.0.1:6379> lpop family 
+"mom"
+redis 127.0.0.1:6379> llen family
+(integer) 2
+redis 127.0.0.1:6379> lindex family 0
+"shravan"
+redis 127.0.0.1:6379> linsert family before rekha vijay
+(integer) 3
+redis 127.0.0.1:6379> lindex family 1
+"vijay"
+#-----------------------------------------------------------------------------
+#SET - DATASTRUCTURE
+#-----------------------------------------------------------------------------
+redis 127.0.0.1:6379> sadd team:b2 tom vlad chaitanyna dinesh
+(integer) 4
+redis 127.0.0.1:6379> sismember team:b2 vlad
+(integer) 1
+redis 127.0.0.1:6379> sismember team:b2 vijay
+(integer) 0
+redis 127.0.0.1:6379> sadd team:b2 vijay
+(integer) 1
+redis 127.0.0.1:6379> sismember team:b2 vlad
+(integer) 1
+redis 127.0.0.1:6379> sismember team:b2 tom
+(integer) 1
+redis 127.0.0.1:6379> sadd team:tw vijay
+(integer) 1
+#intersection of two teams
+redis 127.0.0.1:6379> sinter team:tw team:b2
+1) "vijay"
+
+#sorted set
+redis 127.0.0.1:6379> zadd seats:parliament 100 congress 60 bjp 20 dmk 3 pmk
+(integer) 4
+redis 127.0.0.1:6379> zadd seats:parliament 40 bsp
+(integer) 1
+redis 127.0.0.1:6379> zcard seats:parliament
+(integer) 5
+redis 127.0.0.1:6379> zrank seats:parliament dmk
+(integer) 1
+redis 127.0.0.1:6379> zrank seats:parliament congress
+(integer) 4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
