@@ -144,8 +144,21 @@ redis 127.0.0.1:6379> zrank seats:parliament dmk
 redis 127.0.0.1:6379> zrank seats:parliament congress
 (integer) 4
 
-
-
+#------------------------------------------------------------------------------------------
+# leveraging datastructures
+#------------------------------------------------------------------------------------------
+# multi key queries
+redis 127.0.0.1:6379> set employees:9001 "name:vijay,profession:coder, dept:blue2"
+OK
+redis 127.0.0.1:6379> append employees:9001 "email:vijayrc@outlook.com"
+(integer) 64
+redis 127.0.0.1:6379> get employees:9001
+"name:vijay,profession:coder, dept:blue2email:vijayrc@outlook.com"
+redis 127.0.0.1:6379> hset employees:lookup:email vijayrc@outlook.com 9001
+(integer) 1
+redis 127.0.0.1:6379> hget employees:lookup:email vijayrc@outlook.com
+"9001"
+#now we can use both id and email to lookup an employee
 
 
 
