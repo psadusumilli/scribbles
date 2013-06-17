@@ -160,6 +160,43 @@ redis 127.0.0.1:6379> hget employees:lookup:email vijayrc@outlook.com
 "9001"
 #now we can use both id and email to lookup an employee
 
+#expire command 
+#--------------------------
+
+expire pages:about 30 #remove pages:about after 30s 
+
+expireat pages:about 1356933600 #remove pages:about exactly at dec31, 2012, 12:00am
+
+ttl pages:about # time to live
+
+persist pages:about #remove expiry settings
+
+#publish-subscribe
+#--------------------------
+
+subscribe warnings
+
+publish warnings "hey dude"
+
+#sort
+#--------------------------
+#bugs as hash
+hset bug:12339 severity 3
+hset bug:12339 priority 1
+hset bug:12339 details "{id: 12339, ....}"
+
+hset bug:1382 severity 2
+hset bug:1382 priority 2
+hset bug:1382 details "{id: 1382, ....}"
+
+#some tracked bugs
+sadd bug:watch 12339 1382 338 9338
+
+#sort
+sort bug:watch by bug:*->severity get bug:*->details store bugs:watch-by-priority
+
+
+
 
 
 
