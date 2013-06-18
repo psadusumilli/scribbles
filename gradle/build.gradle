@@ -1,0 +1,40 @@
+
+//#1 task basics
+//****************************************************************************
+//#1.1 task dependencies
+//gradle -q greet -> Hey there lazy dude!
+task hey << {
+	print "Hey "
+}
+
+task there << {
+	print "there "
+}
+
+task greet(dependsOn: [hey,there,'lazy']) << {
+	print "dude! "
+}
+
+task lazy << {
+	print "lazy "
+}
+
+//#1.2 lamda*************************************************
+//gradle -q count -> 0123
+task count << {
+	10.times{ print "$it "}
+	println ""
+}
+count.doFirst {
+	println "started $count.name task"
+}
+count.doLast {
+	println "stopped $count.name task"
+}
+
+//#1.3 dynamic task creation*********************************
+//gradle -q task2 -> I am task2
+4.times {
+	counter -> 	task "task$counter" << {print "I am task $counter"}	
+}
+
