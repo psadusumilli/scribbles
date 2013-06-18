@@ -1,6 +1,9 @@
 
 //#1 task basics
 //****************************************************************************
+defaultTasks 'greet'
+
+
 //#1.1 task dependencies
 //gradle -q greet -> Hey there lazy dude!
 task hey << {
@@ -19,17 +22,22 @@ task lazy << {
 	print "lazy "
 }
 
-//#1.2 lamda*************************************************
+//#1.2 lamda, task property, methods *************************************************
 //gradle -q count -> 0123
 task count << {
-	10.times{ print "$it "}
+	ext.increment = 0
+
+	10.times{ 
+		print "$it "
+		increment = increment +1
+	}
 	println ""
 }
 count.doFirst {
 	println "started $count.name task"
 }
 count.doLast {
-	println "stopped $count.name task"
+	println "stopped $count.name task with $count.increment"
 }
 
 //#1.3 dynamic task creation*********************************
