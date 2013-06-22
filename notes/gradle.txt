@@ -1,0 +1,3 @@
+gradle build => ran the build job
+gradle uploadArchives => to upload artifacts to repos
+

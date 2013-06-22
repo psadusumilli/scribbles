@@ -17,5 +17,6 @@ public class SamplerTest {
     @Test
     public void shouldSaySomething(){
         assertEquals("music",sampler.play());
+        assertEquals("shravan", System.getProperty("name"));
     }
 }
