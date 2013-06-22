@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: MyGradle
-version: 1.0
-

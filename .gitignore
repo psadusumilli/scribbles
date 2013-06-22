@@ -20,4 +20,4 @@ test-output/
 *.log*
 *.wav
 *.pyc
-**/*.gradle
+.gradle/
