@@ -1,4 +1,4 @@
-package com.vijayrc.gradle;
+package com.vijayrc.scribbles;
 
 public class JazzMusic implements Music{
     @Override

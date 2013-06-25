@@ -18,4 +18,6 @@ public class PlayerTest {
     public void shouldSaySomething(){
         assertEquals("Georgia on my mind - Ray Charles", player.play());
     }
+
+
 }

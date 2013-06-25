@@ -1,6 +1,10 @@
 
 subprojects{
     apply plugin: 'java'
+    apply plugin: 'maven'
+
+    sourceCompatibility = 1.7
+    version = '1.0'
 
     repositories {
         mavenCentral()
@@ -13,11 +17,16 @@ subprojects{
         runtime group:'log4j', name:'log4j',version:'1.2.16'
     }
 
-    sourceCompatibility = 1.7
-    version = '1.0'
-
     test {
         systemProperties 'name': 'shravan'
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: "file://localhost/tmp/myRepo/")
+            }
+        }
     }
 
 }
