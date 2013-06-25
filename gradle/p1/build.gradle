@@ -13,8 +13,10 @@ subprojects{
     dependencies {
         compile 'commons-lang:commons-lang:2.5'
         compile 'log4j:log4j:1.2.16'
+        compile 'org.springframework:spring-context:3.2.2.RELEASE'
+        compile 'com.googlecode.lambdaj:lambdaj:2.2'
         testCompile 'junit:junit:4.1'
-
+        testCompile 'org.mockito:mockito-all:1.9.5'
     }
     uploadArchives {
         repositories {
@@ -41,8 +43,10 @@ repositories {
 dependencies{
     compile project(':mod1')
     compile 'org.springframework:spring-webmvc:3.2.2.RELEASE'
+    compile 'com.googlecode.lambdaj:lambdaj:2.2'
     providedCompile 'javax.servlet:servlet-api:2.5'
     testCompile 'junit:junit:4.1'
+    testCompile 'org.mockito:mockito-all:1.9.5'
 }
 
 

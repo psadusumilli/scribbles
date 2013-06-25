@@ -3,7 +3,6 @@
     <title>Gradle WebProject QuickStart</title>
  </head>
  <body>
-    <form action="">
-
+     <p>Hey there!</p>
  </body>
 </html>

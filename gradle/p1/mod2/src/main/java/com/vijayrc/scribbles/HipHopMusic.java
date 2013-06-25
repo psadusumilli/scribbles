@@ -1,5 +1,8 @@
 package com.vijayrc.scribbles;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class HipHopMusic extends BaseMusic {
 
     public HipHopMusic() {
