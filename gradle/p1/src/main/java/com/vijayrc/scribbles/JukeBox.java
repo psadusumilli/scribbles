@@ -1,11 +1,11 @@
 package com.vijayrc.scribbles;
 
-public class Player {
+public class JukeBox {
 
     private MusicLibrary musicLibrary = new MusicLibrary();
 
-    public String play() {
-        return  musicLibrary.playJazz();
+    public String play(String name) {
+        return  musicLibrary.play(name);
     }
 
 

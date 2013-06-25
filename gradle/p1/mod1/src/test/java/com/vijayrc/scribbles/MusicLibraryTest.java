@@ -19,6 +19,6 @@ public class MusicLibraryTest {
 
     @Test
     public void shouldPlayJazzMusic() {
-        assertEquals("Georgia on my mind - Ray Charles", musicLibrary.playJazz());
+        assertEquals("Georgia on my mind - Ray Charles", musicLibrary.play("jazz"));
     }
 }
