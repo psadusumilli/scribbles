@@ -15,4 +15,9 @@ public abstract class BaseMusic implements Music {
     public boolean is(String name) {
         return this.name.equalsIgnoreCase(name);
     }
+
+    @Override
+    public String name() {
+        return name;
+    }
 }

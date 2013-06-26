@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
 import static java.util.Arrays.asList;
 
 @Service
@@ -23,9 +25,7 @@ public class MusicLibrary {
         return "";
     }
 
-    public List<String> all() {
-        for (BaseMusic baseMusic : musicList) {
-
-        }
+    public List<String> playlist() {
+        return extract(musicList, on(BaseMusic.class).name());
     }
 }
