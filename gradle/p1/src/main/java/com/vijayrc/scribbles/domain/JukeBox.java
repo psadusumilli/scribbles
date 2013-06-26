@@ -15,12 +15,9 @@ public class JukeBox {
     public JukeBox(MusicLibrary musicLibrary) {
         this.musicLibrary = musicLibrary;
     }
-
     public String play(String name) {
         return musicLibrary.play(name);
     }
-
-
     public List<String> playlist() {
         return musicLibrary.playlist();
     }

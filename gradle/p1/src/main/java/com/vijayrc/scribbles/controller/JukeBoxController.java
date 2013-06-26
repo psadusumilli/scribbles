@@ -22,6 +22,4 @@ public class JukeBoxController {
     public ModelAndView showBox(@PathVariable String music){
         return new ModelAndView("music").addObject("music", jukeBox.play(music));
     }
-
-
 }

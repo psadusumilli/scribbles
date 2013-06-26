@@ -18,14 +18,6 @@ subprojects{
         testCompile 'junit:junit:4.1'
         testCompile 'org.mockito:mockito-all:1.9.5'
     }
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                repository(url: "file://localhost/tmp/myRepo/")
-            }
-        }
-    }
-
 }
 
 apply plugin: 'war'
