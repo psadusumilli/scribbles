@@ -18,7 +18,7 @@
 
     <servlet-mapping>
         <servlet-name>vrc</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/vrc/*</url-pattern>
     </servlet-mapping>
 
 
