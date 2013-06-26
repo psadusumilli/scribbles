@@ -14,7 +14,7 @@ public class JukeBoxController {
 
     @RequestMapping("/")
     public ModelAndView showBox(){
-        return new ModelAndView("box").addObject("playlist", jukeBox.playlist());
+        return new ModelAndView("box").addObject("name","gradle newbie").addObject("playlist", jukeBox.playlist());
     }
 
 
