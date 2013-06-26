@@ -12,6 +12,8 @@ http://www.springframework.org/schema/mvc http://www.springframework.org/schema/
         <property name="suffix" value=".jsp"/>
     </bean>
 
-    <!--<mvc:resources mapping="/static/**" location="/static/**"/>-->
+    <mvc:annotation-driven />
+    <mvc:resources mapping="/static/css/**" location="/static/css/"/>
+    <mvc:resources mapping="/static/js/**" location="/static/js/"/>
 
 </beans>
