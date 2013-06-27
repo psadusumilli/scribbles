@@ -106,12 +106,15 @@ task groupPing {
     dependsOn pingServer1, pingServer2
 }
 //#1.8 files ************************************************
-task files{
+task myFiles << {
 	FileCollection collection = files('dir1/1.txt', new File('dir1/2.xml'), ['dir1/3.csv', 'dir1/4.properties'])
 	collection.each {file -> println file.name+" "+file.absolutePath}
 }
 
-//#1.9 calling ant tasks , ant tasks can be accessed via 'ant' [AntBuilder instance in project],ant targets map to gradle tasks
+//***********************************************************
+//#1.9 calling ant tasks , ant tasks can be accessed via 'ant',
+//[AntBuilder instance in project],ant targets map to gradle tasks
+
 task antzip << {
     ant.zip(destfile: 'archive.zip') {
         fileset(dir: 'dir1') {
@@ -120,4 +123,9 @@ task antzip << {
             exclude(name: '**.properties')
         }
     }
+}
+
+ant.importBuild 'build.xml'
+task gradleHello(dependsOn: antHello) << {
+    println 'Hello, from Gradle'
 }

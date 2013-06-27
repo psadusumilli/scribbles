@@ -1,0 +1,5 @@
+<project>
+    <target name="antHello">
+        <echo>Hello, from Ant</echo>
+    </target>
+</project>
