@@ -3,6 +3,8 @@
 //****************************************************************************
 defaultTasks 'greet'
 
+def environment='dev'
+print "this environment is "+environment
 
 //#1.1 task dependencies
 //gradle -q greet -> Hey there lazy dude!
