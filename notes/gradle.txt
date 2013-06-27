@@ -1,3 +1,18 @@
 gradle build => ran the build job
 gradle uploadArchives => to upload artifacts to repos
+gradle dist -x test => to exclude task test 
+gradle -b file => to spcify file
+gradle projects => to list projects
+gradle tasks => list tasks
+gradle dependencies => list dependencies
+gradle build --profile => create profile reports like time taken
 
+project => identifier to pick project instance in build script
+path => identifier to pick absolute path of project
+
+gradle.properties => in project dir to add properties
+
+ext => to add properties
+def => to add varaiables
+
+ 

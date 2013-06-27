@@ -111,3 +111,13 @@ task files{
 	collection.each {file -> println file.name+" "+file.absolutePath}
 }
 
+//#1.9 calling ant tasks , ant tasks can be accessed via 'ant' [AntBuilder instance in project],ant targets map to gradle tasks
+task antzip << {
+    ant.zip(destfile: 'archive.zip') {
+        fileset(dir: 'dir1') {
+            include(name: '**.xml')
+            include(name: '**.csv')
+            exclude(name: '**.properties')
+        }
+    }
+}
