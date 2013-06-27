@@ -1,10 +1,17 @@
 
 //#1 task basics
-//****************************************************************************
-defaultTasks 'greet'
+//**********************************************************
+//reading from other files
+apply from:'other.gradle'
 
-def environment='dev'
-print "this environment is "+environment
+defaultTasks 'dude'
+
+//accessing preset variable
+println "project name: $project.name"
+
+//define local variable
+def p1='p1-value'
+println "p1 local variable is $p1"
 
 //#1.1 task dependencies
 //gradle -q greet -> Hey there lazy dude!
@@ -16,7 +23,7 @@ task there << {
 	print "there "
 }
 
-task greet(dependsOn: [hey,there,'lazy']) << {
+task dude(dependsOn: [hey,there,'lazy']) << {
 	print "dude! "
 }
 
@@ -24,7 +31,7 @@ task lazy << {
 	print "lazy "
 }
 
-//#1.2 lamda, task property, methods *************************************************
+//#1.2 lamda, task property, methods **************************
 //gradle -q count -> 0123
 task count << {
 	ext.increment = 0
@@ -32,6 +39,7 @@ task count << {
 	10.times{ 
 		print "$it "
 		increment = increment +1
+		hey
 	}
 	println ""
 }
@@ -43,8 +51,27 @@ count.doLast {
 }
 
 //#1.3 dynamic task creation*********************************
-//gradle -q task2 -> I am task2
-4.times {
-	counter -> 	task "task$counter" << {print "I am task $counter"}	
+//gradle -q dynamo task2 -> I am task2
+task dynamo{
+	4.times {
+		counter -> 	task "task$counter" << {print "I am task $counter"}	
+	}
 }
+//#1.4 folder manipulation **************************
+task copier(type: Copy)  {
+	from "dir1"
+   	into "dir2"
+   	include('**/*.txt', '**/*.xml', '**/*.properties')
 
+	doFirst{
+		File dir2 = new File('dir2')
+		dir2.deleteDir()
+		println "dir2 deleted"
+		dir2.mkdirs();
+		println "dir2 created"
+	}
+	
+	doLast{	
+		println "files copied"
+	}
+}

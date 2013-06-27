@@ -1,0 +1,9 @@
+ext{
+	p1 = "p1-value"	
+} 
+println "other.gradle: p1 is $p1"
+println "other.gradle: project.name is $project.name"
+
+task t2 << {
+	println "task t2 executed"
+}
