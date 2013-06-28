@@ -129,3 +129,12 @@ ant.importBuild 'build.xml'
 task gradleHello(dependsOn: antHello) << {
     println 'Hello, from Gradle'
 }
+
+//#2.0 ********************************************************
+//java plugin adds tasks like compileJava, processResources
+apply plugin: 'java'
+
+task javaPlugin << {
+    println relativePath(compileJava.destinationDir)
+    println relativePath(processResources.destinationDir)
+}
