@@ -1,4 +1,5 @@
-gradle build => ran the build job
+
+gradle build => ran the build sjob
 gradle uploadArchives => to upload artifacts to repos
 gradle dist -x test => to exclude task test 
 gradle -b file => to spcify file
@@ -14,5 +15,24 @@ gradle.properties => in project dir to add properties
 
 ext => to add properties
 def => to add varaiables
+
+
+java plugin sourceset config:
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/java'
+        }
+        resources {
+            srcDir 'src/resources'
+        }
+    }
+}
+
+dependencies {
+    runtime files('libs/a.jar', 'libs/b.jar')
+    runtime fileTree(dir: 'libs', include: '*.jar')
+}
 
  
