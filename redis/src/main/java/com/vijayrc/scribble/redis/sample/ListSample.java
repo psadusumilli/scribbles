@@ -6,12 +6,10 @@ import redis.clients.jedis.Jedis;
 @Log4j
 public class ListSample extends BaseSample {
 
-    public ListSample(Jedis jedis) {
-        super(jedis);
-    }
-
     @Override
     public void run() throws Exception {
+        Jedis jedis = newJedis();
+
         jedis.lpush("boys", "stan", "kyle", "cartman", "kenny");
         jedis.rpush("boys", "butter", "token");
         log.info("southpark boys = " + jedis.llen("boys"));

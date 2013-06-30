@@ -5,12 +5,11 @@ import redis.clients.jedis.Jedis;
 
 @Log4j
 public class HashSample extends BaseSample {
-    public HashSample(Jedis jedis) {
-        super(jedis);
-    }
 
     @Override
     public void run() throws Exception {
+        Jedis jedis = newJedis();
+
         jedis.hset("profile_1", "name", "steve");
         jedis.hset("profile_1", "gender", "male");
         jedis.hset("profile_1", "profession", "coder");

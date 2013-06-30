@@ -5,12 +5,10 @@ import redis.clients.jedis.Jedis;
 
 @Log4j
 public class SetSample extends BaseSample {
-    public SetSample(Jedis jedis) {
-        super(jedis);
-    }
-
     @Override
     public void run() throws Exception {
+        Jedis jedis = newJedis();
+
         jedis.sadd("set_boys_1", "cartman", "kenny", "kyle", "cartman");
         jedis.sadd("set_boys_2", "token", "jimmy", "butters", "kyle");
 
