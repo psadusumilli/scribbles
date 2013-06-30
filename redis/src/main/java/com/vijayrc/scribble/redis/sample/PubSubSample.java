@@ -6,7 +6,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
 public class PubSubSample extends BaseSample {
-
     @Override
     public void run() throws Exception {
         final String channel = "news";

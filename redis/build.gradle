@@ -1,11 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
-
 repositories {
     mavenCentral()
     mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
-
 }
 
 dependencies{
@@ -16,5 +14,4 @@ dependencies{
     runtime fileTree(dir: 'lib', include: '*.jar')
     testCompile 'junit:junit:4.1'
     testCompile 'org.mockito:mockito-all:1.9.5'
-
 }

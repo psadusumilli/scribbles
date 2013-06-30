@@ -8,13 +8,10 @@ import redis.clients.jedis.JedisPoolConfig;
 public class AllSamples {
 
     public static void main(String[] args) throws Exception {
-
-        //new KeyValueSample().run();
-        //new ListSample().run();
-        //new SetSample().run();
-//        new HashSample().run();
+        new KeyValueSample().run();
+        new ListSample().run();
+        new SetSample().run();
+        new HashSample().run();
         new PubSubSample().run();
-
-
     }
 }
