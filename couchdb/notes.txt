@@ -1,0 +1,170 @@
+CouchDb notes:
+
+http://horicky.blogspot.com/2008/10/couchdb-implementation.html
+
+Underlying Storage Structure:
+-----------------------------
+CouchDB is a “document-oriented” database where document is a JSON string (with an optional binary attachment). 
+The underlying structure is composed of a “storage” as well as multiple “view indexes”. The “storage” is used to store the documents and the “view indexes” is used for query processing.
+Within a storage file, there are “contiguous” regions which is used to store documents. There are 2 B+Tree indexes to speed up certain assess to the documents.
+
+
+#1 BTREE1 
+----------
+by_id_index (which use the document id as the key). 
+It is mainly use to lookup the document by its document id, it points to a list of revisions 
+(or a tree of revisions in case of conflicts in the replication scenario) since the last compaction.
+ It also keep a the revision history (which won't be affected by compaction).
+
+ id1 doc_json1
+ id2 doc_json2 
+ id3 doc_json3 
+ id4 doc_json4 
+
+
+#2 BTREE2
+----------
+by_seqnum_index (which use a monotonically increasing number as the key). 
+Seqnum is generated whenever a document is updated. (Note that all updates are happening is a serial fashion so the seqnum reflect a sequence of non-concurrent update). It is mainly use to keep track of last point of replication synchronization, last point of view index update.
+by_seqnum B+Tree index always point to the latest revision, previous revision is automatically forgotten.
+(must be a global number across a database)
+...
+122 doc_json1_rev_13 
+123 doc_json2_rev_1 
+124 doc_json3_rev_7
+...
+
+Append-only:
+-------------
+All updates (creating documents, modifying documents and deleting documents) happens in an append only mechanism. 
+Instead of modifying the existing documents, a new copy is created and append to the current region. After that, the b+tree nodes are also modified to point to the new document location.
+Modification to the b+tree nodes also done in an append-only fashion, which means a new b+tree node is copy and tail-append to the end of the file. 
+This in turn trigger a modification to the parent node of the b+tree node, which cause a new copy of the parent node … until all the way back to the root b+tree node. 
+And finally modify the file header to point to the new root node.
+That means all updates will trigger 1 write to the document (except delete) and logN writes to each B+Tree node page. So it is O(logN) complexity.
+Append-only operation provide an interesting MVCC (Multi-Version Concurrency Control) model because the file keep a history of all the versions of previous document state. 
+As long as the client hold on to a previous root node of the B+Tree index, it can get a snapshot view. While update can continuously happen, the client won’t see any of the latest changes. 
+Such consistency snapshot is very useful in online backup as well as online compaction.
+Note that while read operation is perform concurrently with other read and write. Write operation is perform in a serial order across documents. In other words, at any time only one document update can be in progress (however, write of attachments within a document can happen in parallel).
+
+OPERATIONS:
+------------------------------
+1 GET document
+------------------------------
+
+1.1 When a client issue a HTTP REST GET call to CouchDB, the DBServer …
+1.2 Look at the file header to find the root node of the by_id B+Tree index
+1.3 Traverse down the B+tree to figure out the document location
+1.4 Read the document and return back to client
+
+------------------------------
+2 PUT document (modification)
+------------------------------
+2.1 When a client issue a HTTP REST POST call to CouchDB, the DBServer …
+2.2 Look at the file header to find the root node of the by_id B+Tree index
+2.3 Traverse down the B+tree to figure out the leaf node as well as the document location
+2.4 Read the document. Compare the revision, throw an error if they don’t match.
+2.5 If they match, figure out the old seqnum of the current revision.
+2.6 Generate a new (monotonic increasing) seqnum as well as a new revision
+2.7 Find the last region to see if this document can fit in. If not, allocate another contiguous region.
+2.8 Write the document (with the new revision) into the new region
+2.9 Modify the by_id b+tree to point to the new document location
+2.11 Modify the by_seqnum b+tree to add the new entry (of the new seqnum) and remove the old entry (of the old seqnum).
+2.12 Note that the by_seqnum B+Tree index always point to the latest revision, previous revision is automatically forgotten.
+
+------------------------------
+3 PUT / POST document (creation)
+------------------------------
+3.1 When a client issue a HTTP REST PUT call to CouchDB, the DBServer …
+3.2 Generate a new (monotonic increasing) seqnum as well as a new document id and revision
+3.3 Find the last region to see if this document can fit in. If not, allocate another contiguous region.
+3.4 Write the document (with the new revision) into the new region
+3.5 Modify the by_id b+tree to point to the new document location
+3.6 Modify the by_seqnum b+tree to add the new entry (of the new seqnum)
+
+------------------------------
+4 DELETE document (modify)
+------------------------------
+4.1 When a client issue a HTTP REST DELETE call to CouchDB, the DBServer …
+4.2 Look at the file header to find the root node of the by_id B+Tree index
+4.3 Traverse down the B+tree to figure out the leaf node as well as the document location
+4.4 Read the document. Compare the revision, throw an error if they don’t match.
+4.5 If they match, figure out the old seqnum of the current revision.
+4.6 Generate a new (monotonic increasing) seqnum as well as a new revision
+4.7 Modify the by_id b+tree revision history to show this revision path is deleted
+4.8 Modify the by_seqnum b+tree to add the new entry (of the new seqnum) and remove the old entry (of the old seqnum).
+
+------------------------------
+5 Online Compaction:
+------------------------------
+5.1 As an append-only operation, the storage file will grow over time. So we need to compact the file regularly.
+5.2 Open a new storage file
+5.3 Walk the by_seqnum b+tree index (which only points to the latest revision), locate the document
+5.4 Copy the document to the new storage file (which automatically update the corresponding b+tree indexes in the new storage file).
+5.5 Note that because of the characteristic of MVCC, the compaction will get a consistency snapshot and can happen concurrently 
+	without being interfered by the continuously update after the start of compaction. 
+	However, if the rate of update is too high, the compaction process can never catch up with the update which keep appending to the file. 
+	There is a throttling mechanism under development to slow down the client update rate.
+
+------------------------------
+6 View Indexes:
+------------------------------
+CouchDB supports a concept of “view” to the database. A view is effectively the result of user-defined processing to the underlying document repository. 
+The user-defined processing has to be organized as a two-step processing, “map” and “reduce”. (note that the reduce semantics is very different from Google’s Map/Reduce model). 
+Map() is a user defined function which transform each documents into zero, one or multiple intermediate objects,
+reduce() is another user defined function to consolidate the intermediate objects into the final result.
+The intermediate objects of the map() and the reduce() is stored in the view indexes. 
+As the storage gets updated, the previous results stored in the view indexes is no longer valid and has to be updated. 
+CouchDB use an 'incremental update mechanism' so that the refresh of the view indexes is highly efficient.
+Views definitions are grouped into a design document.
+
+Each view is defined by one “map” function and an optional “reduce” function. Views are updated on GET only
+Initially, the view file is empty (no index has been built yet). View is built lazily when the first query is made.
+
+6.1 CouchDB will walk the by_seqnum B+Tree index of the storage file.
+6.2 Based on that, CouchDB get the latest revisions of all existing documents
+6.3 CouchDB remembers the last seqnum and then feed each document to the View Server using “map_doc”. From prev example, pick all docs with seqnum > 123
+6.4 View Server invoke the map(doc) function, for each emit(key, value) call, an entry is created.
+6.5 Finally, a set of entries is computed and return back to CouchDB.
+6.6 CouchDb will add those entries into the B+Tree index, key = emit_key + doc_id. For each of the B+Tree leave node.
+6.7 CouchDB will send all its containing map entry back to the View Server using “reduce”.
+6.8 View Server invoke the reduce(keys, values) function.
+6.9 The reduce result is computed and return back to CouchDB
+6.10 CouchDb will update the leave B+Tree node to point to the reduce value of its containing map results.
+6.11 After that, CouchDb move up one level to the parent of the leave B+Tree node. For each of the B+Tree parent node, CouchDB will send the corresponding reduce result of its children nodes to the View Server using “rereduce”.
+6.12 View Server invoke the reduce(keys, values) function again.
+6.13 Finally a rereduce result is computed and return back to CouchDB.
+6.14 CouchDB will update the parent B+Tree node to point to the rereduce value.
+6.15 CouchDB continues to move up one level and repeat the calculation of rereduce result. Finally the rereduce result of the root node is also updated.
+
+------------------------------
+7 Incremental View Update
+------------------------------
+CouchDB updates the view indexes lazily and incrementally. That means, when the documents are updated, CouchDB will not refresh the view index until the next query reaches CouchDB.
+Then CouchDB refresh the index in the following way.
+
+7.1 CouchDB will then walk the by_seqnum B+Tree index of the storage file, starting from the last seqnum.
+7.2 CouchDB extract all the change documents since the last view query and feed them to the view server’s map function, and get back a set of map results.
+7.3 CouchDb update the map result into the B+Tree index, some of the leave B+Tree node will be updated.
+7.4 For those updated leave B+Tree node, CouchDB resend all its containing map entries back to view server to recomputed the reduce value. Then store the reduced value inside the B+Tree node.
+7.5 All the parents of the updated leave B+Tree node, CouchDB need to recompute the rereduce value and store it inside the B+Tree node. Until all the way up to the root node.
+
+------------------------------
+8 Query processing
+------------------------------
+When client retrieve the result of a view, there are the following scenarios
+
+8.1 Query on Map-only view
+In this case, there is no reduce phase of the view indexes update. To perform the query processing, 
+CouchDB simply search the B+Tree to locate the corresponding starting point of the key (note that the key is prefixed by the emit_key) and then return all the map results of that key
+
+8.2 Query on Map with reduce
+There are 2 cases. 
+8.2.1 If the query is on the final reduce value over the whole view, then CouchDB will just return the rereduce value pointed by the root of B+Tree of the view index.
+
+8.2.2 If the query is on the reduce value of each key (group_by_key = true), then CouchDB try to locate the boundary of each key. 
+Since this range is probably not fitting exactly along the B+Tree node, CouchDB need to figure out the edge of both ends to locate the partially matched leave B+Tree node
+and resend its map result (with that key) to the View Server. 
+ This reduce result will then merge with existing rereduce result to compute the final reduce result of this key.
+
+
