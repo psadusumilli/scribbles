@@ -1,4 +1,4 @@
 package com.vijayrc.scribbles.radio.domain;
 
-public class Album {
+public class Album extends BaseDoc {
 }

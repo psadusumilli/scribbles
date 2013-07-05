@@ -1,4 +1,15 @@
 package com.vijayrc.scribbles.radio.repository;
 
-public class AllLocations {
+import com.vijayrc.scribbles.radio.domain.Location;
+import org.ektorp.CouchDbConnector;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class AllLocations extends BaseRepo<Location>{
+
+    @Autowired
+    protected AllLocations(CouchDbConnector db) {
+        super(Location.class, db);
+    }
 }

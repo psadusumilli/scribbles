@@ -1,4 +1,4 @@
 package com.vijayrc.scribbles.radio.domain;
 
-public class Listener {
+public class Listener extends BaseDoc{
 }
