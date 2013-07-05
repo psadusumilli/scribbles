@@ -252,7 +252,10 @@ Quick Start:
 	  }  
 	}
 	reduce:
-	function(keys, values){
+	function(keys, values, rereduce){
+		if(rereduce){
+			return sum(values);
+		}
 		return sum(values);
 	}
 
@@ -284,7 +287,7 @@ Quick Start:
 	       },
 	       "by_shop": {
 	           "map": "function(doc) {\n  var shop;\n  if(doc.name && doc.prices){\n\tfor(shop in doc.prices){\t\t\t\n\t\temit(shop,doc.prices[shop]); \n\t}\n  }  \n}",
-	           "reduce": "function(keys, values){\n\treturn sum(values);\n}"
+	           "reduce": "function(keys, values, rereduce){\n\tif(rereduce) {return sum(values);} return sum(values);\n}"
 	       }
 	   }
 	}
