@@ -168,3 +168,138 @@ and resend its map result (with that key) to the View Server.
  This reduce result will then merge with existing rereduce result to compute the final reduce result of this key.
 
 
+-------------------------------------------------------------------------------------------------------
+Open Futon: http://localhost:5984/_utils/
+-------------------------------------------------------------------------------------------------------
+
+Quick Start: 
+
+1 create a database 'shop'
+
+2 create some documents for fruits and prices aggregates
+	#2.1 
+		{
+		   "_id": "00a271787f89c0ef2e10e88a0c0001f4",
+		   "_rev": "1-2628a75ac8c3abfffc8f6e30c9949fd6",
+		   "item": "apple",
+		   "prices": {
+		       "Fresh Mart": 1.59,
+		       "Price Max": 5.99,
+		       "Apples Express": 0.79
+		   }
+		}
+	#2.2
+	{
+	   "_id": "00a271787f89c0ef2e10e88a0c0003f0",
+	   "_rev": "1-e9680c5d9a688b4ff8dd68549e8e072c",
+	   "item": "orange",
+	   "prices": {
+	       "Fresh Mart": 1.99,
+	       "Price Max": 3.19,
+	       "Citrus Circus": 1.09
+	   }
+	}
+	#2.3
+	{
+	   "_id": "00a271787f89c0ef2e10e88a0c00048b",
+	   "_rev": "1-60e25d93dc12884676d037400a6fa189",
+	   "item": "banana",
+	   "prices": {
+	       "Fresh Mart": 1.99
+	       "Price Max": 0.79,
+	       "Banana Montana": 4.22
+	   }
+	}
+-------------------------------------------------------------------------------
+3. Switch to Temporary Views in Futon, write a map function
+	
+	#3.1 - save this as a permanent view (by_price) with design document as 'fruit'
+	function(doc) {
+	  var shop;
+	  if(doc.name && doc.prices){
+		for(shop in doc.prices){			
+			emit(doc.prices[shop],[doc.name, shop]); 
+		}
+	  }  
+	}
+
+	results:
+	0.8 ["orange", "walmart"]
+	1   ["apple", "walmart"]
+	...
+-------------------------------------------------------------------------------
+	#3.2 
+	function(doc) {
+	  var shop;
+	  if(doc.name && doc.prices){
+		for(shop in doc.prices){			
+			emit([doc.prices[shop],shop],doc.name); 
+		}
+	  }  
+	}
+	results:
+	[0.8, "walmart"] "orange"
+	[1, "walmart"] "apple"
+	...34	
+-------------------------------------------------------------------------------
+	#3.3
+	function(doc) {
+	  var shop;
+	  if(doc.name && doc.prices){
+		for(shop in doc.prices){			
+			emit(shop,doc.prices[shop]); 
+		}
+	  }  
+	}
+	reduce:
+	function(keys, values){
+		return sum(values);
+	}
+
+	#results:
+	"freshmart"	2.2
+	"freshmart"	2.6
+	"freshmart" 4
+	"kroger"	2
+	"kroger"	2.1
+
+	#reduce results:
+	"freshmart"	8.8
+	"kroger"	7.300000000000001
+	"target"	5.7
+	"walmart"	2.8
+
+-------------------------------------------------------------------------------
+	#3.4 final view document
+	{
+	   "_id": "_design/fruit",
+	   "_rev": "3-7c60d8b2a634204b4d567c7401bd7170",
+	   "language": "javascript",
+	   "views": {
+	       "by_price": {
+	           "map": "function(doc) {\n  var shop;\n  if(doc.name && doc.prices){\n\tfor(shop in doc.prices){\t\t\t\n\t\temit(doc.prices[shop],[doc.name, shop]); \n\t}\n  }  \n}"
+	       },
+	       "by_price_and_shop": {
+	           "map": "function(doc) {\n  var shop;\n  if(doc.name && doc.prices){\n\tfor(shop in doc.prices){\t\t\t\n\t\temit([doc.prices[shop],shop],doc.name); \n\t}\n  }  \n}"
+	       },
+	       "by_shop": {
+	           "map": "function(doc) {\n  var shop;\n  if(doc.name && doc.prices){\n\tfor(shop in doc.prices){\t\t\t\n\t\temit(shop,doc.prices[shop]); \n\t}\n  }  \n}",
+	           "reduce": "function(keys, values){\n\treturn sum(values);\n}"
+	       }
+	   }
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
