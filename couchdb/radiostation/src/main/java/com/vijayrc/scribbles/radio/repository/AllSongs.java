@@ -15,7 +15,7 @@ public class AllSongs extends BaseRepo<Song> {
         super(Song.class, db);
     }
 
-    @DataSetup(order = 2, description = "songs setup")
+    @DataSetup(order = 2, description = "songs setup", key = "Song")
     public void addData() {
     }
 

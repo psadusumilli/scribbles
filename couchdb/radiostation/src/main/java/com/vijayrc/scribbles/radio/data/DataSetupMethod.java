@@ -6,11 +6,13 @@ public class DataSetupMethod {
     private Object bean;
     private Method method;
     private String description;
+    private String key;
     private Integer order;
 
-    public DataSetupMethod(Object bean, Method method, String description, Integer order) {
+    public DataSetupMethod(Object bean, Method method, String description, String key, Integer order) {
         this.bean = bean;
         this.method = method;
+        this.key = key;
         this.order = order;
         this.description = description;
     }
@@ -25,5 +27,9 @@ public class DataSetupMethod {
 
     public Integer order() {
         return order;
+    }
+
+    public boolean keyIs(String key) {
+        return this.key.equalsIgnoreCase(key);
     }
 }

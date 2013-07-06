@@ -18,11 +18,11 @@ public class DataSetupService {
     @Autowired
     private AllDataSetups allDataSetups;
 
-    public void run() throws Exception {
+    public void run(String key) throws Exception {
         DateTime start = now();
         log.info("setup start: " + start);
 
-        allDataSetups.run();
+        allDataSetups.run(key);
 
         DateTime end = now();
         Period p = new Period(start, end);

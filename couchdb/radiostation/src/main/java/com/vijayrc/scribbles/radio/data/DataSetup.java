@@ -9,4 +9,5 @@ import java.lang.annotation.*;
 public @interface DataSetup {
     int order();
     String description();
+    String key();
 }

@@ -20,7 +20,7 @@ public class AllArtists extends BaseRepo<Artist> {
         super(Artist.class, db);
     }
 
-    @DataSetup(order = 2, description = "artists setup")
+    @DataSetup(order = 2, description = "artists setup", key = "Artist")
     public void addData() {
         int artists = 10;
         for (int i = 1; i <= artists; i++)

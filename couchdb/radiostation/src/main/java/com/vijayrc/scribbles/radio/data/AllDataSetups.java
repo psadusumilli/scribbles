@@ -35,15 +35,16 @@ public class AllDataSetups implements BeanPostProcessor {
             if (!method.isAnnotationPresent(DataSetup.class))
                 continue;
             DataSetup annotation = method.getAnnotation(DataSetup.class);
-            methods.add(new DataSetupMethod(bean, method, annotation.description(), annotation.order()));
+            methods.add(new DataSetupMethod(bean, method, annotation.description(), annotation.key(), annotation.order()));
         }
         return bean;
     }
 
-    public void run() throws Exception {
+    public void run(String key) throws Exception {
         Group<DataSetupMethod> methodGroup = group(methods, by(on(DataSetupMethod.class).order()));
         for (Group<DataSetupMethod> subGroup : methodGroup.subgroups()) {
             for (DataSetupMethod method : subGroup.findAll()) {
+                if(!method.keyIs(key)) continue;
                 ExecutorService executor = Executors.newFixedThreadPool(methods.size());
                 CompletionService completionService = new ExecutorCompletionService(executor);
                 completionService.submit(new DataSetupTask(method));
