@@ -1,7 +1,7 @@
 package com.vijayrc.scribbles.radio.repository;
 
 import com.vijayrc.scribbles.radio.data.DataSetup;
-import com.vijayrc.scribbles.radio.vo.Artist;
+import com.vijayrc.scribbles.radio.documents.Artist;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
 import org.springframework.beans.factory.annotation.Autowired;

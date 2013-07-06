@@ -1,5 +1,5 @@
-package com.vijayrc.scribbles.radio.vo;
-import com.vijayrc.scribbles.radio.documents.BaseDoc;
+package com.vijayrc.scribbles.radio.documents;
+import com.vijayrc.scribbles.radio.vo.Time;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.*;
@@ -11,14 +11,14 @@ public class Artist extends BaseDoc{
     @JsonProperty
     private String name;
     @JsonProperty
-    private DateTime dob;
+    private Time dob;
     @JsonProperty
     private String history;
 
     public Artist(String name, DateTime dob) {
         this.name = name;
-        this.dob = dob;
-        this.artistId = name+"-"+dob;
+        this.dob = new Time(dob);
+        this.artistId = this.name+"-"+ this.dob;
     }
 
     public void history(String history){

@@ -33,5 +33,8 @@ public abstract class BaseRepo<T extends BaseDoc> extends CouchDbRepositorySuppo
         return db.queryView(q, type);
     }
 
+    protected T singleResult(List<T> resultSet) {
+        return (resultSet == null || resultSet.isEmpty()) ? null : resultSet.get(0);
+    }
 
 }

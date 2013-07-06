@@ -1,9 +1,12 @@
 package com.vijayrc.scribbles.radio.documents;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 
 @TypeDiscriminator("doc.type === 'Location'")
+@NoArgsConstructor
 public class Location extends BaseDoc {
     @JsonProperty
     private String city;
@@ -16,5 +19,10 @@ public class Location extends BaseDoc {
         this.city = city;
         this.state = state;
         this.country = country;
+    }
+
+    @Override
+    public String toString() {
+        return country+"-"+state+"-"+city;
     }
 }

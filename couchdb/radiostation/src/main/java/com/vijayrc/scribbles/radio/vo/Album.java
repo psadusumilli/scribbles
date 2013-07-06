@@ -1,5 +1,6 @@
 package com.vijayrc.scribbles.radio.vo;
 
+import com.vijayrc.scribbles.radio.documents.Artist;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 
