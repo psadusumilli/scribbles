@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,22 +29,26 @@ public class AllLocationsTest {
     }
 
     @Test
-    public void shouldAddALocationAndFindIt(){
-        allLocations.add(new Location("atlanta","georgia","usa"));
-        Location locationFromDb = allLocations.findByCountryStateAndCity("usa","georgia","atlanta");
+    public void shouldAddALocationAndFindIt() {
+        allLocations.add(new Location("atlanta", "georgia", "usa"));
+        Location locationFromDb = allLocations.findByCountryStateAndCity("usa", "georgia", "atlanta");
         assertNotNull(locationFromDb.getId());
-        log.info("Location from db: "+locationFromDb);
+        log.info("Location from db: " + locationFromDb);
         allLocations.remove(locationFromDb);
     }
 
     @Test
-    public void shouldReturnCounts(){
-        int count = allLocations.countByCountry();
-        log.info("count by countries: "+count);
+    public void shouldReturnCounts() {
+        Map<String, String> count = allLocations.countByCountry();
+        log.info("count by countries: " + count.size());
+        count = allLocations.countByCountryState();
+        log.info("count by countries,state: " + count.size());
+        count = allLocations.countByCountryStateCity();
+        log.info("count by countries,state,city: " + count.size());
     }
 
     @After
-    public void dataTearDown(){
+    public void dataTearDown() {
         allLocations.removeAll();
     }
 

@@ -5,22 +5,25 @@ import com.vijayrc.scribbles.radio.documents.Location;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.ViewResult;
 import org.ektorp.support.View;
 import org.ektorp.support.Views;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @Scope("singleton")
 @Views({
         @View(name = "find_by_country_state_city",
-              map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city]);}}"),
+                map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city]);}}"),
         @View(name = "count_by_country_state_city",
-              map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city],1);}}",
-              reduce="function(key, values){return sum(values);}")
+                map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city],1);}}",
+                reduce = "function(key, values){return sum(values);}")
 })
 public class AllLocations extends BaseRepo<Location> {
     @Autowired
@@ -28,7 +31,7 @@ public class AllLocations extends BaseRepo<Location> {
         super(Location.class, db);
     }
 
-    @DataSetup(order = 1, description = "locations setup", key="Location")
+    @DataSetup(order = 1, description = "locations setup", key = "Location")
     public void addData() {
         int countries = 3;
         int states = 5;
@@ -45,9 +48,23 @@ public class AllLocations extends BaseRepo<Location> {
         return singleResult(queryView("find_by_country_state_city", key));
     }
 
-    public int countByCountry(){
-        ViewQuery count_by_country= createQuery("count_by_country_state_city").includeDocs(false).group(true).groupLevel(1);
-        return db.queryView(count_by_country).getRows().size();
+    public Map<String, String> countByCountry(){
+        return countBy(1);
+    }
+    public Map<String, String> countByCountryState(){
+        return countBy(2);
+    }
+    public Map<String, String> countByCountryStateCity(){
+        return countBy(3);
+    }
+
+    private Map<String, String> countBy(int level) {
+        Map<String, String> map = new HashMap<String, String>();
+        ViewQuery viewQuery = createQuery("count_by_country_state_city").includeDocs(false).group(true).groupLevel(level);
+        List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
+        for (ViewResult.Row row : rows)
+            map.put(row.getKey(), row.getValue());
+        return map;
     }
 
 }
