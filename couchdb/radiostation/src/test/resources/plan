@@ -1,0 +1,14 @@
+queries:
+1 which is the popular album for last week?
+2 how many new subscribers added for the past 2 days?
+3 what are the locations where artist_1 is popular?
+4 how many songs of artist_1 got played yesterday?
+5 what is the age spread of subscribers from location_1?
+6 what is the usage of subscriber_1 for last month?
+
+
+
+
+
+rereduce or reduce must return scalar values
+

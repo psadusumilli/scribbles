@@ -1,4 +1,4 @@
-package com.vijayrc.scribbles.radio.domain;
+package com.vijayrc.scribbles.radio.documents;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.CouchDbDocument;
