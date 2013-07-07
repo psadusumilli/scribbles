@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -25,7 +26,7 @@ public class AllLocationsTest {
 
     @Before
     public void dataSetup() throws Exception {
-        dataSetupService.run("location");
+        //dataSetupService.run("location");
     }
 
     @Test
@@ -35,6 +36,13 @@ public class AllLocationsTest {
         assertNotNull(locationFromDb.getId());
         log.info("Location from db: " + locationFromDb);
         allLocations.remove(locationFromDb);
+    }
+
+    @Test
+    public void shouldFindGivenARange(){
+        List<Location> locations = allLocations.findByCountryStateAndCity2();
+        assertNotNull(locations);
+        log.info(locations.size());
     }
 
     @Test
@@ -49,7 +57,7 @@ public class AllLocationsTest {
 
     @After
     public void dataTearDown() {
-        allLocations.removeAll();
+//        allLocations.removeAll();
     }
 
 

@@ -20,7 +20,7 @@ import java.util.Map;
 @Scope("singleton")
 @Views({
         @View(name = "find_by_country_state_city",
-                map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city]);}}"),
+                map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city], doc);}}"),
         @View(name = "count_by_country_state_city",
                 map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city],1);}}",
                 reduce = "function(key, values){return sum(values);}")
@@ -44,23 +44,38 @@ public class AllLocations extends BaseRepo<Location> {
     }
 
     public Location findByCountryStateAndCity(String country, String state, String city) {
-        ComplexKey key = ComplexKey.of(country.toLowerCase(), state.toLowerCase(), city.toLowerCase());
+        ComplexKey key = ComplexKey.of(country, state, city);
         return singleResult(queryView("find_by_country_state_city", key));
     }
 
-    public Map<String, String> countByCountry(){
+    public List<Location> findByCountryStateAndCity2() {
+        Object[] startKey = new Object[]{"country_1","state_1"};
+        Object[] endKey = new Object[]{"country_1","state_1","city_3"};
+        ViewQuery viewQuery = createQuery("find_by_country_state_city")
+//                .key(new Object[]{"country_1","state_1","city_1"});
+                .startKey(startKey)
+                .endKey(endKey);
+        return db.queryView(viewQuery, Location.class);
+    }
+
+    public Map<String, String> countByCountry() {
         return countBy(1);
     }
-    public Map<String, String> countByCountryState(){
+
+    public Map<String, String> countByCountryState() {
         return countBy(2);
     }
-    public Map<String, String> countByCountryStateCity(){
+
+    public Map<String, String> countByCountryStateCity() {
         return countBy(3);
     }
 
     private Map<String, String> countBy(int level) {
         Map<String, String> map = new HashMap<String, String>();
-        ViewQuery viewQuery = createQuery("count_by_country_state_city").includeDocs(false).group(true).groupLevel(level);
+        ViewQuery viewQuery = createQuery("count_by_country_state_city")
+                .includeDocs(false)
+                .group(true)
+                .groupLevel(level);
         List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
         for (ViewResult.Row row : rows)
             map.put(row.getKey(), row.getValue());
