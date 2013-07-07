@@ -2,7 +2,7 @@ package com.vijayrc.scribbles.radio.repository;
 
 
 import com.vijayrc.scribbles.radio.documents.Location;
-import com.vijayrc.scribbles.radio.service.DataSetupService;
+import com.vijayrc.scribbles.radio.service.SeedService;
 import com.vijayrc.scribbles.radio.util.Print;
 import lombok.extern.log4j.Log4j;
 import org.junit.*;
@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -23,11 +22,11 @@ public class AllLocationsTest {
     @Autowired
     private AllLocations allLocations;
     @Autowired
-    private DataSetupService dataSetupService;
+    private SeedService seedService;
 
     @Before
     public void dataSetup() throws Exception {
-        //dataSetupService.run("location");
+        seedService.run("Location");
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.vijayrc.scribbles.radio.data;
+package com.vijayrc.scribbles.radio.seed.base;
 
 import ch.lambdaj.group.Group;
 import lombok.extern.log4j.Log4j;
@@ -21,8 +21,8 @@ import static ch.lambdaj.group.Groups.group;
 @Log4j
 @Repository
 @Scope("singleton")
-public class AllDataSetups implements BeanPostProcessor {
-    private List<DataSetupMethod> methods = new ArrayList<DataSetupMethod>();
+public class AllSeeds implements BeanPostProcessor {
+    private List<SeedMethod> methods = new ArrayList<SeedMethod>();
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -32,23 +32,26 @@ public class AllDataSetups implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         for (Method method : bean.getClass().getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(DataSetup.class))
+            if (!method.isAnnotationPresent(Seed.class))
                 continue;
-            DataSetup annotation = method.getAnnotation(DataSetup.class);
-            methods.add(new DataSetupMethod(bean, method, annotation.description(), annotation.key(), annotation.order()));
+            Seed annotation = method.getAnnotation(Seed.class);
+            methods.add(new SeedMethod(bean, method, annotation.description(), annotation.key(), annotation.order()));
         }
         return bean;
     }
 
-    public void run(String key) throws Exception {
-        Group<DataSetupMethod> methodGroup = group(methods, by(on(DataSetupMethod.class).order()));
-        for (Group<DataSetupMethod> subGroup : methodGroup.subgroups()) {
-            for (DataSetupMethod method : subGroup.findAll()) {
-                if(!method.keyIs(key)) continue;
+    public void run(String... keys) throws Exception {
+        List<String> keyList = Arrays.asList(keys);
+
+        Group<SeedMethod> methodGroup = group(methods, by(on(SeedMethod.class).order()));
+        for (Group<SeedMethod> subGroup : methodGroup.subgroups()) {
+            for (SeedMethod method : subGroup.findAll()) {
+                if (!keyList.contains(method.key()))
+                    continue;
                 ExecutorService executor = Executors.newFixedThreadPool(methods.size());
                 CompletionService completionService = new ExecutorCompletionService(executor);
-                completionService.submit(new DataSetupTask(method));
-                log.info(completionService.take().get());
+                completionService.submit(new SeedTask(method));
+                AllSeeds.log.info(completionService.take().get());
             }
         }
     }

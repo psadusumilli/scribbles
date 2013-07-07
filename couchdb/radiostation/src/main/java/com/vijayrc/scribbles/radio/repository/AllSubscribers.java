@@ -1,6 +1,6 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.data.DataSetup;
+import com.vijayrc.scribbles.radio.seed.base.Seed;
 import com.vijayrc.scribbles.radio.documents.Subscriber;
 import org.ektorp.CouchDbConnector;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ public class AllSubscribers extends BaseRepo<Subscriber> {
         super(Subscriber.class, db);
     }
 
-    @DataSetup(order = 2, description = "subscribers setup", key = "Subscriber")
+    @Seed(order = 2, description = "subscribers setup", key = "Subscriber")
     public void addData() {
     }
 

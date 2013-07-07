@@ -1,6 +1,5 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.data.DataSetup;
 import com.vijayrc.scribbles.radio.documents.Location;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
@@ -66,12 +65,5 @@ public class AllLocations extends BaseRepo<Location> {
         return map;
     }
 
-    @DataSetup(order = 1, description = "locations setup", key = "Location")
-    public void addData() {
-        for (int i = 1; i <= 3; i++)
-            for (int j = 1; j <= 5; j++)
-                for (int k = 1; k <= 7; k++)
-                    add(new Location("city_" + k, "state_" + j, "country_" + i));
-    }
 
 }

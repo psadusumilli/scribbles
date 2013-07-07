@@ -9,13 +9,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext.xml")
-public class DataSetupServiceTest {
+public class SeedServiceTest {
 
     @Autowired
-    private DataSetupService dataSetupService;
+    private SeedService seedService;
 
     @Test
     public void shouldLoadData() throws Exception {
-        //dataSetupService.run();
+        //seedService.run();
     }
 }

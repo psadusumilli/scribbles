@@ -1,14 +1,14 @@
-package com.vijayrc.scribbles.radio.data;
+package com.vijayrc.scribbles.radio.seed.base;
 
 import lombok.extern.log4j.Log4j;
 
 import java.util.concurrent.Callable;
 
 @Log4j
-public class DataSetupTask implements Callable<String> {
-    private DataSetupMethod method;
+public class SeedTask implements Callable<String> {
+    private SeedMethod method;
 
-    public DataSetupTask(DataSetupMethod method) {
+    public SeedTask(SeedMethod method) {
         this.method = method;
     }
 

@@ -1,6 +1,6 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.data.DataSetup;
+import com.vijayrc.scribbles.radio.seed.base.Seed;
 import com.vijayrc.scribbles.radio.documents.Artist;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
@@ -20,7 +20,7 @@ public class AllArtists extends BaseRepo<Artist> {
         super(Artist.class, db);
     }
 
-    @DataSetup(order = 2, description = "artists setup", key = "Artist")
+    @Seed(order = 2, description = "artists setup", key = "Artist")
     public void addData() {
         int artists = 10;
         for (int i = 1; i <= artists; i++)

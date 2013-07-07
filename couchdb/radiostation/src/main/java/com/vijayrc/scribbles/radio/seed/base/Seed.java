@@ -1,4 +1,4 @@
-package com.vijayrc.scribbles.radio.data;
+package com.vijayrc.scribbles.radio.seed.base;
 
 
 import java.lang.annotation.*;
@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DataSetup {
+public @interface Seed {
     int order();
     String description();
     String key();

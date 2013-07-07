@@ -1,15 +1,15 @@
-package com.vijayrc.scribbles.radio.data;
+package com.vijayrc.scribbles.radio.seed.base;
 
 import java.lang.reflect.Method;
 
-public class DataSetupMethod {
+public class SeedMethod {
     private Object bean;
     private Method method;
     private String description;
     private String key;
     private Integer order;
 
-    public DataSetupMethod(Object bean, Method method, String description, String key, Integer order) {
+    public SeedMethod(Object bean, Method method, String description, String key, Integer order) {
         this.bean = bean;
         this.method = method;
         this.key = key;
@@ -31,5 +31,9 @@ public class DataSetupMethod {
 
     public boolean keyIs(String key) {
         return this.key.equalsIgnoreCase(key);
+    }
+
+    public String key() {
+        return key;
     }
 }
