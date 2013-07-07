@@ -3,6 +3,7 @@ package com.vijayrc.scribbles.radio.repository;
 
 import com.vijayrc.scribbles.radio.documents.Location;
 import com.vijayrc.scribbles.radio.service.DataSetupService;
+import com.vijayrc.scribbles.radio.util.Print;
 import lombok.extern.log4j.Log4j;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -44,21 +45,15 @@ public class AllLocationsTest {
         Object[] endKey = new Object[]{"country_2", "state_2", "city_3"};
         List<Location> locations = allLocations.findByRange(startKey, endKey);
         assertNotNull(locations);
-        for (Location location : locations)
-            log.info(location);
+        Print.the(locations);
     }
 
     @Test
     public void shouldReturnCounts() {
-        log.info("states count by country:\n" + print(allLocations.statesCountByCountry()));
-        log.info("cities count by state: \n" + print(allLocations.citiesCountByStateAndCountry()));
-    }
-
-    private String print(Map map) {
-        String str = "";
-        for (Object key : map.keySet())
-            str = str + key + "=>" + map.get(key) + "\n";
-        return str;
+        log.info("states count by country:");
+        Print.the(allLocations.statesCountByCountry());
+        log.info("cities count by state:");
+        Print.the(allLocations.citiesCountByStateAndCountry());
     }
 
     @After
