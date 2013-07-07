@@ -41,17 +41,25 @@ public class AllLocations extends BaseRepo<Location> {
         return db.queryView(viewQuery, Location.class);
     }
 
+    public int countByRange(Object[] startKey, Object[] endKey) {
+        ViewQuery viewQuery = createQuery("count_by_country_state_city").startKey(startKey).endKey(endKey);
+        List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
+        if (rows.isEmpty())
+            return 0;
+        return rows.get(0).getValueAsInt();
+    }
+
     public Map<String, String> statesCountByCountry() {
-        return countBy(1);
+        return countBy("count_by_country_state_city", 1);
     }
 
     public Map<String, String> citiesCountByStateAndCountry() {
-        return countBy(2);
+        return countBy("count_by_country_state_city", 2);
     }
 
-    private Map<String, String> countBy(int level) {
+    private Map<String, String> countBy(String view, int level) {
         Map<String, String> map = new HashMap<String, String>();
-        ViewQuery viewQuery = createQuery("count_by_country_state_city").includeDocs(false).group(true).groupLevel(level);
+        ViewQuery viewQuery = createQuery(view).includeDocs(false).group(true).groupLevel(level);
         List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
         for (ViewResult.Row row : rows)
             map.put(row.getKey(), row.getValue());

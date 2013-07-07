@@ -46,6 +46,9 @@ public class AllLocationsTest {
         List<Location> locations = allLocations.findByRange(startKey, endKey);
         assertNotNull(locations);
         Print.the(locations);
+
+        log.info("using find view: " + locations.size());
+        log.info("using count view: " + allLocations.countByRange(startKey, endKey));
     }
 
     @Test
