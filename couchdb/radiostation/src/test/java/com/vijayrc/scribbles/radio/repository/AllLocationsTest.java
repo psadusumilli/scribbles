@@ -26,7 +26,7 @@ public class AllLocationsTest {
 
     @Before
     public void dataSetup() throws Exception {
-        dataSetupService.run("location");
+        //dataSetupService.run("location");
     }
 
     @Test
@@ -39,7 +39,7 @@ public class AllLocationsTest {
     }
 
     @Test
-    public void shouldFindGivenARange() {
+    public void shouldFindLocationsWithinGivenARange() {
         Object[] startKey = new Object[]{"country_1", "state_1"};
         Object[] endKey = new Object[]{"country_2", "state_2", "city_3"};
         List<Location> locations = allLocations.findByRange(startKey, endKey);
@@ -50,20 +50,20 @@ public class AllLocationsTest {
 
     @Test
     public void shouldReturnCounts() {
-        log.info("states count by country: " + print(allLocations.statesCountByCountry()));
-        log.info("cities count by state: " + print(allLocations.citiesCountByStateAndCountry()));
+        log.info("states count by country:\n" + print(allLocations.statesCountByCountry()));
+        log.info("cities count by state: \n" + print(allLocations.citiesCountByStateAndCountry()));
     }
 
     private String print(Map map) {
-        StringBuilder builder = new StringBuilder();
+        String str = "";
         for (Object key : map.keySet())
-            builder.append(key + "=>" + map.get(key) + "\n");
-        return builder.toString();
+            str = str + key + "=>" + map.get(key) + "\n";
+        return str;
     }
 
     @After
     public void dataTearDown() {
-        allLocations.removeAll();
+        //allLocations.removeAll();
     }
 
 

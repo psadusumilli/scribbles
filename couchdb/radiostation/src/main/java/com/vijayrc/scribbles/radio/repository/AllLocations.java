@@ -23,7 +23,7 @@ import java.util.Map;
                 map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city], doc);}}"),
         @View(name = "count_by_country_state_city",
                 map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city],1);}}",
-                reduce = "function(key, values){return sum(values);}")
+                reduce = "function(key, values, rereduce){if(rereduce){return sum(values);}return sum(values);}")
 })
 public class AllLocations extends BaseRepo<Location> {
     @Autowired
