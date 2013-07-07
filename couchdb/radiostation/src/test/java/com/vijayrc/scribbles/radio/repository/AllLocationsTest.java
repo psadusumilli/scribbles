@@ -26,7 +26,7 @@ public class AllLocationsTest {
 
     @Before
     public void dataSetup() throws Exception {
-        //dataSetupService.run("location");
+        dataSetupService.run("location");
     }
 
     @Test
@@ -39,25 +39,31 @@ public class AllLocationsTest {
     }
 
     @Test
-    public void shouldFindGivenARange(){
-        List<Location> locations = allLocations.findByCountryStateAndCity2();
+    public void shouldFindGivenARange() {
+        Object[] startKey = new Object[]{"country_1", "state_1"};
+        Object[] endKey = new Object[]{"country_2", "state_2", "city_3"};
+        List<Location> locations = allLocations.findByRange(startKey, endKey);
         assertNotNull(locations);
-        log.info(locations.size());
+        for (Location location : locations)
+            log.info(location);
     }
 
     @Test
     public void shouldReturnCounts() {
-        Map<String, String> count = allLocations.countByCountry();
-        log.info("count by countries: " + count.size());
-        count = allLocations.countByCountryState();
-        log.info("count by countries,state: " + count.size());
-        count = allLocations.countByCountryStateCity();
-        log.info("count by countries,state,city: " + count.size());
+        log.info("states count by country: " + print(allLocations.statesCountByCountry()));
+        log.info("cities count by state: " + print(allLocations.citiesCountByStateAndCountry()));
+    }
+
+    private String print(Map map) {
+        StringBuilder builder = new StringBuilder();
+        for (Object key : map.keySet())
+            builder.append(key + "=>" + map.get(key) + "\n");
+        return builder.toString();
     }
 
     @After
     public void dataTearDown() {
-//        allLocations.removeAll();
+        allLocations.removeAll();
     }
 
 

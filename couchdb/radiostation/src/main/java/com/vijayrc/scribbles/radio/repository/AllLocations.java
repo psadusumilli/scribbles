@@ -27,20 +27,8 @@ import java.util.Map;
 })
 public class AllLocations extends BaseRepo<Location> {
     @Autowired
-    protected AllLocations(CouchDbConnector db) {
+    public AllLocations(CouchDbConnector db) {
         super(Location.class, db);
-    }
-
-    @DataSetup(order = 1, description = "locations setup", key = "Location")
-    public void addData() {
-        int countries = 3;
-        int states = 5;
-        int cities = 7;
-
-        for (int i = 1; i <= countries; i++)
-            for (int j = 1; j <= states; j++)
-                for (int k = 1; k <= cities; k++)
-                    add(new Location("city_" + k, "state_" + j, "country_" + i));
     }
 
     public Location findByCountryStateAndCity(String country, String state, String city) {
@@ -48,38 +36,34 @@ public class AllLocations extends BaseRepo<Location> {
         return singleResult(queryView("find_by_country_state_city", key));
     }
 
-    public List<Location> findByCountryStateAndCity2() {
-        Object[] startKey = new Object[]{"country_1","state_1"};
-        Object[] endKey = new Object[]{"country_1","state_1","city_3"};
-        ViewQuery viewQuery = createQuery("find_by_country_state_city")
-//                .key(new Object[]{"country_1","state_1","city_1"});
-                .startKey(startKey)
-                .endKey(endKey);
+    public List<Location> findByRange(Object[] startKey, Object[] endKey) {
+        ViewQuery viewQuery = createQuery("find_by_country_state_city").startKey(startKey).endKey(endKey);
         return db.queryView(viewQuery, Location.class);
     }
 
-    public Map<String, String> countByCountry() {
+    public Map<String, String> statesCountByCountry() {
         return countBy(1);
     }
 
-    public Map<String, String> countByCountryState() {
+    public Map<String, String> citiesCountByStateAndCountry() {
         return countBy(2);
-    }
-
-    public Map<String, String> countByCountryStateCity() {
-        return countBy(3);
     }
 
     private Map<String, String> countBy(int level) {
         Map<String, String> map = new HashMap<String, String>();
-        ViewQuery viewQuery = createQuery("count_by_country_state_city")
-                .includeDocs(false)
-                .group(true)
-                .groupLevel(level);
+        ViewQuery viewQuery = createQuery("count_by_country_state_city").includeDocs(false).group(true).groupLevel(level);
         List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
         for (ViewResult.Row row : rows)
             map.put(row.getKey(), row.getValue());
         return map;
+    }
+
+    @DataSetup(order = 1, description = "locations setup", key = "Location")
+    public void addData() {
+        for (int i = 1; i <= 3; i++)
+            for (int j = 1; j <= 5; j++)
+                for (int k = 1; k <= 7; k++)
+                    add(new Location("city_" + k, "state_" + j, "country_" + i));
     }
 
 }
