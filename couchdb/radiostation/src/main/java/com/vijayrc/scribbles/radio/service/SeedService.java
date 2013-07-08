@@ -18,11 +18,11 @@ public class SeedService {
     @Autowired
     private AllSeeds allSeeds;
 
-    public void run(String key) throws Exception {
+    public void run(String... keys) throws Exception {
         DateTime start = now();
         SeedService.log.info("setup start: " + start);
 
-        allSeeds.run(key);
+        allSeeds.run(keys);
 
         DateTime end = now();
         Period p = new Period(start, end);

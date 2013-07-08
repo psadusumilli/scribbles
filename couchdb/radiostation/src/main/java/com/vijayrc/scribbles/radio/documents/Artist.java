@@ -1,10 +1,14 @@
 package com.vijayrc.scribbles.radio.documents;
 import com.vijayrc.scribbles.radio.vo.Time;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.*;
 
 @TypeDiscriminator("doc.type === 'Artist'")
+@Getter
+@NoArgsConstructor
 public class Artist extends BaseDoc{
     @JsonProperty
     private String artistId;
@@ -23,5 +27,10 @@ public class Artist extends BaseDoc{
 
     public void history(String history){
         this.history = history;
+    }
+
+    @Override
+    public String toString() {
+        return artistId;
     }
 }

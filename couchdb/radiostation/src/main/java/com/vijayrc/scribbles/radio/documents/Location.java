@@ -1,6 +1,5 @@
 package com.vijayrc.scribbles.radio.documents;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;

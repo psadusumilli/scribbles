@@ -1,5 +1,6 @@
 package com.vijayrc.scribbles.radio.documents;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
@@ -7,6 +8,7 @@ import org.joda.time.DateTime;
 
 @Log4j
 @TypeDiscriminator("doc.type === 'Subscriber'")
+@NoArgsConstructor
 public class Subscriber extends BaseDoc {
     @JsonProperty
     private String subscriberId;

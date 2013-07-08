@@ -2,7 +2,7 @@ package com.vijayrc.scribbles.radio.seed.base;
 
 import java.lang.reflect.Method;
 
-public class SeedMethod {
+public class SeedMethod implements Comparable {
     private Object bean;
     private Method method;
     private String description;
@@ -29,11 +29,16 @@ public class SeedMethod {
         return order;
     }
 
-    public boolean keyIs(String key) {
-        return this.key.equalsIgnoreCase(key);
-    }
-
     public String key() {
         return key;
+    }
+
+    private String uniqueName(){
+        return order+"-"+key;
+    }
+
+    @Override
+    public int compareTo(Object other) {
+        return this.uniqueName().compareTo(((SeedMethod) other).uniqueName());
     }
 }

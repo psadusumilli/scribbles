@@ -1,10 +1,12 @@
 package com.vijayrc.scribbles.radio.vo;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 
 @Getter
+@NoArgsConstructor
 public class Time{
     @JsonProperty
     private int minute;

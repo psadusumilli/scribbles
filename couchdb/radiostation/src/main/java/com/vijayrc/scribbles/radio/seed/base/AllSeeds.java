@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.sort;
 import static ch.lambdaj.group.Groups.by;
 import static ch.lambdaj.group.Groups.group;
 
@@ -22,7 +23,7 @@ import static ch.lambdaj.group.Groups.group;
 @Repository
 @Scope("singleton")
 public class AllSeeds implements BeanPostProcessor {
-    private List<SeedMethod> methods = new ArrayList<SeedMethod>();
+    private Set<SeedMethod> methods = new TreeSet<SeedMethod>();
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -42,7 +43,6 @@ public class AllSeeds implements BeanPostProcessor {
 
     public void run(String... keys) throws Exception {
         List<String> keyList = Arrays.asList(keys);
-
         Group<SeedMethod> methodGroup = group(methods, by(on(SeedMethod.class).order()));
         for (Group<SeedMethod> subGroup : methodGroup.subgroups()) {
             for (SeedMethod method : subGroup.findAll()) {

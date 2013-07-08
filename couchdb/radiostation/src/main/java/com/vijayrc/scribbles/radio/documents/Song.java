@@ -1,10 +1,12 @@
 package com.vijayrc.scribbles.radio.documents;
 
 import com.vijayrc.scribbles.radio.vo.Album;
+import lombok.NoArgsConstructor;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 
 @TypeDiscriminator("doc.type === 'Song'")
+@NoArgsConstructor
 public class Song extends BaseDoc {
     @JsonProperty
     private String title;
@@ -23,5 +25,10 @@ public class Song extends BaseDoc {
         this.genre = genre;
         this.duration = duration;
         this.songId = title+"-"+album;
+    }
+
+    @Override
+    public String toString() {
+      return songId;
     }
 }
