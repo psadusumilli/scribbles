@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 @Log4j
 public class SongSeed {
-    private final int songs = 100;
-
     @Autowired
     private AllSongs allSongs;
     @Autowired
@@ -24,7 +22,7 @@ public class SongSeed {
     @Seed(order = 2, description = "songs setup", key = "song")
     public void run() {
         Album album = album(1);
-        for (int i = 1, k = 1; i <= songs; i++) {
+        for (int i = 1, k = 1; i <= 100; i++) {
             if (i % Random.between(5, 9) == 0) {
                 ++k;
                 album = album(k);
@@ -44,7 +42,10 @@ public class SongSeed {
     }
 
     private Album album(int k) {
-        return new Album("album_" + k, artistSeed.random(), Random.date());
+        return new Album("album_" + k, artistSeed.random(), Random.date(1940, 2013));
     }
 
+    public String randomId() {
+        return "song_"+Random.between(1, 100);
+    }
 }

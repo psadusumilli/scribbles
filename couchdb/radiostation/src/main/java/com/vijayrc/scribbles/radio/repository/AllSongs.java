@@ -1,22 +1,23 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.seed.base.Seed;
 import com.vijayrc.scribbles.radio.documents.Song;
+import com.vijayrc.scribbles.radio.documents.Subscriber;
+import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.support.GenerateView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@Scope("singleton")
+@Log4j
 public class AllSongs extends BaseRepo<Song> {
     @Autowired
-    protected AllSongs(CouchDbConnector db) {
+    public AllSongs(CouchDbConnector db) {
         super(Song.class, db);
     }
 
-    @Seed(order = 2, description = "songs setup", key = "Song")
-    public void addData() {
+    @GenerateView
+    public Song findByTitle(String title) {
+        return singleResult(queryView("by_title", title));
     }
-
 }

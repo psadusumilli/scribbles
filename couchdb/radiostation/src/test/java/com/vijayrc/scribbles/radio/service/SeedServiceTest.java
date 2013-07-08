@@ -16,7 +16,7 @@ public class SeedServiceTest {
 
     @Test
     public void shouldLoadData() throws Exception {
-        seedService.run("artist","song");
+        seedService.run("location","artist","song","subscriber","play");
     }
 
 

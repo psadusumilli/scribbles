@@ -1,7 +1,10 @@
 package com.vijayrc.scribbles.radio.seed.base;
 
+import lombok.Getter;
+
 import java.lang.reflect.Method;
 
+@Getter
 public class SeedMethod implements Comparable {
     private Object bean;
     private Method method;
@@ -19,18 +22,6 @@ public class SeedMethod implements Comparable {
 
     public void run() throws Exception {
         method.invoke(bean, null);
-    }
-
-    public String description() {
-        return description;
-    }
-
-    public Integer order() {
-        return order;
-    }
-
-    public String key() {
-        return key;
     }
 
     private String uniqueName(){

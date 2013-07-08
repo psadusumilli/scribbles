@@ -1,18 +1,20 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.seed.base.Seed;
 import com.vijayrc.scribbles.radio.documents.Subscriber;
 import org.ektorp.CouchDbConnector;
+import org.ektorp.support.GenerateView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class AllSubscribers extends BaseRepo<Subscriber> {
     @Autowired
-    protected AllSubscribers(CouchDbConnector db) {
+    public AllSubscribers(CouchDbConnector db) {
         super(Subscriber.class, db);
     }
 
-    @Seed(order = 2, description = "subscribers setup", key = "Subscriber")
-    public void addData() {
+    @GenerateView
+    public Subscriber findBySubscriberId(String subscriberId) {
+        return singleResult(queryView("by_subscriberId", subscriberId));
     }
-
 }

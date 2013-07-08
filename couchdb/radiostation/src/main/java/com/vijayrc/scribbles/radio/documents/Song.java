@@ -1,12 +1,14 @@
 package com.vijayrc.scribbles.radio.documents;
 
 import com.vijayrc.scribbles.radio.vo.Album;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 
 @TypeDiscriminator("doc.type === 'Song'")
 @NoArgsConstructor
+@Getter
 public class Song extends BaseDoc {
     @JsonProperty
     private String title;

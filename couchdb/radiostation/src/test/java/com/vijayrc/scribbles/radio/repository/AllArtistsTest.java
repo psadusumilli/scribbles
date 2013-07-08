@@ -20,7 +20,7 @@ public class AllArtistsTest {
 
     @Test
     public void shouldAddAndFindByName() {
-        allArtists.add(new Artist("Andrew Bird", Random.date()));
+        allArtists.add(new Artist("Andrew Bird", Random.date(1930, 2013)));
         Artist artist = allArtists.findByName("Andrew Bird");
         assertNotNull(artist.getId());
         allArtists.remove(artist);

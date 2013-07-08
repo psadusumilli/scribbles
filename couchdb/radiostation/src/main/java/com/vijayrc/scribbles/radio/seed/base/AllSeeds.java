@@ -43,10 +43,10 @@ public class AllSeeds implements BeanPostProcessor {
 
     public void run(String... keys) throws Exception {
         List<String> keyList = Arrays.asList(keys);
-        Group<SeedMethod> methodGroup = group(methods, by(on(SeedMethod.class).order()));
+        Group<SeedMethod> methodGroup = group(methods, by(on(SeedMethod.class).getOrder()));
         for (Group<SeedMethod> subGroup : methodGroup.subgroups()) {
             for (SeedMethod method : subGroup.findAll()) {
-                if (!keyList.contains(method.key()))
+                if (!keyList.contains(method.getKey()))
                     continue;
                 ExecutorService executor = Executors.newFixedThreadPool(methods.size());
                 CompletionService completionService = new ExecutorCompletionService(executor);

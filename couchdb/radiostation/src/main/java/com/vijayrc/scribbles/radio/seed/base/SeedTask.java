@@ -14,8 +14,8 @@ public class SeedTask implements Callable<String> {
 
     @Override
     public String call() throws Exception {
-        log.info("started:" + method.description() + "|" + method.order());
+        log.info("started:" + method);
         method.run();
-        return "completed:" + method.description() + "|" + method.order();
+        return "completed:" + method;
     }
 }

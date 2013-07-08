@@ -1,10 +1,11 @@
 package com.vijayrc.scribbles.radio.documents;
+
 import com.vijayrc.scribbles.radio.vo.Time;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
-import org.joda.time.*;
+import org.joda.time.DateTime;
 
 @TypeDiscriminator("doc.type === 'Artist'")
 @Getter

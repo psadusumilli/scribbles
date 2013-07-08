@@ -1,6 +1,7 @@
 package com.vijayrc.scribbles.radio.repository;
 
 import com.vijayrc.scribbles.radio.documents.Location;
+import lombok.extern.log4j.Log4j;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-@Scope("singleton")
 @Views({
         @View(name = "find_by_country_state_city",
                 map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city], doc);}}"),
@@ -24,6 +24,7 @@ import java.util.Map;
                 map = "function(doc){if(doc.type === 'Location'){emit([doc.country, doc.state, doc.city],1);}}",
                 reduce = "function(key, values, rereduce){if(rereduce){return sum(values);}return sum(values);}")
 })
+@Log4j
 public class AllLocations extends BaseRepo<Location> {
     @Autowired
     public AllLocations(CouchDbConnector db) {
@@ -64,6 +65,4 @@ public class AllLocations extends BaseRepo<Location> {
             map.put(row.getKey(), row.getValue());
         return map;
     }
-
-
 }

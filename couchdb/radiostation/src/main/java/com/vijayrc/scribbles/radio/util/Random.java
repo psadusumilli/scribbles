@@ -14,8 +14,8 @@ public class Random {
         return min + (int) (Math.random() * ((max - min) + 1));
     }
 
-    public static DateTime date() {
-        calendar.set(YEAR, between(1930, 2013));
+    public static DateTime date(int minYear, int maxYear) {
+        calendar.set(YEAR, between(minYear, maxYear));
         calendar.set(DAY_OF_YEAR, between(1, calendar.getActualMaximum(DAY_OF_YEAR)));
         return new DateTime(calendar.getTime());
     }
