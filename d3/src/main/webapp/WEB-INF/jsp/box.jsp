@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
  <head>
-    <title>Gradle JukeBox</title>
+    <title>D3</title>
     <link href="static/css/bootstrap.css" rel="stylesheet">
     <link href="static/css/base.css" rel="stylesheet">
     <script src="static/js/jquery-1.9.1.min.js"></script>
@@ -14,6 +14,17 @@
             <div id="sample-1">
                  <p>Hey dude</p>
                  <p>Hey dude again</p>
+            </div>
+            <div id="sample-2">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <circle cx="100" cy="50" r="40" stroke="black" stroke-width="2" fill="red" />
+                    <rect x="100" y="100" rx="20" ry="20" width="150" height="150" style="fill:red;stroke:black;stroke-width:5;opacity:0.5"/>
+                    <ellipse cx="240" cy="100" rx="220" ry="30" style="fill:purple"/>
+                    <ellipse cx="220" cy="70" rx="190" ry="20" style="fill:lime"/>
+                    <ellipse cx="210" cy="45" rx="170" ry="15" style="fill:yellow"/>
+                </svg>
+            </div>
+            <div id="sample-3">
             </div>
        </div>
    </div>
