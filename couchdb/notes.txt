@@ -294,6 +294,18 @@ Quick Start:
 
 
 
+-------------------------------------------------------------------------------
+
+BLOG POST:
+
+$ curl http://localhost:5984/
+{"couchdb":"Welcome","uuid":"ca00ca300b72b21ea430f11ee37c6d54","version":"1.3.0","vendor":{"version":"1.3.0","name":"The Apache Software Foundation"}}
+
+$ curl http://localhost:5984/_all_dbs
+["_replicator","_users"]
+
+
+
 
 
 
