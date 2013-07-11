@@ -11,12 +11,10 @@
  <body>
    <div class="container-fluid">
        <div class="row-fluid">
-             <p>Hey dude</p>
-             <p>Hey dude</p>
-             <p>Hey dude</p>
-             <p>Hey dude</p>
-             <p>Hey dude</p>
-             <p>Hey dude</p>
+            <div id="sample-1">
+                 <p>Hey dude</p>
+                 <p>Hey dude again</p>
+            </div>
        </div>
    </div>
  </body>
