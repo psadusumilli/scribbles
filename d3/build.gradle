@@ -1,0 +1,26 @@
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+
+httpPort = 9090
+version = '1.0'
+sourceCompatibility = '1.7'
+
+repositories {
+    mavenCentral()
+    mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
+}
+
+dependencies{
+    compile 'commons-lang:commons-lang:2.5'
+    compile 'log4j:log4j:1.2.16'
+    compile 'org.springframework:spring-webmvc:3.2.2.RELEASE'
+    compile 'com.googlecode.lambdaj:lambdaj:2.2'
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    testCompile 'junit:junit:4.1'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+}
+
+
