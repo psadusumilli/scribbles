@@ -27,8 +27,13 @@ public class AllSubscribersTest {
         Object[] startKey = new Time(start).asArrayKey();
         Object[] endKey = new Time(end).asArrayKey();
 
-        List<Subscriber> subscribers = allSubscribers.findByRange(startKey, endKey);
+        List<Subscriber> subscribers = allSubscribers.findByRegisteredDateRange(startKey, endKey);
         Print.the(subscribers);
+    }
+
+    @Test
+    public void shouldShowPlayListUsingViewCollation(){
+        allSubscribers.findAllPlays("subscriber_1");
     }
 
 }
