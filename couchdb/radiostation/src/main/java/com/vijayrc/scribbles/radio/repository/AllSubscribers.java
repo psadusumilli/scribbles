@@ -1,9 +1,9 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.documents.Location;
+import com.google.gson.Gson;
 import com.vijayrc.scribbles.radio.documents.Play;
+import com.vijayrc.scribbles.radio.documents.PlayHistory;
 import com.vijayrc.scribbles.radio.documents.Subscriber;
-import com.vijayrc.scribbles.radio.util.Print;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
@@ -24,6 +24,7 @@ import java.util.List;
 @Log4j
 public class AllSubscribers extends BaseRepo<Subscriber> {
     @Autowired
+
     public AllSubscribers(CouchDbConnector db) {
         super(Subscriber.class, db);
     }
@@ -38,16 +39,21 @@ public class AllSubscribers extends BaseRepo<Subscriber> {
         return db.queryView(viewQuery, Subscriber.class);
     }
 
-    public void findAllPlays(String subscriberId) {
+    public PlayHistory findAllPlays(String subscriberId) {
         Object[] startKey = new Object[]{subscriberId};
         Object[] endKey = new Object[]{subscriberId, 2};
         ViewQuery viewQuery = createQuery("find_all_plays").startKey(startKey).endKey(endKey);
         ViewResult viewResult = db.queryView(viewQuery);
+        if(viewResult == null || viewResult.isEmpty()) return null;
 
-        if(viewResult == null || viewResult.isEmpty()) return;
-        for (ViewResult.Row row : viewResult.getRows())
-            log.info(row.getId()+"|"+row);
-
+        PlayHistory playHistory = new PlayHistory();
+        Gson gson = new Gson();
+        for (ViewResult.Row row : viewResult.getRows()){
+            if(playHistory.hasNoSubscriber())
+                  playHistory.setSubscriber(gson.fromJson(row.getValue(),Subscriber.class));
+            playHistory.addPlay(gson.fromJson(row.getValue(),Play.class));
+        }
+        return playHistory;
     }
 
 }

@@ -1,0 +1,29 @@
+queries:
+1 which is the popular album for last week?
+2 how many new subscribers added for the past 2 days?
+3 what are the locations where artist_1 is popular?
+4 how many songs of artist_1 got played yesterday?
+5 what is the age spread of subscribers from location_1?
+6 what is the usage of subscriber_1 for last month?
+
+
+
+
+
+rereduce or reduce must return scalar values
+
+view collation:
+----------------
+subscriber1
+    subscriber1_play1
+    subscriber1_play2
+subscriber2
+    subscriber2_play1
+    subscriber2_play2
+---------------------------------------
+song
+    play
+    play
+
+
+function(doc) {if(doc.type == 'Subscriber') {emit([doc.subscriberId, 0], doc);} else if(doc.type == 'Play') {emit([doc.subscriberId, 1], doc);}}

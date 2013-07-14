@@ -1,5 +1,6 @@
 package com.vijayrc.scribbles.radio.repository;
 
+import com.vijayrc.scribbles.radio.documents.PlayHistory;
 import com.vijayrc.scribbles.radio.documents.Subscriber;
 import com.vijayrc.scribbles.radio.util.Print;
 import com.vijayrc.scribbles.radio.vo.Time;
@@ -12,6 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext.xml")
@@ -33,7 +36,9 @@ public class AllSubscribersTest {
 
     @Test
     public void shouldShowPlayListUsingViewCollation(){
-        allSubscribers.findAllPlays("subscriber_1");
+        PlayHistory playHistory = allSubscribers.findAllPlays("subscriber_1");
+        assertNotNull(playHistory);
+        log.info("play history: "+playHistory);
     }
 
 }
