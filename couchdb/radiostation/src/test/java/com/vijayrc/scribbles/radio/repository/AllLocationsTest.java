@@ -26,7 +26,7 @@ public class AllLocationsTest {
 
     @Before
     public void dataSetup() throws Exception {
-        seedService.run("location");
+        //seedService.run("location");
     }
 
     @Test

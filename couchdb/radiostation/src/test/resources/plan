@@ -12,3 +12,16 @@ queries:
 
 rereduce or reduce must return scalar values
 
+view collation:
+----------------
+subscriber1
+    subscriber1_play1
+    subscriber1_play2
+subscriber2
+    subscriber2_play1
+    subscriber2_play2
+---------------------------------------
+song
+    play
+    play
+

@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 
 @Getter
 @NoArgsConstructor
-public class Time{
+public class Time {
     @JsonProperty
     private int minute;
     @JsonProperty
@@ -29,6 +29,10 @@ public class Time{
 
     @Override
     public String toString() {
-        return minute+":"+hour+":"+day+":"+minute+":"+year;
+        return year+"/"+month+"/"+day +" "+hour+":"+minute;
+    }
+
+    public Object[] asArrayKey() {
+        return new Object[]{year, month, day, hour};
     }
 }
