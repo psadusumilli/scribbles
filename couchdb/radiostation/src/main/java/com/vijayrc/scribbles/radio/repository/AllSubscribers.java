@@ -19,7 +19,7 @@ import java.util.List;
 @Repository
 @Views({
         @View(name = "find_all_registered_between_two_dates", map = "function(doc){if(doc.type === 'Subscriber'){emit([doc.time.year,doc.time.month,doc.time.day, doc.time.hour],doc)}}"),
-        @View(name = "find_all_plays", map = "function(doc) {if(doc.type == 'Subscriber') {emit([doc.subscriberId, 0], doc);} else if(doc.type == 'Play') {emit([doc.subscriberId, 1], doc);}}")
+        @View(name = "find_playhistory", map = "function(doc) {if(doc.type == 'Subscriber') {emit([doc.subscriberId, 0], doc);} else if(doc.type == 'Play') {emit([doc.subscriberId, 1], doc);}}")
 })
 @Log4j
 public class AllSubscribers extends BaseRepo<Subscriber> {
@@ -39,10 +39,10 @@ public class AllSubscribers extends BaseRepo<Subscriber> {
         return db.queryView(viewQuery, Subscriber.class);
     }
 
-    public PlayHistory findAllPlays(String subscriberId) {
+    public PlayHistory findPlayHistory(String subscriberId) {
         Object[] startKey = new Object[]{subscriberId};
         Object[] endKey = new Object[]{subscriberId, 2};
-        ViewQuery viewQuery = createQuery("find_all_plays").startKey(startKey).endKey(endKey);
+        ViewQuery viewQuery = createQuery("find_playhistory").startKey(startKey).endKey(endKey);
         ViewResult viewResult = db.queryView(viewQuery);
         if(viewResult == null || viewResult.isEmpty()) return null;
 

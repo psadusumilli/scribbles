@@ -9,10 +9,8 @@ import org.ektorp.ViewResult;
 import org.ektorp.support.View;
 import org.ektorp.support.Views;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,12 +55,4 @@ public class AllLocations extends BaseRepo<Location> {
         return countBy("count_by_country_state_city", 2);
     }
 
-    private Map<String, String> countBy(String view, int level) {
-        Map<String, String> map = new HashMap<String, String>();
-        ViewQuery viewQuery = createQuery(view).includeDocs(false).group(true).groupLevel(level);
-        List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
-        for (ViewResult.Row row : rows)
-            map.put(row.getKey(), row.getValue());
-        return map;
-    }
 }

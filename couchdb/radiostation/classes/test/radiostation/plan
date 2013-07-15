@@ -25,5 +25,11 @@ song
     play
     play
 
+2012,12,3,song1  3
+2013,12,3,song2  20
+rereduce will give sum of
+
+2012,12,3,song2 1
+
 
 function(doc) {if(doc.type == 'Subscriber') {emit([doc.subscriberId, 0], doc);} else if(doc.type == 'Play') {emit([doc.subscriberId, 1], doc);}}

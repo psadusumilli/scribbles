@@ -36,7 +36,7 @@ public class AllSubscribersTest {
 
     @Test
     public void shouldShowPlayListUsingViewCollation(){
-        PlayHistory playHistory = allSubscribers.findAllPlays("subscriber_1");
+        PlayHistory playHistory = allSubscribers.findPlayHistory("subscriber_1");
         assertNotNull(playHistory);
         log.info("play history: "+playHistory);
     }

@@ -5,12 +5,15 @@ import lombok.extern.log4j.Log4j;
 import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
+import org.ektorp.ViewResult;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.GenerateView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Log4j
 public abstract class BaseRepo<T extends BaseDoc> extends CouchDbRepositorySupport<T> {
@@ -48,6 +51,15 @@ public abstract class BaseRepo<T extends BaseDoc> extends CouchDbRepositorySuppo
         for (T entity : entities)
             bulkDeleteQueue.add(BulkDeleteDocument.of(entity));
         db.executeBulk(bulkDeleteQueue);
+    }
+
+    protected Map<String, String> countBy(String view, int level) {
+        Map<String, String> map = new HashMap<String, String>();
+        ViewQuery viewQuery = createQuery(view).includeDocs(false).group(true).groupLevel(level);
+        List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
+        for (ViewResult.Row row : rows)
+            map.put(row.getKey(), row.getValue());
+        return map;
     }
 
 }
