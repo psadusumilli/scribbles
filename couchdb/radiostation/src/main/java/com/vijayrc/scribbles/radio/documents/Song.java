@@ -26,7 +26,7 @@ public class Song extends BaseDoc {
         this.album = album;
         this.genre = genre;
         this.duration = duration;
-        this.songId = title+"-"+album;
+        this.songId = title+"|"+album;
     }
 
     @Override

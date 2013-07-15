@@ -24,6 +24,6 @@ public class Location extends BaseDoc {
 
     @Override
     public String toString() {
-        return country+"-"+state+"-"+city;
+        return country+"|"+state+"|"+city;
     }
 }

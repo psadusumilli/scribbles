@@ -29,7 +29,7 @@ public class Time {
 
     @Override
     public String toString() {
-        return year+"/"+month+"/"+day +" "+hour+":"+minute;
+        return "["+year+"/"+month+"/"+day +" "+hour+":"+minute+"]";
     }
 
     public Object[] asArrayKey() {

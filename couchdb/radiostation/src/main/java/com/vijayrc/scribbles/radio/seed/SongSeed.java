@@ -46,6 +46,6 @@ public class SongSeed {
     }
 
     public String randomId() {
-        return "song_"+Random.between(1, 100);
+        return null;
     }
 }

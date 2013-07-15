@@ -23,7 +23,7 @@ public class Artist extends BaseDoc{
     public Artist(String name, DateTime dob) {
         this.name = name;
         this.dob = new Time(dob);
-        this.artistId = this.name+"-"+ this.dob;
+        this.artistId = this.name+"|"+ this.dob;
     }
 
     public void history(String history){

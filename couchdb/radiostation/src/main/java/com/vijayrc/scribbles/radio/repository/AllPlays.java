@@ -1,6 +1,7 @@
 package com.vijayrc.scribbles.radio.repository;
 
 import com.vijayrc.scribbles.radio.documents.Play;
+import com.vijayrc.scribbles.radio.documents.Song;
 import com.vijayrc.scribbles.radio.vo.Time;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static ch.lambdaj.Lambda.*;
+import static ch.lambdaj.Lambda.extract;
+import static ch.lambdaj.Lambda.on;
 
 @Repository
 @Log4j
@@ -42,10 +44,11 @@ public class AllPlays extends BaseRepo<Play> {
         ViewResult viewResult = db.queryView(viewQuery);
     }
 
-    public List<String> findSongsPlayedByTimeRange(Time startTime, Time endTime) {
+    public List<Song> findSongsPlayedByTimeRange(Time startTime, Time endTime) {
         ViewQuery viewQuery = createQuery("find_by_time").startKey(startTime.asArrayKey()).endKey(endTime.asArrayKey());
-        List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
-        return extract(rows, on(ViewResult.Row.class).getValue());
+        List<String> songsIds = extract(db.queryView(viewQuery).getRows(), on(ViewResult.Row.class).getValue());
+        ViewQuery by_title = createQuery("by_title").allDocs().includeDocs(true).keys(songsIds);
+        return db.queryView(by_title, Song.class);
     }
 }
 

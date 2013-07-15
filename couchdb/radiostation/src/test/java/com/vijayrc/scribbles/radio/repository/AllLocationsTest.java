@@ -24,11 +24,6 @@ public class AllLocationsTest {
     @Autowired
     private SeedService seedService;
 
-    @Before
-    public void dataSetup() throws Exception {
-        //seedService.run("location");
-    }
-
     @Test
     public void shouldAddALocationAndFindIt() {
         allLocations.add(new Location("atlanta", "georgia", "usa"));
@@ -57,11 +52,4 @@ public class AllLocationsTest {
         log.info("cities count by state:");
         Print.the(allLocations.citiesCountByStateAndCountry());
     }
-
-    @After
-    public void dataTearDown() {
-        //allLocations.removeAll();
-    }
-
-
 }

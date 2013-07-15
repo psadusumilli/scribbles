@@ -26,6 +26,6 @@ public class Play extends BaseDoc {
 
     @Override
     public String toString() {
-        return songId + "-" + subscriberId + "-" + time;
+        return songId + "|" + subscriberId + "|" + time;
     }
 }
