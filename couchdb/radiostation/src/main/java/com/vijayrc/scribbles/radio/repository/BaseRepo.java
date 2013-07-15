@@ -54,9 +54,9 @@ public abstract class BaseRepo<T extends BaseDoc> extends CouchDbRepositorySuppo
     }
 
     protected Map<String, String> countBy(String view, int level) {
-        Map<String, String> map = new HashMap<String, String>();
         ViewQuery viewQuery = createQuery(view).includeDocs(false).group(true).groupLevel(level);
         List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
+        Map<String, String> map = new HashMap<String, String>();
         for (ViewResult.Row row : rows)
             map.put(row.getKey(), row.getValue());
         return map;
