@@ -1,6 +1,6 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.domain.Song;
+import com.vijayrc.scribbles.radio.domain.Album;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
@@ -9,19 +9,16 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Log4j
-public class AllSongs extends Repo<Song> {
+public class AllAlbums extends Repo<Album> {
+
     @Autowired
-    public AllSongs(CouchDbConnector db) {
-        super(Song.class, db);
+    public AllAlbums(CouchDbConnector db) {
+        super(Album.class, db);
     }
 
     @GenerateView
-    public Song findBySongId(String songId) {
-        return singleResult(queryView("by_songId", songId));
-    }
-
-    @GenerateView
-    public Song findByName(String name) {
+    public Album findByName(String name) {
         return singleResult(queryView("by_name", name));
     }
+
 }

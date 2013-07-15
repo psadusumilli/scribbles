@@ -1,6 +1,6 @@
 package com.vijayrc.scribbles.radio.seed;
 
-import com.vijayrc.scribbles.radio.documents.Play;
+import com.vijayrc.scribbles.radio.domain.Play;
 import com.vijayrc.scribbles.radio.repository.AllPlays;
 import com.vijayrc.scribbles.radio.seed.base.Seed;
 import com.vijayrc.scribbles.radio.util.Random;
@@ -18,10 +18,10 @@ public class PlaySeed {
     @Autowired
     private AllPlays allPlays;
 
-    @Seed(order = 3, description = "play history setup", key = "play")
+    @Seed(order = 4, description = "play history setup", key = "play")
     public void run() {
         for (int i = 0; i < 200; i++) {
-            Play play = new Play(songSeed.randomId(), subscriberSeed.randomId(), Random.date(2005, 2013));
+            Play play = new Play(songSeed.randomSongId(), subscriberSeed.randomSubscriberId(), Random.date(2005, 2013));
             allPlays.add(play);
             log.info(play);
         }

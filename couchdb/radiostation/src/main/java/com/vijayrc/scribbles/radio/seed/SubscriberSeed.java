@@ -1,6 +1,6 @@
 package com.vijayrc.scribbles.radio.seed;
 
-import com.vijayrc.scribbles.radio.documents.Subscriber;
+import com.vijayrc.scribbles.radio.domain.Subscriber;
 import com.vijayrc.scribbles.radio.repository.AllSubscribers;
 import com.vijayrc.scribbles.radio.seed.base.Seed;
 import com.vijayrc.scribbles.radio.util.Random;
@@ -29,7 +29,7 @@ public class SubscriberSeed {
         }
     }
 
-    public String randomId() {
+    public String randomSubscriberId() {
         return "subscriber_" + Random.between(1, 100);
     }
 }

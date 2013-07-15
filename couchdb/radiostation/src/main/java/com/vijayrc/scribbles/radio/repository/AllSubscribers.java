@@ -1,9 +1,9 @@
 package com.vijayrc.scribbles.radio.repository;
 
 import com.google.gson.Gson;
-import com.vijayrc.scribbles.radio.documents.Play;
-import com.vijayrc.scribbles.radio.documents.PlayHistory;
-import com.vijayrc.scribbles.radio.documents.Subscriber;
+import com.vijayrc.scribbles.radio.domain.Play;
+import com.vijayrc.scribbles.radio.aggregate.PlayHistory;
+import com.vijayrc.scribbles.radio.domain.Subscriber;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
@@ -22,7 +22,7 @@ import java.util.List;
         @View(name = "find_playhistory", map = "function(doc) {if(doc.type == 'Subscriber') {emit([doc.subscriberId, 0], doc);} else if(doc.type == 'Play') {emit([doc.subscriberId, 1], doc);}}")
 })
 @Log4j
-public class AllSubscribers extends BaseRepo<Subscriber> {
+public class AllSubscribers extends Repo<Subscriber> {
     @Autowired
 
     public AllSubscribers(CouchDbConnector db) {

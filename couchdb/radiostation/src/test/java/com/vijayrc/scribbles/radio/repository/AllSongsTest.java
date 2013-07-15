@@ -1,9 +1,9 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.documents.Artist;
-import com.vijayrc.scribbles.radio.documents.Song;
+import com.vijayrc.scribbles.radio.domain.Artist;
+import com.vijayrc.scribbles.radio.domain.Song;
 import com.vijayrc.scribbles.radio.util.Random;
-import com.vijayrc.scribbles.radio.vo.Album;
+import com.vijayrc.scribbles.radio.domain.Album;
 import lombok.extern.log4j.Log4j;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class AllSongsTest {
     private AllArtists allArtists;
 
     public void shouldCheckLinkingOfArtistDocument(){
-        Artist artist = new Artist("test_artist",Random.date(1980,1981));
+        Artist artist = new Artist("test_artist",Random.date(1980,1981), location);
         allArtists.add(artist);
 
         Album album = new Album("test_album",artist, Random.date(2003,2005));

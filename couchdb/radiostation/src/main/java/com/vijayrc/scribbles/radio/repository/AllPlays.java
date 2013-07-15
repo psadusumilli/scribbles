@@ -1,8 +1,8 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.documents.Play;
-import com.vijayrc.scribbles.radio.documents.Song;
-import com.vijayrc.scribbles.radio.vo.Time;
+import com.vijayrc.scribbles.radio.domain.Play;
+import com.vijayrc.scribbles.radio.domain.Song;
+import com.vijayrc.scribbles.radio.dimension.Time;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
@@ -27,7 +27,7 @@ import static ch.lambdaj.Lambda.on;
         @View(name = "find_by_time",
                 map = "function(doc){if(doc.type === 'Play'){emit([doc.time.year,doc.time.month,doc.time.day,doc.time.hour], doc.songId);}}")
 })
-public class AllPlays extends BaseRepo<Play> {
+public class AllPlays extends Repo<Play> {
 
     private AllSongs allSongs;
 

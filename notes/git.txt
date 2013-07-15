@@ -1,0 +1,7 @@
+
+//create branch local and remote
+
+git branch backup
+git checkout branch
+git push origin backup
+git pull origin backup

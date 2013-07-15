@@ -1,16 +1,18 @@
-package com.vijayrc.scribbles.radio.documents;
+package com.vijayrc.scribbles.radio.domain;
 
-import com.vijayrc.scribbles.radio.vo.Time;
+import com.vijayrc.scribbles.radio.dimension.Time;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 
-@TypeDiscriminator("doc.type === 'Play'")
-@NoArgsConstructor
+@Log4j
 @Getter
-public class Play extends BaseDoc {
+@NoArgsConstructor
+@TypeDiscriminator("doc.type === 'Play'")
+public class Play extends Doc {
     @JsonProperty
     private String songId;
     @JsonProperty

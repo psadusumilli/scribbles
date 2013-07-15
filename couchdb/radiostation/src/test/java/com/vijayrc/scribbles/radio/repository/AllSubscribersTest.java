@@ -1,9 +1,9 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.documents.PlayHistory;
-import com.vijayrc.scribbles.radio.documents.Subscriber;
+import com.vijayrc.scribbles.radio.aggregate.PlayHistory;
+import com.vijayrc.scribbles.radio.domain.Subscriber;
 import com.vijayrc.scribbles.radio.util.Print;
-import com.vijayrc.scribbles.radio.vo.Time;
+import com.vijayrc.scribbles.radio.dimension.Time;
 import lombok.extern.log4j.Log4j;
 import org.joda.time.DateTime;
 import org.junit.Test;

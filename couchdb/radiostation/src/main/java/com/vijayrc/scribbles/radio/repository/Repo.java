@@ -1,6 +1,6 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.documents.BaseDoc;
+import com.vijayrc.scribbles.radio.domain.Doc;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.BulkDeleteDocument;
 import org.ektorp.CouchDbConnector;
@@ -16,14 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 @Log4j
-public abstract class BaseRepo<T extends BaseDoc> extends CouchDbRepositorySupport<T> {
-
-    private Class<T> type;
-
+public abstract class Repo<T extends Doc> extends CouchDbRepositorySupport<T> {
     @Autowired
-    protected BaseRepo(Class<T> type, CouchDbConnector db) {
+    protected Repo(Class<T> type, CouchDbConnector db) {
         super(type, db);
-        this.type = type;
         initStandardDesignDocument();
     }
 

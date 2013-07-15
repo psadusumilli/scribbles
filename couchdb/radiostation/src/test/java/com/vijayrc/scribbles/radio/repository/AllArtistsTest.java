@@ -1,6 +1,6 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.documents.Artist;
+import com.vijayrc.scribbles.radio.domain.Artist;
 import com.vijayrc.scribbles.radio.util.Random;
 import lombok.extern.log4j.Log4j;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class AllArtistsTest {
 
     @Test
     public void shouldAddAndFindByName() {
-        allArtists.add(new Artist("Andrew Bird", Random.date(1930, 2013)));
+        allArtists.add(new Artist("Andrew Bird", Random.date(1930, 2013), location));
         Artist artist = allArtists.findByName("Andrew Bird");
         assertNotNull(artist.getId());
         allArtists.remove(artist);

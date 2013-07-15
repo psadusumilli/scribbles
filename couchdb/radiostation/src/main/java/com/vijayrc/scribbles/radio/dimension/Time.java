@@ -1,4 +1,4 @@
-package com.vijayrc.scribbles.radio.vo;
+package com.vijayrc.scribbles.radio.dimension;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

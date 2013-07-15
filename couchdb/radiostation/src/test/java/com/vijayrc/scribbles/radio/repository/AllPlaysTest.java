@@ -1,10 +1,10 @@
 package com.vijayrc.scribbles.radio.repository;
 
-import com.vijayrc.scribbles.radio.documents.Play;
-import com.vijayrc.scribbles.radio.documents.Song;
+import com.vijayrc.scribbles.radio.domain.Play;
+import com.vijayrc.scribbles.radio.domain.Song;
 import com.vijayrc.scribbles.radio.seed.SubscriberSeed;
 import com.vijayrc.scribbles.radio.util.Print;
-import com.vijayrc.scribbles.radio.vo.Time;
+import com.vijayrc.scribbles.radio.dimension.Time;
 import lombok.extern.log4j.Log4j;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -44,11 +44,11 @@ public class AllPlaysTest {
 
     private void setupSongs(DateTime today) {
         for (int i = 0; i < 20; i++)
-            allPlays.add(new Play("song_80-album_14-artist_42-1953/9/12 20:59", subscriberSeed.randomId(), today));
+            allPlays.add(new Play("song_80-album_14-artist_42-1953/9/12 20:59", subscriberSeed.randomSubscriberId(), today));
         for (int i = 0; i < 10; i++)
-            allPlays.add(new Play("song_26-album_3-artist_35-1956/12/5 20:59", subscriberSeed.randomId(), today));
+            allPlays.add(new Play("song_26-album_3-artist_35-1956/12/5 20:59", subscriberSeed.randomSubscriberId(), today));
         for (int i = 0; i < 5; i++)
-            allPlays.add(new Play("song_19-album_3-artist_35-1956/12/5 20:59", subscriberSeed.randomId(), today));
+            allPlays.add(new Play("song_19-album_3-artist_35-1956/12/5 20:59", subscriberSeed.randomSubscriberId(), today));
     }
 
 
