@@ -41,8 +41,7 @@ public class SongSeed {
         return allAlbums.findByName("album_" + k);
     }
 
-    public String randomSongId() {
-        Song byName = allSongs.findByName("song_" + between(1, totalNumberOfSongs));
-        return byName.getSongId();
+    public Song randomSong() {
+        return allSongs.findByName("song_" + between(1, totalNumberOfSongs));
     }
 }

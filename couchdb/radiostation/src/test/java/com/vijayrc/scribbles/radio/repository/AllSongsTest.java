@@ -3,7 +3,6 @@ package com.vijayrc.scribbles.radio.repository;
 import com.vijayrc.scribbles.radio.domain.Artist;
 import com.vijayrc.scribbles.radio.domain.Song;
 import com.vijayrc.scribbles.radio.seed.LocationSeed;
-import com.vijayrc.scribbles.radio.util.Random;
 import com.vijayrc.scribbles.radio.domain.Album;
 import lombok.extern.log4j.Log4j;
 import org.junit.runner.RunWith;
@@ -25,7 +24,7 @@ public class AllSongsTest {
     private LocationSeed locationSeed;
 
     public void shouldCheckLinkingOfArtistDocument(){
-        Artist artist = new Artist("test_artist", date(1980, 1981), locationSeed.random());
+        Artist artist = new Artist("test_artist", date(1980, 1981), locationSeed.randomLocation());
         allArtists.add(artist);
 
         Album album = new Album("test_album",artist, date(2003, 2005));

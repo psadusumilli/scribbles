@@ -20,18 +20,18 @@ public class Song extends Doc {
     @JsonProperty
     private Integer duration;
     @JsonProperty
-    private String songId;
+    private String uniqueId;
 
     public Song(String title, Album album, String genre, Integer duration) {
         this.name = title;
         this.album = album;
         this.genre = genre;
         this.duration = duration;
-        this.songId = title+"|"+album;
+        this.uniqueId = title+"|"+album;
     }
 
     @Override
     public String toString() {
-      return songId;
+      return uniqueId;
     }
 }

@@ -23,7 +23,7 @@ import java.util.Set;
 @TypeDiscriminator("doc.type === 'Artist'")
 public class Artist extends Doc {
     @JsonProperty
-    private String artistId;
+    private String uniqueId;
     @JsonProperty
     private String name;
     @JsonProperty
@@ -37,12 +37,12 @@ public class Artist extends Doc {
         this.name = name;
         this.location = location;
         this.time = new Time(dob);
-        this.artistId = this.name + "|" + this.time;
+        this.uniqueId = this.name + "|" + this.time;
     }
 
     @Override
     public String toString() {
-        return artistId;
+        return uniqueId;
     }
 
     public void add(Album album) {

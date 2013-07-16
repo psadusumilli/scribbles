@@ -3,11 +3,13 @@ package com.vijayrc.scribbles.radio.seed;
 import com.vijayrc.scribbles.radio.domain.Subscriber;
 import com.vijayrc.scribbles.radio.repository.AllSubscribers;
 import com.vijayrc.scribbles.radio.seed.base.Seed;
-import com.vijayrc.scribbles.radio.util.Random;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import static com.vijayrc.scribbles.radio.util.Random.between;
+import static com.vijayrc.scribbles.radio.util.Random.date;
 
 @Component
 @Scope("singleton")
@@ -23,13 +25,13 @@ public class SubscriberSeed {
     @Seed(order = 2, description = "subscribers setup", key = "subscriber")
     public void run() {
         for (int i = 1; i <= 100; i++) {
-            Subscriber subscriber = new Subscriber("subscriber_" + i, Random.date(2000, 2013), locationSeed.random());
+            Subscriber subscriber = new Subscriber("subscriber_" + i, date(2000, 2013), locationSeed.randomLocation());
             allSubscribers.add(subscriber);
             log.info(subscriber);
         }
     }
 
-    public String randomSubscriberId() {
-        return "subscriber_" + Random.between(1, 100);
+    public Subscriber randomSubscriber() {
+        return allSubscribers.findBySubscriberId("subscriber_" + between(1, 100));
     }
 }

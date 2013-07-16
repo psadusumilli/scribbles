@@ -23,7 +23,7 @@ public class ArtistSeed {
     @Seed(order = 1, description = "artists setup", key = "artist")
     public void run() {
         for (int i = 1; i <= 50; i++) {
-            Artist artist = new Artist("artist_" + i, date(1930, 2005), locationSeed.random());
+            Artist artist = new Artist("artist_" + i, date(1930, 2005), locationSeed.randomLocation());
             allArtists.add(artist);
             log.info(artist);
         }

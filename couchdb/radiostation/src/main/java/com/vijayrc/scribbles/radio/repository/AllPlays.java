@@ -21,10 +21,11 @@ import static ch.lambdaj.Lambda.on;
 @Repository
 @Log4j
 @Views({
-        @View(name = "songs_count_by_time",
+        @View(name = "count_songs_by_time",
                 map = "function(doc){if(doc.type === 'Play'){emit([doc.time.year,doc.time.month,doc.time.day,doc.songId],1);}}",
                 reduce = "function(key,values,rereduce){if(rereduce){return sum(values);}return sum(values);}"),
-        @View(name = "find_by_time",
+
+        @View(name = "find_songs_by_time",
                 map = "function(doc){if(doc.type === 'Play'){emit([doc.time.year,doc.time.month,doc.time.day,doc.time.hour], doc.songId);}}")
 })
 public class AllPlays extends Repo<Play> {
@@ -40,15 +41,14 @@ public class AllPlays extends Repo<Play> {
     public void findPopularSongForDay(DateTime dateTime) {
         Time time = new Time(dateTime);
         Object[] key = new Object[]{time.getYear(), time.getMonth(), time.getDay()};
-        ViewQuery viewQuery = createQuery("songs_count_by_time").includeDocs(false).group(true).groupLevel(3).key(key);
+        ViewQuery viewQuery = createQuery("count_by_time").includeDocs(false).group(true).groupLevel(3).key(key);
         ViewResult viewResult = db.queryView(viewQuery);
     }
 
     public List<Song> findSongsPlayedByTimeRange(Time startTime, Time endTime) {
-        ViewQuery viewQuery = createQuery("find_by_time").startKey(startTime.asArrayKey()).endKey(endTime.asArrayKey());
+        ViewQuery viewQuery = createQuery("find_songs_by_time").startKey(startTime.asArrayKey()).endKey(endTime.asArrayKey());
         List<String> songsIds = extract(db.queryView(viewQuery).getRows(), on(ViewResult.Row.class).getValue());
-        ViewQuery by_title = createQuery("by_title").allDocs().includeDocs(true).keys(songsIds);
-        return db.queryView(by_title, Song.class);
+        return null;
     }
 }
 

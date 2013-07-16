@@ -19,10 +19,4 @@ public class AllAlbums extends Repo<Album> {
     public Album findByName(String name) {
         return singleResult(queryView("by_name", name));
     }
-
-    @GenerateView
-    public Album findByAlbumId(String albumId) {
-        return singleResult(queryView("by_albumId", albumId));
-    }
-
 }

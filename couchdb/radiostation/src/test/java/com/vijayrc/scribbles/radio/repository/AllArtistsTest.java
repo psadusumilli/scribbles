@@ -26,7 +26,7 @@ public class AllArtistsTest {
 
     @Test
     public void shouldAddAlbumsAndFindByName() {
-        Artist artist = new Artist("Andrew Bird", date(1930, 2013), locationSeed.random());
+        Artist artist = new Artist("Andrew Bird", date(1930, 2013), locationSeed.randomLocation());
         allArtists.add(artist);
 
         artist.add(new Album("Nervous Tick", artist, date(2012, 2013)));

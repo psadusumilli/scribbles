@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
 @TypeDiscriminator("doc.type === 'Album'")
 public class Album extends Doc {
     @JsonProperty
-    private String albumId;
+    private String uniqueId;
     @JsonProperty
     private String name;
     @JsonProperty
@@ -28,17 +28,17 @@ public class Album extends Doc {
         this.name = name;
         this.artistId = artist.getId();
         this.time = new Time(releaseDate);
-        this.albumId = name+"|"+artist;
+        this.uniqueId = name+"|"+artist;
     }
 
     @Override
     public String toString() {
-        return albumId;
+        return uniqueId;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return this.albumId.equals(((Album)obj).albumId);
+        return this.uniqueId.equals(((Album)obj).uniqueId);
     }
 }
 

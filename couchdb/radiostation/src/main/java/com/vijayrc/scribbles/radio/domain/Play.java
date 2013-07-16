@@ -1,5 +1,6 @@
 package com.vijayrc.scribbles.radio.domain;
 
+import com.vijayrc.scribbles.radio.dimension.Location;
 import com.vijayrc.scribbles.radio.dimension.Time;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,10 +20,13 @@ public class Play extends Doc {
     private String subscriberId;
     @JsonProperty
     private Time time;
+    @JsonProperty
+    private Location location;
 
-    public Play(String songId, String subscriberId, DateTime dateTime) {
-        this.songId = songId;
-        this.subscriberId = subscriberId;
+    public Play(Song song, Subscriber subscriber, DateTime dateTime) {
+        this.songId = song.getId();
+        this.subscriberId = subscriber.getId();
+        this.location = subscriber.getLocation();
         this.time = new Time(dateTime);
     }
 

@@ -16,11 +16,6 @@ public class AllSongs extends Repo<Song> {
     }
 
     @GenerateView
-    public Song findBySongId(String songId) {
-        return singleResult(queryView("by_songId", songId));
-    }
-
-    @GenerateView
     public Song findByName(String name) {
         return singleResult(queryView("by_name", name));
     }

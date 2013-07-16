@@ -19,10 +19,4 @@ public class AllArtists extends Repo<Artist> {
     public Artist findByName(String name) {
         return singleResult(queryView("by_name", name));
     }
-
-    @GenerateView
-    public Artist findByArtistId(String artistId) {
-        return singleResult(queryView("by_artistId", artistId));
-    }
-
 }
