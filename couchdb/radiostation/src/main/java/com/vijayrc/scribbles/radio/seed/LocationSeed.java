@@ -12,6 +12,6 @@ import static com.vijayrc.scribbles.radio.util.Random.between;
 @Log4j
 public class LocationSeed {
     public Location random() {
-        return new Location("city_" + between(10, 20), "state_" + between(3, 5), "country_" + between(1, 2));
+        return new Location("country_" + between(1, 2), "state_" + between(3, 5), "city_" + between(10, 20));
     }
 }

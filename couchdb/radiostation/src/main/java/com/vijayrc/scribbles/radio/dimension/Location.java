@@ -7,7 +7,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 @NoArgsConstructor
 @Getter
-public class Location{
+public class Location {
     @JsonProperty
     private String city;
     @JsonProperty
@@ -15,7 +15,7 @@ public class Location{
     @JsonProperty
     private String country;
 
-    public Location(String city, String state, String country) {
+    public Location(String country, String state, String city) {
         this.city = city;
         this.state = state;
         this.country = country;
@@ -23,6 +23,10 @@ public class Location{
 
     @Override
     public String toString() {
-        return "["+country+"|"+state+"|"+city+"]";
+        return "[" + country + "|" + state + "|" + city + "]";
+    }
+
+    public Object[] asArrayKey() {
+        return new Object[]{country, state, city};
     }
 }
