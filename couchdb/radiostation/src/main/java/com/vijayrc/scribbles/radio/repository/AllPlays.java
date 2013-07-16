@@ -1,19 +1,20 @@
 package com.vijayrc.scribbles.radio.repository;
 
+import com.vijayrc.scribbles.radio.dimension.Time;
 import com.vijayrc.scribbles.radio.domain.Play;
 import com.vijayrc.scribbles.radio.domain.Song;
-import com.vijayrc.scribbles.radio.dimension.Time;
 import lombok.extern.log4j.Log4j;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.ViewResult;
 import org.ektorp.support.View;
 import org.ektorp.support.Views;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ch.lambdaj.Lambda.extract;
 import static ch.lambdaj.Lambda.on;
@@ -38,11 +39,18 @@ public class AllPlays extends Repo<Play> {
         this.allSongs = allSongs;
     }
 
-    public void findPopularSongForTimeRange(DateTime dateTime) {
-        Time time = new Time(dateTime);
-        Object[] key = new Object[]{time.getYear(), time.getMonth(), time.getDay()};
-        ViewQuery viewQuery = createQuery("count_songs_by_time").includeDocs(false).group(true).groupLevel(2).key(key);
-        ViewResult viewResult = db.queryView(viewQuery);
+    public Map<String, String> findSongsCountForTimeRange(Time startTime, Time endTime) {
+        Object[] startKey = new Object[]{startTime.getYear(), startTime.getMonth(), startTime.getDay()};
+        Object[] endKey = new Object[]{endTime.getYear(), endTime.getMonth(), endTime.getDay()};
+
+        ViewQuery viewQuery = createQuery("count_songs_by_time").includeDocs(false).group(true).groupLevel(3)
+.startKey(startKey).endKey(endKey);
+
+        List<ViewResult.Row> rows = db.queryView(viewQuery).getRows();
+        Map<String, String> map = new HashMap<String, String>();
+        for (ViewResult.Row row : rows)
+            map.put(row.getKey(), row.getValue());
+        return map;
     }
 
     public List<Song> findSongsPlayedByTimeRange(Time startTime, Time endTime) {

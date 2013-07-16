@@ -16,6 +16,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
+import static ch.lambdaj.Lambda.on;
+import static ch.lambdaj.Lambda.sort;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext.xml")
 @Log4j
@@ -28,22 +31,26 @@ public class AllPlaysTest {
     private SongSeed songSeed;
 
     @Test
-    public void shouldFindPopularAlbumWithinAPeriodFromASpecificLocation() {
+    public void shouldFindPopularSongWithinATimeRangeFromASpecificState() {
         DateTime today = DateTime.now();
         setupSongs(today);
         Time startTime = new Time(today.minusMinutes(2));
         Time endTime = new Time(today);
 
-        List<Song> songsPlayedByTimeRange = allPlays.findSongsPlayedByTimeRange(startTime, endTime);
-        Print.the(songsPlayedByTimeRange);
+        List<Song> songsForTimeRange = allPlays.findSongsPlayedByTimeRange(startTime, endTime);
+        Print.the(sort(songsForTimeRange,on(Song.class).getUniqueId()));
     }
 
+
     private void setupSongs(DateTime today) {
+        Song song1 = songSeed.randomSong();
+        Song song2 = songSeed.randomSong();
+        Song song3 = songSeed.randomSong();
         for (int i = 0; i < 20; i++)
-            allPlays.add(new Play(songSeed.randomSong(), subscriberSeed.randomSubscriber(), today));
+            allPlays.add(new Play(song1, subscriberSeed.randomSubscriber(), today));
         for (int i = 0; i < 10; i++)
-            allPlays.add(new Play(songSeed.randomSong(), subscriberSeed.randomSubscriber(), today));
+            allPlays.add(new Play(song2, subscriberSeed.randomSubscriber(), today));
         for (int i = 0; i < 5; i++)
-            allPlays.add(new Play(songSeed.randomSong(), subscriberSeed.randomSubscriber(), today));
+            allPlays.add(new Play(song3, subscriberSeed.randomSubscriber(), today));
     }
 }
