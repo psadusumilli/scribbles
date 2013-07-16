@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Log4j
 public class AllAlbums extends Repo<Album> {
-
     @Autowired
     public AllAlbums(CouchDbConnector db) {
         super(Album.class, db);
@@ -19,6 +18,11 @@ public class AllAlbums extends Repo<Album> {
     @GenerateView
     public Album findByName(String name) {
         return singleResult(queryView("by_name", name));
+    }
+
+    @GenerateView
+    public Album findByAlbumId(String albumId) {
+        return singleResult(queryView("by_albumId", albumId));
     }
 
 }

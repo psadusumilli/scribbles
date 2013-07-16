@@ -12,7 +12,7 @@ import org.ektorp.support.TypeDiscriminator;
 @TypeDiscriminator("doc.type === 'Song'")
 public class Song extends Doc {
     @JsonProperty
-    private String title;
+    private String name;
     @JsonProperty
     private Album album;
     @JsonProperty
@@ -23,7 +23,7 @@ public class Song extends Doc {
     private String songId;
 
     public Song(String title, Album album, String genre, Integer duration) {
-        this.title = title;
+        this.name = title;
         this.album = album;
         this.genre = genre;
         this.duration = duration;

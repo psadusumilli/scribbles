@@ -8,6 +8,8 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static com.vijayrc.scribbles.radio.util.Random.date;
+
 @Component
 @Log4j
 public class PlaySeed {
@@ -20,8 +22,8 @@ public class PlaySeed {
 
     @Seed(order = 4, description = "play history setup", key = "play")
     public void run() {
-        for (int i = 0; i < 200; i++) {
-            Play play = new Play(songSeed.randomSongId(), subscriberSeed.randomSubscriberId(), Random.date(2005, 2013));
+        for (int i = 0; i < 1000; i++) {
+            Play play = new Play(songSeed.randomSongId(), subscriberSeed.randomSubscriberId(), date(2005, 2013));
             allPlays.add(play);
             log.info(play);
         }
