@@ -26,19 +26,14 @@ public class AllPlaysTest {
     private SubscriberSeed subscriberSeed;
     @Autowired
     private SongSeed songSeed;
-    @Test
-    public void shouldFindPopularSongs() {
-        DateTime today = DateTime.now();
-        setupSongs(today);
-        allPlays.findPopularSongForDay(today);
-    }
 
     @Test
-    public void shouldFindSongsPlayedWithinAPeriod() {
+    public void shouldFindPopularAlbumWithinAPeriodFromASpecificLocation() {
         DateTime today = DateTime.now();
         setupSongs(today);
         Time startTime = new Time(today.minusMinutes(2));
         Time endTime = new Time(today);
+
         List<Song> songsPlayedByTimeRange = allPlays.findSongsPlayedByTimeRange(startTime, endTime);
         Print.the(songsPlayedByTimeRange);
     }
@@ -51,6 +46,4 @@ public class AllPlaysTest {
         for (int i = 0; i < 5; i++)
             allPlays.add(new Play(songSeed.randomSong(), subscriberSeed.randomSubscriber(), today));
     }
-
-
 }

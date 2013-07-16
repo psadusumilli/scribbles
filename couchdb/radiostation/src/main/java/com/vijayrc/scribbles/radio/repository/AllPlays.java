@@ -38,17 +38,17 @@ public class AllPlays extends Repo<Play> {
         this.allSongs = allSongs;
     }
 
-    public void findPopularSongForDay(DateTime dateTime) {
+    public void findPopularSongForTimeRange(DateTime dateTime) {
         Time time = new Time(dateTime);
         Object[] key = new Object[]{time.getYear(), time.getMonth(), time.getDay()};
-        ViewQuery viewQuery = createQuery("count_by_time").includeDocs(false).group(true).groupLevel(3).key(key);
+        ViewQuery viewQuery = createQuery("count_songs_by_time").includeDocs(false).group(true).groupLevel(2).key(key);
         ViewResult viewResult = db.queryView(viewQuery);
     }
 
     public List<Song> findSongsPlayedByTimeRange(Time startTime, Time endTime) {
         ViewQuery viewQuery = createQuery("find_songs_by_time").startKey(startTime.asArrayKey()).endKey(endTime.asArrayKey());
         List<String> songsIds = extract(db.queryView(viewQuery).getRows(), on(ViewResult.Row.class).getValue());
-        return null;
+        return allSongs.getAllFor(songsIds);
     }
 }
 
