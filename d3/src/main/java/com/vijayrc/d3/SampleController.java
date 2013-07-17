@@ -10,7 +10,7 @@ public class SampleController {
 
     @RequestMapping("/{sample}")
     public ModelAndView show(@PathVariable String sample){
-        return new ModelAndView(sample);
+        return new ModelAndView("samples").addObject("sample",sample);
     }
 
 }

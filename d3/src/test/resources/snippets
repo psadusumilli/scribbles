@@ -1,0 +1,5 @@
+ circles.data([8, 12, 15, 20])
+        .enter().append("circle")
+        .attr("cx",function(d,i){ return Math.random() * 100;})
+        .attr("cy",function(d,i){ return 100 * (i+1);})
+        .attr("r",function(d){ return d;});

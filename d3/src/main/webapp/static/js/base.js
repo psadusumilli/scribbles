@@ -9,8 +9,18 @@ D3Test = function(){
             .style("padding-top",function(d) { return 0.5*d + "px";});
     };
 
+    var sample2 = function(){
+        var circles = d3.select("#sample-2").selectAll("circle");
+        circles.data([8, 12, 15, 20])
+        .enter().append("circle")
+        .attr("cx",function(d,i){ return Math.random() * 100;})
+        .attr("cy",function(d,i){ return 100 * (i+1);})
+        .attr("r",function(d){ return d;});
+    };
+
     this.boot = function(){
       sample1();
+      sample2();
     };
 
 }
