@@ -29,17 +29,8 @@ public abstract class Repo<T extends Doc> extends CouchDbRepositorySupport<T> {
         return super.getAll();
     }
 
-    public List<T> getAll(int limit) {
-        ViewQuery q = createQuery("all").limit(limit).includeDocs(true);
-        return db.queryView(q, type);
-    }
-
     protected T singleResult(List<T> resultSet) {
         return (resultSet == null || resultSet.isEmpty()) ? null : resultSet.get(0);
-    }
-
-    public void removeAll() {
-        removeAll(getAll());
     }
 
     private void removeAll(List<T> entities) {

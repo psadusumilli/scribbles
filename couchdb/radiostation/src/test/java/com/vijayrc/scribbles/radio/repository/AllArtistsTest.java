@@ -31,10 +31,10 @@ public class AllArtistsTest {
 
         artist.add(new Album("Nervous Tick", artist, date(2012, 2013)));
         artist.add(new Album("Insomnia", artist, date(2012, 2013)));
-        allArtists.update(artist);   //saves albums here
+        allArtists.update(artist);   //saves associated albums here
 
         Artist artistFromDb = allArtists.findByName("Andrew Bird");
         assertEquals(2, artistFromDb.getAlbums().size());
-        allArtists.remove(artistFromDb);      //does not remove albums
+        allArtists.remove(artistFromDb);      //does not remove albums, ektorp cascading flaky
     }
 }
