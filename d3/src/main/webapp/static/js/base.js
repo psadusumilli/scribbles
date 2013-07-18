@@ -18,9 +18,24 @@ D3Test = function(){
         .attr("r",function(d){ return d;});
     };
 
+    var sample3 = function(){
+        var data = [8, 12, 15, 20, 33, 42];
+        var x = d3.scale.linear().domain([0, d3.max(data)]).range([0, 420]);
+        var rects = d3.select("#sample-3").selectAll("rect");
+
+        rects.data(data)
+        .enter().append("rect")
+        .attr("y", function(d, i) { return i * 20; })
+        .attr("width", x)
+        .attr("height", 20)
+        .attr("fill","steelblue")
+        .attr("stroke","white");
+    };
+
     this.boot = function(){
       sample1();
       sample2();
+      sample3();
     };
 
 }
