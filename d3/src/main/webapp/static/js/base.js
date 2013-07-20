@@ -67,10 +67,21 @@ D3Test = function(){
         .style("stroke", "#000");
     };
 
+
+    var sample4 = function(){
+      d3.select("#sample-4-1").style("color","grey").transition().delay().style("color","yellowgreen");
+      d3.select("#sample-4-2").transition()
+          .delay(750)
+          .each("start", function() { d3.select(this).style("color", "green"); })
+          .style("color", "red");
+
+    };
+
     this.boot = function(){
       sample1();
       sample2();
       sample3();
+      sample4();
     };
 
 }
