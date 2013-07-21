@@ -72,12 +72,13 @@ D3Test = function(){
       d3.select("#sample-4-1").style("color","grey").transition().delay().style("color","yellowgreen");
       d3.select("#sample-4-2").transition()
           .delay(750)      //applies start after delay of 750ms
+          .duration(2000)
           .each("start", function() { d3.select(this).style("font-size", "3px"); })
           .style("font-size", "30px");
 
-      d3.select("#sample-4-3").transition().delay(1750)
-          .styleTween("color", function() { return d3.interpolate("blue", "red"); });
-
+      d3.select("#sample-4-3").transition().delay(4000)
+          .styleTween("color", function() { return d3.interpolate("blue", "red"); })
+          .each("end", function(){ d3.select(this).transition().duration(1000).style("font-size", "40px"); });
     };
 
     this.boot = function(){
