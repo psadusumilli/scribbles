@@ -5,4 +5,5 @@
     <script src="static/js/jquery-1.9.1.min.js"></script>
     <script src="static/js/d3.v3.min.js"></script>
     <script src="static/js/base.js"></script>
+    <script src="static/js/vendi.js"></script>
  </head>
