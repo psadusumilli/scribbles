@@ -2,14 +2,29 @@ Vendi = function(){
   this.boot = function(){
       var posts = new PostSeed().boot();
   };
+
+
+
+
 };
-//------------------------------------------------------
+
+
+
+
+
+
+//--------------- SEED  ---------------------------
 Post = function(name, tags){
    this.name = name;
    this.tags = tags;
 };
 Tag = function(name){
    this.name = name;
+   this.numberOfPosts = 0;
+
+   this.increment(){
+        ++numberOfPosts ;
+   };
 };
 //--------------------------------------------------
 PostSeed = function(){
@@ -46,4 +61,5 @@ TagSeed = function(){
    };
 };
 
+//-----------------------------------------------------
 $(document).ready(function(){new Vendi().boot()});
