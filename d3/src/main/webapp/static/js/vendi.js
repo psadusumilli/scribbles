@@ -10,28 +10,27 @@ Diagram1 = function(){
 
   var drawPosts = function(){
      svg.selectAll("circle").data(postSeed.allPosts()).enter().append("circle")
-     .attr("r",function(d){return d.tagKeys.length*2})
-     .attr("fill","white")
-     .attr("cy",30)
-     .attr("cx",function(d,i){return i*40;})
-     .transition().duration(1000).attr("fill","grey").attr("stroke","black");
+     .attr("cy",30).attr("cx",function(d,i){return i*40;})
+     .attr("r",1).attr("fill","white")
+     .transition().duration(1000).attr("r",function(d){return d.tagKeys.length*2})
+     .attr("fill","grey").attr("stroke","black");
 
      svg.selectAll("text").data(postSeed.allPosts()).enter().append("text")
      .text(function(d){return d.name;})
-     .attr("y",10)
-     .attr("x",function(d,i){return i*40;});
+     .attr("y",10).attr("x",function(d,i){return i*40;});
   };
 
   var drawTags = function(){
      svg.selectAll("rect").data(postSeed.allTags()).enter().append("rect")
-     .attr("y",60)
+     .attr("y",160)
      .attr("x",function(d,i){return i*40;})
-     .attr("width",30).attr("height",function(d){return d.postKeys.length*3;})
-     .transition().duration(1000).attr("fill","lightblue").attr("stroke","black");
+     .attr("width",30)
+     .attr("height",1).transition().duration(1000).attr("height",function(d){return d.postKeys.length*3;})
+     .attr("fill","lightblue").attr("stroke","black");
 
      svg.selectAll("text").data(postSeed.allTags()).enter().append("text")
      .text(function(d){return d.name;})
-     .attr("y",70)
+     .attr("y",170)
      .attr("x",function(d,i){return i*40;});
   };
 
@@ -94,7 +93,7 @@ TagSeed = function(){
 };
 //-------------------------
 PostSeed = function(){
-   var posts = new Array(30);
+   var posts = new Array(25);
    var tagSeed = new TagSeed().boot();
 
    this.boot = function(){
