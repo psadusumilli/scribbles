@@ -23,7 +23,7 @@ Diagram1 = function(){
 
   var drawTags = function(){
      svg.selectAll("rect").data(postSeed.allTags()).enter().append("rect")
-     .attr("y",function(d){d.y = 200; return d.y;})
+     .attr("y",function(d){d.y = 300; return d.y;})
      .attr("x",function(d,i){d.x = (i*120)+20; return d.x;})
      .attr("width",30)
      .attr("height",1)
@@ -40,7 +40,7 @@ Diagram1 = function(){
           .attr("x",function(d,i){return (i*40)+20;});
      labels.data(postSeed.allTags()).enter().append("text")
           .text(function(d){return d.name;})
-          .attr("y",210)
+          .attr("y",310)
           .attr("x",function(d,i){return (i*120)+20;});
   };
 
