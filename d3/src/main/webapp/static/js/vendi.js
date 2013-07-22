@@ -17,7 +17,7 @@ Diagram1 = function(){
      .attr("r",1)
      .attr("fill","white")
      .transition().duration(1000)
-     .attr("r",function(d){return d.tagKeys.length*2})
+     .attr("r",function(d){return d.tagKeys.length*3})
      .attr("fill","grey").attr("stroke","black");
   };
 
@@ -47,13 +47,14 @@ Diagram1 = function(){
   var drawLinks = function(){
       var lines = [];
       $.each(postSeed.allTags(),function(i, tag){
+         var lineColor = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
          for(var i=0;i< tag.postKeys.length;i++){
             var post = tag.posts[tag.postKeys[i]];
-            lines.push(new Line(tag.x, tag.y, post.x, post.y));
+            lines.push(new Line(tag.x, tag.y, post.x, post.y, lineColor));
          }
       });
       svg.selectAll("line").data(lines).enter().append("line")
-      .style("stroke", "#5184AF")
+      .style("stroke", function(d){return d.color;})
       .attr("x1",function(d){return d.x1;})
       .attr("y1",function(d){return d.y1;})
       .attr("x2",function(d){return d.x1;})
@@ -63,11 +64,12 @@ Diagram1 = function(){
       .attr("y2",function(d){return d.y2;});
   };
 
-  var Line = function(x1,y1,x2,y2){
+  var Line = function(x1,y1,x2,y2,color){
        this.x1 = x1;
        this.y1 = y1;
        this.x2 = x2;
        this.y2 = y2;
+       this.color = color;
   };
 
 };
