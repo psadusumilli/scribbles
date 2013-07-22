@@ -49,8 +49,13 @@ Diagram1 = function(){
             lines.push(new Line(tag.x, tag.y, post.x, post.y));
          }
       });
-      alert(lines.length);
-      alert(lines[0].x1+" "+lines[0].y2)
+      svg.selectAll("line").data(lines).enter().append("line")
+      .style("stroke", "#ccc")
+      .attr("x1",function(d){return d.x1;})
+      .attr("y1",function(d){return d.y1;})
+      .attr("x2",function(d){return d.x2;})
+      .attr("y2",function(d){return d.y2;});
+      //.exit().remove();
   };
 
   var Line = function(x1,y1,x2,y2){
