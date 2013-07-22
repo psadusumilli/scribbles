@@ -1,22 +1,20 @@
 Diagram1 = function(){
+  var svg = d3.select("#diagram-1");
+
   this.boot = function(){
       var postSeed = new PostSeed().boot();
-      alert(postSeed.allPosts().length);
-      alert(postSeed.allTags().length);
+      drawNodes(postSeed.allPosts());
+  };
+
+  var drawNodes = function(data){
+     svg.selectAll("circle").data(data).enter().append("circle")
+     .attr("r",function(d){return d.tagKeys.length})
+     .attr("cx",10)
+     .attr("cy",function(d,i){return i*20;});
   };
 
 
-
-
 };
-
-
-
-
-//--------------- VISUAL DOMAIN -------------------
-
-
-
 
 
 
@@ -51,7 +49,7 @@ Tag = function(name){
 };
 //-------------------------
 TagSeed = function(){
-   var tags = new Array(10);
+   var tags = new Array(8);
 
    this.random = function(){
      var randomSize = Math.floor((Math.random()*4)+3); //[3-7]tags/post
@@ -74,7 +72,7 @@ TagSeed = function(){
 };
 //-------------------------
 PostSeed = function(){
-   var posts = new Array(200);
+   var posts = new Array(50);
    var tagSeed = new TagSeed().boot();
 
    this.boot = function(){
