@@ -27,18 +27,18 @@ Diagram1 = function(){
 
   var drawTags = function(){
      svg.selectAll("rect").data(postSeed.allTags()).enter().append("rect")
-     .attr("y",function(d){d.y = 160; return d.y;})
-     .attr("x",function(d,i){d.x = (i*80)+20; return d.x;})
+     .attr("y",function(d){d.y = 200; return d.y;})
+     .attr("x",function(d,i){d.x = (i*120)+20; return d.x;})
      .attr("width",30)
      .attr("height",1)
      .transition().duration(1000)
      .attr("height",function(d){return d.postKeys.length*3;})
      .attr("fill","lightblue").attr("stroke","black");
 
-     svg.selectAll("text").data(postSeed.allTags()).enter().append("text")
+     svg.select("text").data(postSeed.allTags()).enter().append("text")
      .text(function(d){return d.name;})
-     .attr("y",170)
-     .attr("x",function(d,i){return (i*80)+20;});
+     .attr("y",210)
+     .attr("x",function(d,i){return (i*120)+20;});
   };
 
   var drawLinks = function(){
@@ -53,6 +53,9 @@ Diagram1 = function(){
       .style("stroke", "#5184AF")
       .attr("x1",function(d){return d.x1;})
       .attr("y1",function(d){return d.y1;})
+      .attr("x2",function(d){return d.x1;})
+      .attr("y2",function(d){return d.y1;})
+      .transition().delay(500).duration(500)
       .attr("x2",function(d){return d.x2;})
       .attr("y2",function(d){return d.y2;})
       .exit().remove();
