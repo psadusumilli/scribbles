@@ -30,8 +30,7 @@ Diagram1 = function(){
 
      svg.selectAll("text").data(postSeed.allTags()).enter().append("text")
      .text(function(d){return d.name;})
-     .attr("y",170)
-     .attr("x",function(d,i){return i*40;});
+     .attr("y",170).attr("x",function(d,i){return i*40;});
   };
 
 
