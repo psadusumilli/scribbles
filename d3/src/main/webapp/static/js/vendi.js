@@ -6,10 +6,10 @@ Diagram1 = function(){
       postSeed = new PostSeed().boot();
       drawPosts();
       drawTags();
+      drawLinks();
   };
 
   var drawPosts = function(){
-     //post circles
      svg.selectAll("circle").data(postSeed.allPosts()).enter().append("circle")
      .attr("cy",function(d){d.y = 30; return d.y;})
      .attr("cx",function(d,i){d.x = i*40; return d.x;})
@@ -19,8 +19,6 @@ Diagram1 = function(){
      .attr("r",function(d){return d.tagKeys.length*2})
      .attr("fill","grey").attr("stroke","black");
 
-
-     //post labels
      svg.selectAll("text").data(postSeed.allPosts()).enter().append("text")
      .text(function(d){return d.name;})
      .attr("y",10)
@@ -28,7 +26,6 @@ Diagram1 = function(){
   };
 
   var drawTags = function(){
-     //tag rectangles
      svg.selectAll("rect").data(postSeed.allTags()).enter().append("rect")
      .attr("y",function(d){d.y = 160; return d.y;})
      .attr("x",function(d,i){d.x = i*40; return d.x;})
@@ -38,17 +35,32 @@ Diagram1 = function(){
      .attr("height",function(d){return d.postKeys.length*3;})
      .attr("fill","lightblue").attr("stroke","black");
 
-     //tag labels
      svg.selectAll("text").data(postSeed.allTags()).enter().append("text")
      .text(function(d){return d.name;})
      .attr("y",170)
      .attr("x",function(d,i){return i*40;});
   };
 
+  var drawLinks = function(){
+      var lines = [];
+      $.each(postSeed.allTags(),function(i, tag){
+         for(var i=0;i< tag.postKeys.length;i++){
+            var post = tag.posts[tag.postKeys[i]];
+            lines.push(new Line(tag.x, tag.y, post.x, post.y));
+         }
+      });
+      alert(lines.length);
+      alert(lines[0].x1+" "+lines[0].y2)
+  };
+
+  var Line = function(x1,y1,x2,y2){
+       this.x1 = x1;
+       this.y1 = y1;
+       this.x2 = x2;
+       this.y2 = y2;
+  };
 
 };
-
-
 
 
 //--------------- SEED  ---------------------------

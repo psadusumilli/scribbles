@@ -1,5 +1,5 @@
- circles.data([8, 12, 15, 20])
-        .enter().append("circle")
-        .attr("cx",function(d,i){ return Math.random() * 100;})
-        .attr("cy",function(d,i){ return 100 * (i+1);})
-        .attr("r",function(d){ return d;});
+svg.selectAll("line").data(tag.postKeys).enter().append("line")
+           .attr("x1",tag.x).attr("y1",tag.y)
+           .attr("x2",function(d){return tag.posts[d].x;})
+           .attr("y2",function(d){return tag.posts[d].y;});
+           //.exit().remove();
