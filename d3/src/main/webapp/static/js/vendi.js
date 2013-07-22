@@ -1,16 +1,24 @@
 Diagram1 = function(){
-  var svg = d3.select("#diagram-1");
+  var svg = d3.select("#diagram-1").style("padding","30px");
+  var postSeed;
 
   this.boot = function(){
-      var postSeed = new PostSeed().boot();
-      drawNodes(postSeed.allPosts());
+      postSeed = new PostSeed().boot();
+      drawPosts();
   };
 
-  var drawNodes = function(data){
-     svg.selectAll("circle").data(data).enter().append("circle")
-     .attr("r",function(d){return d.tagKeys.length})
-     .attr("cx",10)
-     .attr("cy",function(d,i){return i*20;});
+  var drawPosts = function(){
+     svg.selectAll("circle").data(postSeed.allPosts()).enter().append("circle")
+     .attr("r",function(d){return d.tagKeys.length*2})
+     .attr("fill","white")
+     .attr("cy",30)
+     .attr("cx",function(d,i){return i*40;})
+     .transition().duration(1000).attr("fill","grey").attr("stroke","black");
+
+     svg.selectAll("text").data(postSeed.allPosts()).enter().append("text")
+     .text(function(d){return d.name;})
+     .attr("y",10)
+     .attr("x",function(d,i){return i*40;});
   };
 
 
@@ -63,7 +71,7 @@ TagSeed = function(){
 
    this.boot = function(){
      for(var i=0; i<tags.length; i++){
-        tags[i] = new Tag("tag_"+i);
+        tags[i] = new Tag("t_"+i);
      }
      return this;
    };
@@ -72,12 +80,12 @@ TagSeed = function(){
 };
 //-------------------------
 PostSeed = function(){
-   var posts = new Array(50);
+   var posts = new Array(30);
    var tagSeed = new TagSeed().boot();
 
    this.boot = function(){
      for(var i=0; i < posts.length; i++) {
-        posts[i] = new Post("post_"+i);
+        posts[i] = new Post("p_"+i);
         var tags = tagSeed.random();
         for(var j=0; j<tags.length; j++){
             posts[i].addTag(tags[j]);
