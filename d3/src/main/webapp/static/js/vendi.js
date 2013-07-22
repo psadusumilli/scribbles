@@ -9,18 +9,22 @@ Diagram1 = function(){
   };
 
   var drawPosts = function(){
+     //post circles
      svg.selectAll("circle").data(postSeed.allPosts()).enter().append("circle")
      .attr("cy",30).attr("cx",function(d,i){return i*40;})
      .attr("r",1).attr("fill","white")
      .transition().duration(1000).attr("r",function(d){return d.tagKeys.length*2})
      .attr("fill","grey").attr("stroke","black");
 
+
+     //post labels
      svg.selectAll("text").data(postSeed.allPosts()).enter().append("text")
      .text(function(d){return d.name;})
      .attr("y",10).attr("x",function(d,i){return i*40;});
   };
 
   var drawTags = function(){
+     //tag rectangles
      svg.selectAll("rect").data(postSeed.allTags()).enter().append("rect")
      .attr("y",160)
      .attr("x",function(d,i){return i*40;})
@@ -28,6 +32,7 @@ Diagram1 = function(){
      .attr("height",1).transition().duration(1000).attr("height",function(d){return d.postKeys.length*3;})
      .attr("fill","lightblue").attr("stroke","black");
 
+     //tag labels
      svg.selectAll("text").data(postSeed.allTags()).enter().append("text")
      .text(function(d){return d.name;})
      .attr("y",170).attr("x",function(d,i){return i*40;});
