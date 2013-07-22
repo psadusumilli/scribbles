@@ -5,6 +5,7 @@ Diagram1 = function(){
   this.boot = function(){
       postSeed = new PostSeed().boot();
       drawPosts();
+      drawTags();
   };
 
   var drawPosts = function(){
@@ -18,6 +19,19 @@ Diagram1 = function(){
      svg.selectAll("text").data(postSeed.allPosts()).enter().append("text")
      .text(function(d){return d.name;})
      .attr("y",10)
+     .attr("x",function(d,i){return i*40;});
+  };
+
+  var drawTags = function(){
+     svg.selectAll("rect").data(postSeed.allTags()).enter().append("rect")
+     .attr("y",60)
+     .attr("x",function(d,i){return i*40;})
+     .attr("width",30).attr("height",function(d){return d.postKeys.length*3;})
+     .transition().duration(1000).attr("fill","lightblue").attr("stroke","black");
+
+     svg.selectAll("text").data(postSeed.allTags()).enter().append("text")
+     .text(function(d){return d.name;})
+     .attr("y",70)
      .attr("x",function(d,i){return i*40;});
   };
 
