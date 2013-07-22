@@ -3,3 +3,11 @@ svg.selectAll("line").data(tag.postKeys).enter().append("line")
            .attr("x2",function(d){return tag.posts[d].x;})
            .attr("y2",function(d){return tag.posts[d].y;});
            //.exit().remove();
+
+
+
+
+     svg.select("text").data(postSeed.allTags()).enter().append("text")
+     .text(function(d){return d.name;})
+     .attr("y",210)
+     .attr("x",function(d,i){return (i*120)+20;});
