@@ -11,6 +11,7 @@ Diagram1 = function(){
   };
 
   var drawPosts = function(){
+
      svg.selectAll("circle").data(postSeed.allPosts()).enter().append("circle")
      .attr("cy",function(d){d.y = 30; return d.y;})
      .attr("cx",function(d,i){d.x = (i*40)+20; return d.x;})
