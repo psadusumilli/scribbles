@@ -12,9 +12,7 @@ class BoxTest extends FunSuite{
     box.add(eraser)
     print(box.describe())
     assert(box.has(pencil))
-
+    assert(Box.canAdd(eraser))
   }
-
-
 
 }
