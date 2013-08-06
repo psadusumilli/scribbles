@@ -1,6 +1,6 @@
 package com.vijayrc
 
-class basics {
+class Basics {
   def conditional(x:Int):Unit = {
     if (x  > 0){
       var i = 0
@@ -88,6 +88,7 @@ class basics {
     println(romanNumeral(4))
   }
 
+  //note the closures here
   def asserter():Unit = {
     def link(args: Array[String]): String = args.mkString("--")
     assert(link(Array("A","B")) == "A--B" )
