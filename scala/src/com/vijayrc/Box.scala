@@ -7,9 +7,8 @@ class Box {
       items += item
     }
 
-    def print():Unit = {
-      println("Box:---")
-      items.foreach(item => item.print())
+    def describe():String = {
+      items.mkString(",")
     }
 
     def has(item:Item):Boolean = {

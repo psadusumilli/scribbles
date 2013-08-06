@@ -14,7 +14,7 @@ object Runner {
     val box = new Box
     box.add(pencil)
     box.add(eraser)
-    box.print()
+    box.describe()
   }
 
 

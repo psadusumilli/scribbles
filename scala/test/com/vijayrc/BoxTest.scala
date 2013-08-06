@@ -10,7 +10,8 @@ class BoxTest extends FunSuite{
     val box = new Box
     box.add(pencil)
     box.add(eraser)
-    box.print()
+    print(box.describe())
+    assert(box.has(pencil))
 
   }
 
