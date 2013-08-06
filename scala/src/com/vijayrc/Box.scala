@@ -11,4 +11,8 @@ class Box {
       println("Box:---")
       items.foreach(item => item.print())
     }
+
+    def has(item:Item):Boolean = {
+      items.exists(i => i.isSameAs(item))
+    }
 }

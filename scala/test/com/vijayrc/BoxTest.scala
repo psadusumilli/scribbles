@@ -1,13 +1,9 @@
 package com.vijayrc
 
-object Runner {
+import org.scalatest.FunSuite
 
-  def main(args:Array[String]){
-    println("Hello boys")
-    val basics = new Basics
-    basics.conditional(4)
-    basics.asserter()
-
+class BoxTest extends FunSuite{
+  test("should add items and display"){
     val pencil =  new Item("pencil",2)
     val eraser =  new Item("eraser",1)
 
@@ -15,8 +11,8 @@ object Runner {
     box.add(pencil)
     box.add(eraser)
     box.print()
-  }
 
+  }
 
 
 

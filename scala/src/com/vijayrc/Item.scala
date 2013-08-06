@@ -1,16 +1,15 @@
 package com.vijayrc
 
 
-class Item {
-  private var name = ""
-  private var quantity = 0
-
-  def make(n:String,q:Int) = {
-    name = n
-    quantity = q
-  }
+class Item(n:String,q:Int) {
+  private val name = n
+  private val quantity = q
 
   def print():Unit = {
     println("item:"+name+"|"+quantity+" nos")
+  }
+
+  def isSameAs(i:Item):Boolean = {
+    return name.equalsIgnoreCase(i.name)
   }
 }
