@@ -3,8 +3,11 @@ package com.vijayrc
 import scala.io.Source
 
 class IO {
-  def print(file:String):Unit = {
-    Source.fromFile(file).getLines().foreach(println)
+  def capitalize(file:String):String = {
+    val lines: Iterator[String] = Source.fromFile(file).getLines()
+    var output = ""
+    lines.foreach(line => output += line.toUpperCase+"\n")
+    output
   }
 
 }

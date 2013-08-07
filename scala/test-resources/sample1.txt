@@ -1,0 +1,5 @@
+22 JUL 2013| Atlanta
+D3 helps you bring data to life using HTML, SVG and CSS.
+Sharing d3 code for a simple blog-post-tag relationship diagram to exhibit svg generation and transitions.
+Posts are shown as circles with radius based on number of tags; tags as displayed as rectangles with height based on number of posts;
+lines represent the many-to-many links between them. more
