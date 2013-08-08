@@ -10,6 +10,9 @@ class Basics {
       }
     }else{
       println("enter a +ve no")
+      println(
+        """|I am a "RAW" string
+          |so me 'BAD'""".stripMargin)//triple double-quote pairs can have pack any raw string
     }
   }
 
@@ -96,6 +99,13 @@ class Basics {
     def addplus(x:String) = x+"--"
     val chars = List("A","B","C")
     chars.map(a=> addplus(a)).foreach(print)
+  }
+
+  def methodAsOperator(){
+    println()
+    println("I'm a string".indexOf("m"))
+    println("I'm a string" indexOf "s") //indexOf is now like a operator
+    println("he he" toUpperCase) // no empty () needed, this is indicate methods with no arguments and with side-effects
   }
 
 

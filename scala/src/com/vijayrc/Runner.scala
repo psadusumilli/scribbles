@@ -8,6 +8,7 @@ object Runner {
     val basics = new Basics
     basics.conditional(4)
     basics.asserter()
+    basics.methodAsOperator()
 
   }
 
