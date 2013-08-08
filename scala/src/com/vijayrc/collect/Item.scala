@@ -1,5 +1,4 @@
-package com.vijayrc
-
+package com.vijayrc.collect
 
 class Item(n:String,q:Int) {
   private val name = n

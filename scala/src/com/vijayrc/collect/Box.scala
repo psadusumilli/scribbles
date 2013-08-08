@@ -1,4 +1,4 @@
-package com.vijayrc
+package com.vijayrc.collect
 
 class Box {
   private var items:Set[Item] = Set()

@@ -1,4 +1,4 @@
-package com.vijayrc
+package com.vijayrc.collect
 
 import org.scalatest.FunSuite
 
