@@ -14,6 +14,10 @@ class Basics {
         """|I am a "RAW" string
           |so me 'BAD'""".stripMargin)//triple double-quote pairs can have pack any raw string
     }
+
+    //functional conditionals
+    val x2 = if(x>=0)x else -1*x
+    print("\nx2 is "+x2)
   }
 
   def looping(args:Array[String]):Unit = {
@@ -23,8 +27,13 @@ class Basics {
     println("")
     args.foreach(print)
     println("")
+
     for(arg <- args) //note that arg is a val
       print(arg+",")
+    for(i <- 1 to 4) print(i)
+    println("")
+    for(i <- 1 until 4) print(i)
+
   }
 
   def array():Unit = {
