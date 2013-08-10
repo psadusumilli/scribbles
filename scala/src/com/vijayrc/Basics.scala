@@ -117,6 +117,29 @@ class Basics {
     println("he he" toUpperCase) // no empty () needed, this is indicate methods with no arguments and with side-effects
   }
 
+  def except(){
+    var r = 0
+    try{
+        val a = Array(1,2)
+        r =  a(1)
+        r =  a(2)
+    }catch {
+      case ex:IndexOutOfBoundsException => print("check the index")
+      case ex:Exception => print("generic error")
+    }finally {
+       r = 99
+    }
+    print("r is "+r)
+  }
+
+  def matcher(gadget:String):String = {
+      gadget match{
+        case "laptop" => "mouse"
+        case "phone" => "handsfree"
+        case "tv" => "hdmi"
+        case _ => "wtf?"
+      }
+  }
 
 
 }
