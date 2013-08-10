@@ -31,6 +31,12 @@ class Functioner {
     sum
   }
 
+  def join(limiter:String,args:String*) = {
+    var result=""
+    args.foreach(arg => result+=arg+limiter)
+    result
+  }
+
 
 
 }

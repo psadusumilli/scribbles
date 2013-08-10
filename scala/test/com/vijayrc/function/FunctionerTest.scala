@@ -17,6 +17,10 @@ class FunctionerTest extends FunSuite{
     assert(28==functioner.closure(list))
   }
 
+  test("should join strings"){
+    assert("stan|cartman|kyle|kenny" == functioner.join("|","stan","cartman","kyle","kenny"))
+  }
+
 
 
 
