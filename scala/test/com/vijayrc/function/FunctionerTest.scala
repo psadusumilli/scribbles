@@ -6,13 +6,15 @@ class FunctionerTest extends FunSuite{
   val functioner = new Functioner
 
   test("curse someone"){
-    val curse: String = functioner.say("stupid")
+    val curse: String = functioner.local("stupid")
     assert(curse == "Hey stupid fucker")
   }
 
   test("call function literal"){
-    val filtered: List[Int] = functioner.filter(List(1, 2, 3, 4, 5, 6, 7))
+    val list: List[Int] = List(1, 2, 3, 4, 5, 6, 7)
+    val filtered: List[Int] = functioner.objects(list)
     filtered.foreach(x => print(x+","))
+    assert(28==functioner.closure(list))
   }
 
 
