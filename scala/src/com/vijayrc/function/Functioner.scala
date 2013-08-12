@@ -11,11 +11,13 @@ class Functioner {
   def objects(numbers:List[Int]):List[Int] = {
     val sum = (x:Int,y:Int,z:Int) => x+y+z
     println("sum applied: "+sum.apply(1,2,3))
-    val partialSum = sum(1,_:Int,4)
+    val partialSum = sum(1,_:Int,4) // _ is placeholder
     println("partial: " +partialSum(2))
 
     val myfilter = (x:Int) => {x > 0 && x % 3 == 0}
+
     println("applying function object :"+myfilter.apply(4))
+    println("does numbers contains -ve number?" +numbers.exists( _ < 0))
     numbers.filter(myfilter)
   }
 
