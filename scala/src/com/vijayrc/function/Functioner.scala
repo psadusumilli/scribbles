@@ -31,10 +31,14 @@ class Functioner {
     sum
   }
 
-  def join(limiter:String,args:String*) = {
+  def repeatedArg(limiter:String,args:String*) = {
     var result=""
     args.foreach(arg => result+=arg+limiter)
     result
+  }
+
+  def recursion(number:Int):Int = {
+    if(number == 0) 1 else number * recursion(number - 1)
   }
 
 

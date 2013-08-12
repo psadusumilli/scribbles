@@ -18,7 +18,10 @@ class FunctionerTest extends FunSuite{
   }
 
   test("should join strings"){
-    assert("stan|cartman|kyle|kenny" == functioner.join("|","stan","cartman","kyle","kenny"))
+    assert("stan|cartman|kyle|kenny|" == functioner.repeatedArg("|","stan","cartman","kyle","kenny"))
+    assert(1 == functioner.recursion(0))
+    assert(1 == functioner.recursion(1))
+    assert(6 == functioner.recursion(3))
   }
 
 
