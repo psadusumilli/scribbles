@@ -20,7 +20,6 @@ class MyFind {
   //'matchfunction' implementation goes here
   def filesEndingWith(filePath:String, query:String):Array[File] = {
     find(filePath,query,_.endsWith(_))
-    +
   }
 
   //'matchfunction' implementation goes here with 2 bound variables

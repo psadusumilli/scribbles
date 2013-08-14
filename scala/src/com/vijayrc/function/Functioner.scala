@@ -43,6 +43,22 @@ class Functioner {
     if(number == 0) 1 else number * recursion(number - 1)
   }
 
+  def currying(){
+    def incrBy(increment:Int)(number:Int) = number+increment
+    val incrByTwo = incrBy(2)_
+    val incrByOne = incrBy(1)_
+    println(incrBy(1)(2),incrByTwo(3),incrByOne(1))
 
+    //{} can be used instead of () for method args if there is only one arg or the last arg in a curry
+    println {"hey there curly"}
+
+    def myTest(desc:String)(testFun: => Unit){
+      println("executing test:"+desc)
+      testFun
+    }
+    myTest("dummy one on one"){
+      assert(1==1)
+    }
+  }
 
 }

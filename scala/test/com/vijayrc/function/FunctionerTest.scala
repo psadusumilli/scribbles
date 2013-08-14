@@ -22,6 +22,7 @@ class FunctionerTest extends FunSuite{
     assert(1 == functioner.recursion(0))
     assert(1 == functioner.recursion(1))
     assert(6 == functioner.recursion(3))
+    functioner.currying()
   }
 
 
