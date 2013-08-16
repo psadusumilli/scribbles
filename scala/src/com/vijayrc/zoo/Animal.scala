@@ -7,5 +7,5 @@ abstract class Animal {
   def sound:String
   def isScary:Boolean = sound.contains("growl")
   def hasTail:Boolean = tail
-  def canEat(prey:Animal):Boolean = this == prey.predator
+  final def canEat(prey:Animal):Boolean = this == prey.predator
 }
