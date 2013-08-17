@@ -1,6 +1,16 @@
 package com.vijayrc
 
 class Basics {
+
+  //Any (~Object in Java) is subdivided into AnyVal and AnyRef
+  //AnyVal has Int,Double,Float,Boolean,Char,Byte
+  //AnyRef has String
+  def valueTypes(){
+      println(42.equals(23))
+      assert (43 == (42 max 43))
+
+  }
+
   def conditional(x:Int):Unit = {
     if (x  > 0){
       var i = 0
