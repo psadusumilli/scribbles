@@ -3,6 +3,7 @@ package com.vijayrc.traitor
 import org.scalatest.FunSuite
 
 class CarTest extends FunSuite{
+
   test("traitor cars"){
     val guzzler:GasGuzzler = new FordFit
     println(guzzler.consumeGas)

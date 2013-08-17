@@ -16,5 +16,11 @@ class RationalTest extends FunSuite{
     }
   }
 
+  test("should compare"){
+    val r1 = new Rational(1,2)
+    val r2 = new Rational(3,5)
+    assert(r2 > r1)
+  }
+
 
 }

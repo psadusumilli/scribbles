@@ -1,6 +1,6 @@
 package com.vijayrc.reason
 
-class Rational(n:Int, d:Int){
+class Rational(n:Int, d:Int) extends Ordered[Rational]{
   require(d != 0)
   private val numero = n
   private val denom = d
@@ -13,5 +13,5 @@ class Rational(n:Int, d:Int){
 
   def this(n:Int) = this(n,1)
   def +(that:Rational) = new Rational(this.numero*that.denom + this.denom*that.numero,this.denom*that.denom)
-
+  def compare(that: Rational): Int = this.numero*that.denom - this.denom*that.numero
 }
