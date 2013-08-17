@@ -14,9 +14,9 @@ class IntQueueTest extends FunSuite{
     intQueueWithDoubler.put(4)
     assert(8==intQueueWithDoubler.get())
 
-    val myDoublerQueue = new MyDoublerQueue
+    val myDoublerQueue = new MyDoublerQueue with Decrementer //rightmost trait executed first
     myDoublerQueue.put(10)
-    assert(20 == myDoublerQueue.get())
+    assert(18 == myDoublerQueue.get())
   }
 
 }
