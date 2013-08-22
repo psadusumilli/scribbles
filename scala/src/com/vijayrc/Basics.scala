@@ -64,6 +64,7 @@ class Basics {
     val list4 = "Z" :: list1
     list3.foreach(print)
     list4.foreach(print)
+    
 
     val list5 = 1::2::3::Nil
     println(list5(2))
