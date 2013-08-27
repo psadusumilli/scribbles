@@ -83,6 +83,29 @@ class ExprTest extends FunSuite{
     assert (matched == "1")
   }
 
+  test("Option to check for null"){
+    val map = Map(1 -> "one",2 -> "two")
+    def hasKey(value:Option[String]):String = {
+      value match{
+        case Some(x)=> x+" is present" //some string value is present and not null
+        case None => "?" //null value
+      }
+    }
+    hasKey(map get 1)
+  }
+
+  test("using match as a val"){
+    //general function notation
+    val family = (x:String) =>  x match  { case "rekha" => "wife" case "shravan" => "son" case _ => ""}
+
+    //partial function
+    val family2:String  => Int =  { case "rekha" => 1 case "shravan" => 2 case _ => -1}
+
+    assert("wife" == family("rekha"))
+    assert(1 == family2("rekha"))
+  }
+
+
 
 
 
