@@ -57,8 +57,8 @@ class ExprTest extends FunSuite{
     //tuple
     val myTuple = (1,"1",Number(1))
     val tupleMatch: String = myTuple match {
-      case (_, "1", expr: Expr) => "1" //not the type match here
-      case (2, "1", Number(1)) => "2"
+      case (_, "1", expr: Expr) => "1" //note the type match here
+      case (_, "3", Number(1)) => "2"
       case _ => "0"
     }
     assert(tupleMatch == "1")
@@ -76,8 +76,8 @@ class ExprTest extends FunSuite{
   test("pattern guard"){
     val arr = Array(1,2,4)
     val matched: String = arr match {
-      case Array(x,_*) if (x == 1) => "1"
-      case Array(x,_*) if (x == 2) => "2"
+      case Array(x,_*) if x == 1 => "1"
+      case Array(x,_*) if x == 2 => "2"
       case _ => "-1"
     }
     assert (matched == "1")
@@ -104,6 +104,7 @@ class ExprTest extends FunSuite{
     assert("wife" == family("rekha"))
     assert(1 == family2("rekha"))
   }
+
 
 
 

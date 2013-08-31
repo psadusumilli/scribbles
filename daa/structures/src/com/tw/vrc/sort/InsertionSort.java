@@ -3,6 +3,7 @@ package com.tw.vrc.sort;
 import java.util.List;
 
 /**
+ * gist - swap neighbouring elements starting from left
  * sorted subsets grow from left
  * insert the immediate left element into sorted subset
  * start swapping the adjacent elements of subset from right end.
