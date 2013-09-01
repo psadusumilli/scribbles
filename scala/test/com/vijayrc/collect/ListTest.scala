@@ -22,4 +22,31 @@ class ListTest extends FunSuite{
       println("a"::"b"::"c"::"d"::"e"::Nil zip myList)
   }
 
+  test("higher order functions"){
+    val boys = "cartman"::"kyle"::"stan"::"kenny"::Nil
+
+    val capBoys: List[String] = boys.map(boy => boy.toUpperCase())
+    println(boys.mkString(",")+"|"+capBoys)
+
+    var sum=0
+    boys foreach(sum += _.length)
+    println("sum="+sum)
+
+    println(boys.map(_.length+4))
+    println(boys.flatMap(_.toUpperCase))
+    println((1::2::4::8::Nil).flatMap(_::9::Nil))
+    println(List.range(3,6).flatMap(x=> List.range(1,x)).mkString("|"))
+
+    println("filter:",List.range(1,9).filter(_% 2 == 0))
+    println("partition:",List.range(1,9).partition(_% 2 == 0))
+    println("forall:",List.range(1,9).forall(_ > 0))
+
+    println("takeWhile:",List.range(9,-30,-3) takeWhile(_ > 0)) //unlike filter, stops collecting the moment condition fails
+    println("dropWhile:",List.range(9,-30,-3) dropWhile(_ > 0))
+
+    println("folding left:", ("southpark:" /: boys)(_+"|"+_))
+    println("folding right:", (boys :\ "southpark")(_+"|"+_))
+
+  }
+
 }
