@@ -13,6 +13,10 @@ class BoxTest extends FunSuite{
     print(box.describe())
     assert(box.has(pencil))
     assert(Box.canAdd(eraser))
+
+    val newBox = Box() //apply function called for empty brackets
+    newBox.add(pencil)
+
   }
 
 }

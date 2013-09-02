@@ -13,4 +13,5 @@ class Box {
 //a object is a singleton just to pack static methods
 object Box{
   def canAdd(item:Item):Boolean = item.count() > 0
+  def apply():Box  = new Box
 }

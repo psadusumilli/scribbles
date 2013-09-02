@@ -21,6 +21,6 @@ class CollectTest extends FunSuite{
     println(boys(1))
     println(boys ++ List(3->"C",4->"D"))
 
-    
+
   }
 }
