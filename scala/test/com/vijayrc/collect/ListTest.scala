@@ -1,6 +1,7 @@
 package com.vijayrc.collect
 
 import org.scalatest.FunSuite
+import scala.collection.mutable.ListBuffer
 
 class ListTest extends FunSuite{
 
@@ -47,6 +48,14 @@ class ListTest extends FunSuite{
     println("folding left:", ("southpark:" /: boys)(_+"|"+_))
     println("folding right:", (boys :\ "southpark")(_+"|"+_))
 
+  }
+
+  test("list buffer"){
+    val buffer = new ListBuffer[Int]
+    buffer += 1
+    buffer += 3
+    val buffer2 = 4 +: buffer
+    println(buffer.toList, "|", buffer2.toList)
   }
 
 }
