@@ -17,7 +17,11 @@ class MyListTest extends FunSuite {
 
   test("test append"){
     val myList = new MyList
-    assert(1::2::3::4::5::6::Nil == myList.append(List(1,2,3),4::5::6::Nil))
+    val result = 1 :: 2 :: 3 :: 4 :: 5 :: 6 :: Nil
+    assert(result == myList.append(List(1,2,3),4::5::6::Nil))
+    println(result.head+"|"+result.last)
+    println(result.tail)
+    println(result.init)
   }
 
 }
