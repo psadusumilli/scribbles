@@ -7,7 +7,8 @@ class Hero extends Actor{
       println("hero entry scene..")
       while (true){
         receive{
-          case dialogue => println("hero says: "+dialogue)
+          case x:Int => print("Got "+x+ "$")
+          case dialogue => println("hero says: "+dialogue) //variable pattern matching
         }
 
       }

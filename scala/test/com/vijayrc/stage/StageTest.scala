@@ -10,6 +10,7 @@ class StageTest extends FunSuite{
 
     hero.!("I'll punch you in the face")
     hero ! "let's run around trees"
+    hero !5
   }
 
 }
