@@ -1,6 +1,5 @@
 package com.vijayrc.stage
 
-import scala.actors.Actor
 
 class VillainAkaOneDialogueActor extends BaseActor("VILLAIN=>") {
     def act(){

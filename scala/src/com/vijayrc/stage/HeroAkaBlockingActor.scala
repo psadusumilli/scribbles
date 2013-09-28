@@ -1,6 +1,5 @@
 package com.vijayrc.stage
 
-import scala.actors.Actor
 
 class HeroAkaBlockingActor extends BaseActor("HERO=>"){
   def act() {
