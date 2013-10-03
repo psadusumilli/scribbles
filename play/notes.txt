@@ -3,3 +3,11 @@ cd <app>
 play
 run
 http://localhost:9000
+
+Controller is a object containing Actions
+Action is Action.apply(request:Request) that returns Result written as Action{request=>Result} 
+OK,BadResult,Redirect,Found.NotFound..etc are types of Result
+
+tasks/:id  controller.Application fetch(id:Long)  // here id is path parameter
+tasks/     controller.Application.newTask(name:String) // here name is request param
+
