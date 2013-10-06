@@ -25,6 +25,10 @@ class FunctionerTest extends FunSuite{
     functioner.currying()
   }
 
+  test("show closure scopes"){
+      functioner.closureScopes()
+  }
+
 
 
 

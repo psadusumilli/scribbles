@@ -28,9 +28,26 @@ class Functioner {
     println(appender1("hey you"))
     println(appender2("hi there"))
 
+
     var sum = 0
     numbers.foreach(sum += _ ) //the function inside foreach is a closure, as it needs 'sum' var
     sum
+
+  }
+
+  def closureScopes(){
+    //filter elements < (first element - offset)
+    //function isBelow has 2 free variables, first, offset
+    //'first' is it's first surrounding function 'belowFirst'
+    //'offset' is the second surronding function 'closureScopes'
+    val offset = 3
+    val belowFirst  =  ( inputList : List[Int] )  =>  {
+      val first = inputList( 0 )
+      val isBelow  =  ( y : Int )  =>   y < (first + offset)
+      for(  x <- inputList;  if  isBelow( x ))  yield x
+    }
+    print(belowFirst(List(4,21,1,4,2,3)))
+
   }
 
   def repeatedArg(limiter:String,args:String*) = {
