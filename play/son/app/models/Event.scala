@@ -4,7 +4,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 class Event (val name:String, val title:String,val location:String, val time:Date){
-
+    private var html = ""
+    def addContent(h:String) {html = h}
+    def content:String= {html}
 }
 
 object Event{

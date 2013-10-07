@@ -4,13 +4,13 @@
 
 @main("Shravan Logs..") {
     <h1>Events of a boy</h1>
-    <ul>
+    <table class="table table-striped events-table">
     @events.map{event =>
-        <li>
-            <div class="event-time">@event.time</div>
-            <div class="event-title">@event.title</div>
-            <div class="event-location">@event.location</div>
-        </li>
+        <tr>
+            <td class="event-time">@event.time</td>
+            <td class="event-title">@event.title</td>
+            <td class="event-location">@event.location</td>
+        </tr>
     }
-    </ul>
+    </table>
 }
