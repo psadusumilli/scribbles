@@ -1,7 +1,15 @@
-@(message: String)
+@(events: List[Event])
 
-@main("Welcome to Play 2.1") {
-    
-    @play20.welcome(message)
-    
+@import helper._
+
+@main("Shravan Logs..") {
+    <h1>Events of a boy</h1>
+    <ul>
+    @events.map{event =>
+        <li>
+            <div class="event-time">@event.time</div>
+            <div class="event-title">@event.title</div>
+        </li>
+    }
+    </ul>
 }
