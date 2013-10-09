@@ -87,12 +87,6 @@ Rules to write a custom class loader
 		If successful, it returns the class. Else, it throws a "no class definition found" error.
 3.2| 'CLASS FILE VERIFIER'
 
-
-
-
-
-
 #--------------------------------------------------------------------------------------------------------------------------------------------	
-
 
 
