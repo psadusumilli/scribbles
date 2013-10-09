@@ -1,0 +1,13 @@
+@(userForm:Form[User])
+
+@import helper._
+
+@main("Login"){
+    <div class="login-box">
+        @form(routes.UserController.login) {
+            @inputText(userForm("name"))
+            @inputText(userForm("password"))
+            <input type="submit" value="Login">
+        }
+    </div>
+}

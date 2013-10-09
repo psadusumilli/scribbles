@@ -5,10 +5,6 @@ import models.Event
 
 object EventController extends Controller {
   
-  def index = Action {
-    Redirect(routes.EventController.all)
-  }
-
   def all = Action{
     Ok(views.html.events(Event.all))
   }

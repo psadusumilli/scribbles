@@ -3,7 +3,8 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.EventController.index
+GET     /                           controllers.UserController.showLogin
+GET     /login                      controllers.UserController.login
 GET     /all                        controllers.EventController.all
 GET     /event/:name                controllers.EventController.get(name)
 
