@@ -4,6 +4,12 @@
 .sidebar-img{
     max-width:95%;
 }
-.events-table{
-    width: auto !important;
+.event-date{
+    width:20%;
+}
+.event-title{
+    width:45%;
+}
+.event-location{
+    width:35%;
 }
