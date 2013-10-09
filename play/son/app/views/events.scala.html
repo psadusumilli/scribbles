@@ -1,0 +1,22 @@
+@(events: List[Event])
+@import helper._
+
+@main("Shravan Logs..") {
+<div class="container-fluid">
+    <div class="row-fluid main-box">
+        <div class="span4 offset1"><img class="sidebar-img" src="@routes.Assets.at("images/sidebar.png")"/></div>
+        <div class="span6">
+            <h1>Events of a boy</h1>
+            <table class="table table-striped events-table">
+                @events.map{event =>
+                <tr class="@{event.name}">
+                    <td class="event-date">@event.date</td>
+                    <td class="event-title">@event.title</td>
+                    <td class="event-location">@event.location</td>
+                </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+}

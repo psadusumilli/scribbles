@@ -10,7 +10,7 @@ object EventController extends Controller {
   }
 
   def all = Action{
-    Ok(views.html.index(Event.all))
+    Ok(views.html.events(Event.all))
   }
 
   def get(name:String) = Action{
