@@ -15,9 +15,14 @@ object UserController extends Controller{
   }
 
   def login = Action{ implicit request =>
-    val user = userForm.bindFromRequest.get
-    print(user)
-    Redirect(routes.EventController.all)
+    userForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.login(errors)),
+      user =>{
+        print(user)
+        Redirect(routes.EventController.all)
+      }
+    )
   }
+
 
 }
