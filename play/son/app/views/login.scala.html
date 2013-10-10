@@ -5,8 +5,8 @@
 @main("Login"){
     <div class="login-box">
         @form(routes.UserController.login) {
-            @inputText(userForm("name"))
-            @inputText(userForm("password"))
+            @inputText(userForm("name"),'id -> "login-name",'_showConstraints -> false)
+            @inputText(userForm("password"), 'id -> "login-password",'type -> "password",'_showConstraints -> false)
             <input type="submit" value="Login">
         }
     </div>
