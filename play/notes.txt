@@ -1,13 +1,71 @@
-play new <app>
-cd <app>
-play
-run
-http://localhost:9000
+1| COMMANDS
+***********
+	play new <app>
+	cd <app>
+	play
+	run
+	http://localhost:9000
+#----------------------------------------------------------------------------------------------------------------------------
+2| CONTROLLERS, ACTIONS & ROUTES
+********************************
+	2.1|Controller is a object containing Actions
+	2.2|Action is Action.apply(request:Request) that returns Result written as 'Action{request=>Result}'
+		
+		Action { implicit request =>
+  			Ok("Got request [" + request + "]")
+		}
 
-Controller is a object containing Actions
-Action is Action.apply(request:Request) that returns Result written as Action{request=>Result} 
-OK,BadResult,Redirect,Found.NotFound..etc are types of Result
+	2.3|OK,BadResult,Redirect,Found.NotFound..etc are types of Result
+	2.4|Every method declared in a Controller must have a corresponding entry in 'conf/routes'
 
-tasks/:id  controller.Application fetch(id:Long)  // here id is path parameter
-tasks/     controller.Application.newTask(name:String) // here name is request param
+		GET 	tasks/:id  				controller.Application fetch(id:Long)  // here id is path parameter
+		GET 	tasks/new/  			controller.Application.newTask(name:String) // here name is query string
+		GET   	/items/$id<[0-9]+>    	controllers.Items.show(id: Long) // regex 
+		GET   	/                     	controllers.Application.show(page = "home") //fixed default value
+		GET   	/:page                	controllers.Application.show(page) 
+	2.5| Many routes can match the same request. If there is a conflict, the first route (in declaration order) is used.	
+	2.6| Adding header/cookies:
+			val result = Ok("Hello World!").withHeaders( CACHE_CONTROL -> "max-age=3600",  ETAG -> "xx")
+			val result = Ok("Hello world").withCookies(Cookie("theme", "blue"))		
+			val result2 = result.discardingCookies(DiscardingCookie("theme"))
+#----------------------------------------------------------------------------------------------------------------------------		
+3| SESSION SCOPE
+****************
+	3.1| retrieve the incoming Session from the HTTP request:
+		def index = Action { request =>
+		  request.session.get("connected").map { user =>
+		    Ok("Hello " + user)
+		  }.getOrElse {
+		    Unauthorized("Oops, you are not connected")
+		  }
+		}
+	3.2| implicit request session fetch:
+		def index = Action { implicit request =>
+		  session.get("connected").map { user =>
+		    Ok("Hello " + user)
+		  }.getOrElse {
+		    Unauthorized("Oops, you are not connected")
+		  }
+		}
 
+	3.3| add to session:
+		Ok("Welcome!").withSession("connected" -> "user@gmail.com")	
+	3.4| update session
+		Ok("Hello World!").withSession(session + ("saidHello" -> "yes"))	
+	3.5| new session
+		Ok("Bye").withNewSession	
+#----------------------------------------------------------------------------------------------------------------------------		
+4| FLASH SCOPE
+**************
+The Flash scope works exactly like the Session, but with two differences:
+	data are kept for only one request
+	the Flash cookie is not signed, making it possible for the user to modify it.
+
+	def save = Action { Redirect("/home").flashing("success" -> "The item has been created")}
+	def index = Action { implicit request => Ok {flash.get("success").getOrElse("Welcome!")}}
+
+#----------------------------------------------------------------------------------------------------------------------------		
+5| BODY PARSERS
+*************** 
+An HTTP PUT or POST request contains a body. This body can use any format, specified in the Content-Type request header.
+In Play, a body parser transforms this request body into a Scala value.
