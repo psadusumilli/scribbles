@@ -59,7 +59,3 @@ input{
     padding:2%;
     color: white !important;
 }
-.all-events{
-    height:600px;
-    overflow-y:scroll;
-}
