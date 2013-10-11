@@ -1,5 +1,5 @@
 body{
-    background: white !important;
+    background-image:url('body.jpg') !important;
 }
 h1,h2{
     font-family: 'Pathway Gothic One', sans-serif !important;
@@ -12,6 +12,14 @@ h1,h2{
 }
 .event-date{
     width:20%;
+}
+.events-table{
+    color: white;
+    font-size: 130%;
+}
+.events-title{
+    color:white;
+    font-size:420%;
 }
 .event-title{
     width:45%;
