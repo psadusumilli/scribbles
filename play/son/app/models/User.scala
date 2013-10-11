@@ -12,3 +12,10 @@ case class User(val name:String, val password:String) {
 
   override def toString: String = name+"|"+password
 }
+object User{
+  def isValid(user:User):Boolean = {
+    //TODO write code to fetch from DB
+    val dbUser = new User("father","password")
+    return user.equals(dbUser)
+  }
+}

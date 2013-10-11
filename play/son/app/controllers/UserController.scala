@@ -19,7 +19,8 @@ object UserController extends Controller{
       errors => BadRequest(views.html.login(errors)),
       user =>{
         print(user)
-        Redirect(routes.EventController.all)
+        if (User.isValid(user)) Redirect(routes.EventController.all).withSession("user"->user.name)
+        else BadRequest(views.html.login(userForm))
       }
     )
   }
