@@ -1,17 +1,19 @@
 package actions
 
 import play.api.mvc._
-import scala.concurrent.Future
 
-class AuthenticatedRequest[A](val username:String, request:Request[A]) extends WrappedRequest[A](request)
-
-object Authenticated extends ActionBuilder{
-
-  def invokeBlock[A](request:Request[A], block:(AuthenticatedRequest[A]) => Future[SimpleResult[A]]) = {
+case class Authenticated[A](action:Action[A]) extends Action[A]{
+  def apply(request: Request[A]): Result = {
+    print{"auth called"}
     request.session.get("user").map{
-      user => block(new AuthenticatedRequest[A](user, request))
+      user => {
+        print("authenticated: ",user)
+        action(request)
+      }
     } getOrElse{
-      Future.successful(Results.Forbidden)
+        Results.Forbidden
     }
   }
+
+  def parser: BodyParser[A] = {return action.parser}
 }

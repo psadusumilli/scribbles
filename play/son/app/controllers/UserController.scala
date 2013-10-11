@@ -17,9 +17,11 @@ object UserController extends Controller{
   def login = Action{ implicit request =>
     userForm.bindFromRequest.fold(
       errors => BadRequest(views.html.login(errors)),
-      user =>{
-        println("logged in: ", user)
-        if (User.isValid(user)) Redirect(routes.EventController.all).withSession("user"->user.name)
+      user => {
+        if (User.isValid(user)) {
+          println("logged in: ", user)
+          Redirect(routes.EventController.all).withSession("user"->user.name)
+        }
         else Unauthorized(views.html.login(userForm))
       }
     )
