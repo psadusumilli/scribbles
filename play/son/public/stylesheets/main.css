@@ -52,3 +52,6 @@ h1,h2{
 .blue-location{
     background:#1874CD;
 }
+input{
+    height: 30px !important;
+}
