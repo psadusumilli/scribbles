@@ -4,7 +4,7 @@
 @main("Shravan Logs..") {
 <div class="container-fluid">
     <div class="row-fluid main-box">
-        <div class="span6">
+        <div class="span6 all-events">
             <h1 class="events-title">EVENTS OF A BOY</h1>
             <table class="table events-table">
                 @events.map{event =>
@@ -15,6 +15,9 @@
                 </tr>
                 }
             </table>
+        </div>
+        <div class="span2">
+           <a class="logout" href="">Logout</a>
         </div>
         <div id="event"></div>
     </div>

@@ -44,14 +44,23 @@ h1,h2{
     padding:5%;
 }
 .green-date{
-    background:#218868;
+    background:#8968CD;
 }
 .red-date{
-    background:#CD5C5C;
+    background:#8DB6CD;
 }
 .blue-location{
     background:#1874CD;
 }
 input{
     height: 30px !important;
+}
+.logout{
+    font-size: 150%;
+    padding:2%;
+    color: white !important;
+}
+.all-events{
+    height:600px;
+    overflow-y:scroll;
 }

@@ -4,10 +4,9 @@ import play.api.mvc._
 
 case class Authenticated[A](action:Action[A]) extends Action[A]{
   def apply(request: Request[A]): Result = {
-    print{"auth called"}
     request.session.get("user").map{
       user => {
-        print("authenticated: ",user)
+        println("authenticated: ",user)
         action(request)
       }
     } getOrElse{
