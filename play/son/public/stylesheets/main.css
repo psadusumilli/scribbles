@@ -1,3 +1,9 @@
+body{
+    background: white !important;
+}
+h1,h2{
+    font-family: 'Pathway Gothic One', sans-serif !important;
+}
 .main-box{
     padding:50px 50px 50px 50px;
 }
@@ -15,4 +21,17 @@
 }
 .login-box{
     padding:10% 20%;
+}
+.ui-widget-header{
+    display: none !important;
+}
+#event{
+    background: white !important;
+}
+.single-event-date{
+}
+.single-event-location{
+}
+.event-dialog{
+    padding:5%;
 }

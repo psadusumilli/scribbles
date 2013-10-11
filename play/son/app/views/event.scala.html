@@ -2,10 +2,11 @@
 
 @import helper._
 
-<div class="row">
-    <div class="span4">@event.content</div>
-    <div clas="span1">
-        <div class="event-date">@event.date</div>
-        <div class="event-location">@event.location</div>
+<div class="row event-dialog">
+    <h1>@event.title</h1>
+    <div>
+        <span class="single-event-date">@event.date | </span>
+        <span class="single-event-location">@event.location</span>
     </div>
+    <div>@event.content</div>
 </div>

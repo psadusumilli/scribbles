@@ -11,7 +11,7 @@ EventsPage = function(){
     };
 
     var showEvent = function(response){
-       eventBox.dialog();
+       eventBox.dialog({"height":600, "width":900, modal:true});
        eventBox.html(response)
     };
 
