@@ -10,6 +10,11 @@ EventsPage = function(){
        });
     };
 
+    var stylizeEventTable = function(){
+        var colors = [#1874CD,#CD5C5C,#218868]
+        
+    };
+
     var showEvent = function(response){
        eventBox.dialog({"height":600, "width":900, modal:true});
        eventBox.html(response)
