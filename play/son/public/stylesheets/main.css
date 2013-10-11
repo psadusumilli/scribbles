@@ -43,3 +43,12 @@ h1,h2{
 .event-dialog{
     padding:5%;
 }
+.green-date{
+    background:#218868;
+}
+.red-date{
+    background:#CD5C5C;
+}
+.blue-location{
+    background:#1874CD;
+}

@@ -11,17 +11,27 @@ EventsPage = function(){
     };
 
     var stylizeEventTable = function(){
-        var colors = [#1874CD,#CD5C5C,#218868]
-        
+        $(".events-table tr").each(function(){
+            var randomNum = Math.ceil(Math.random()*9);
+            if(randomNum % 2 == 0)
+                $(this).children(".event-date").addClass("red-date");
+            if(randomNum % 3 == 0)
+                $(this).children(".event-location").addClass("blue-location");
+            if(randomNum % 5 == 0)
+                $(this).children(".event-date").addClass("green-date");
+
+        });
     };
 
     var showEvent = function(response){
        eventBox.dialog({"height":600, "width":900, modal:true});
-       eventBox.html(response)
+       eventBox.html(response);
     };
 
     this.boot = function(){
+       stylizeEventTable();
        setupEventSelect();
+
     };
 };
 
