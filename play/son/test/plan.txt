@@ -1,0 +1,7 @@
+1) jdbc integration -> SBT
+2) SBT
+3) Single Event display -> Gallery on dialog, layout
+4) New event creation form
+5) sbt building a war
+6) running tests
+

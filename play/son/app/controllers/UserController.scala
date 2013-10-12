@@ -4,6 +4,7 @@ import play.api.mvc._
 import play.api.data.Forms._
 import play.api.data._
 import models.User
+import play.api.Logger
 
 object UserController extends Controller{
   val userForm = Form(
@@ -19,7 +20,7 @@ object UserController extends Controller{
       errors => BadRequest(views.html.login(errors)),
       user => {
         if (User.isValid(user)) {
-          println("logged in: ", user)
+          Logger.info("logged in: "+ user)
           Redirect(routes.EventController.all).withSession("user"->user.name)
         }
         else Unauthorized(views.html.login(userForm))

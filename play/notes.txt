@@ -178,7 +178,12 @@ def
 //----------------------------------------------------------------------------------------------------------------------------		
 6| ASYNCHRONOUS HTTP 
 *********************
+The web client will be blocked while waiting for the response, 
+but nothing will be blocked on the server, and server resources can be used to serve other clients.
 
+	val futurePIValue: Future[Double] = computePIAsynchronously()
+	val futureResult: Future[SimpleResult] = futurePIValue.map {pi => Ok("PI value computed: " + pi)}
+	
 
 
 
