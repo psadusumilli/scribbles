@@ -5,7 +5,7 @@
 	play
 	run
 	http://localhost:9000
-#----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------
 2| CONTROLLERS, ACTIONS & ROUTES
 ********************************
 	2.1|Controller is a object containing Actions
@@ -28,7 +28,7 @@
 			val result = Ok("Hello World!").withHeaders( CACHE_CONTROL -> "max-age=3600",  ETAG -> "xx")
 			val result = Ok("Hello world").withCookies(Cookie("theme", "blue"))		
 			val result2 = result.discardingCookies(DiscardingCookie("theme"))
-#----------------------------------------------------------------------------------------------------------------------------		
+//----------------------------------------------------------------------------------------------------------------------------		
 3| SESSION SCOPE
 ****************
 	3.1| retrieve the incoming Session from the HTTP request:
@@ -54,18 +54,135 @@
 		Ok("Hello World!").withSession(session + ("saidHello" -> "yes"))	
 	3.5| new session
 		Ok("Bye").withNewSession	
-#----------------------------------------------------------------------------------------------------------------------------		
+//----------------------------------------------------------------------------------------------------------------------------		
 4| FLASH SCOPE
 **************
 The Flash scope works exactly like the Session, but with two differences:
-	data are kept for only one request
-	the Flash cookie is not signed, making it possible for the user to modify it.
+	a) data are kept for only one request
+	b) the Flash cookie is not signed, making it possible for the user to modify it.
 
 	def save = Action { Redirect("/home").flashing("success" -> "The item has been created")}
 	def index = Action { implicit request => Ok {flash.get("success").getOrElse("Welcome!")}}
 
-#----------------------------------------------------------------------------------------------------------------------------		
+//----------------------------------------------------------------------------------------------------------------------------		
 5| BODY PARSERS
 *************** 
-An HTTP PUT or POST request contains a body. This body can use any format, specified in the Content-Type request header.
-In Play, a body parser transforms this request body into a Scala value.
+5.1| An HTTP PUT or POST request contains a body. This body can use any format, specified in the Content-Type request header.
+	In Play, a body parser transforms this request body into a Scala value. 
+	To summarize, an 'Action[A]' uses a 'BodyParser[A]' to retrieve a value of type A from the HTTP request, 
+	and to build a 'Request[A]' object that is passed to the action code.
+		
+		trait Action[A] extends (Request[A] => Result) { 
+			def parser: BodyParser[A]
+		}
+		trait Request[+A] extends RequestHeader {
+	  		def body: A
+		}
+
+5.2| This body parser checks the Content-Type header and decides what kind of body to process:
+		text/plain: String
+		application/json: JsValue
+		application/xml, text/xml or application/XXX+xml: NodeSeq
+		application/form-url-encoded: Map[String, Seq[String]]
+		multipart/form-data: MultipartFormData[TemporaryFile]
+		any other content type: RawBuffer
+
+5.3| The body parsers available in Play are defined in play.api.mvc.BodyParsers.parse.
+		//text parser
+		def save = Action(parse.text) { request =>
+		  Ok("Got: " + request.body)
+		}
+		//file parser
+		def save = Action(parse.file(to = new File("/tmp/upload"))) { request =>
+  			Ok("Saved the request content to " + request.body)
+		}
+		//custom parser - save the file as username.upload
+		val storeInUserFile = parse.using { request =>
+		  request.session.get("username").map { user =>
+		    file(to = new File("/tmp/" + user + ".upload"))
+		  }.getOrElse {
+		    sys.error("You don't have the right to upload here")
+		  }
+		}
+		def save = Action(storeInUserFile) { request =>
+		  Ok("Saved the request content to " + request.body)
+		}
+		//accept only 10KB of data.
+		def save = Action(parse.maxLength(1024 * 10, storeInUserFile)) { request =>
+		  Ok("Saved the request content to " + request.body)
+		}
+
+//----------------------------------------------------------------------------------------------------------------------------		
+5| ACTION COMPOSITION
+**********************
+5.1| Custom Action using ActionBuilder 
+		
+	object LoggingAction extends ActionBuilder[Request] {
+  		def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[SimpleResult]) = {
+    		Logger.info("Calling action")
+    		block(request)
+  		}
+	}
+	def index = LoggingAction {
+  		Ok("Hello World")
+	}	
+//-------------------------------------------------------------
+5.2| Extending Action
+	
+	case class Logging[A](action: Action[A]) extends Action[A] {
+	  def apply(request: Request[A]): Future[SimpleResult] = {
+	    Logger.info("Calling action")if 
+	    action(request)
+	  }
+	  lazy val parser = action.parser
+	}	
+	def index = Logging {
+		Action{Ok("Hello World")}
+	}
+//-------------------------------------------------------------	
+5.3| Another way
+
+	def logging[A](action: Action[A])= Action.async(action.parser) { request =>
+	  Logger.info("Calling action")
+	  action(request)
+	}
+//-------------------------------------------------------------	
+5.4| Example to allow https only
+def
+	 onlyHttps[A](action: Action[A]) = Action.async(action.parser) { request =>
+	  	request.headers.get("X-Forwarded-Proto").collect {
+		    case "https" => action(request)
+		  } getOrElse {
+		    Future.successful(Forbidden("Only HTTPS requests allowed"))
+		  }
+	}	
+//-------------------------------------------------------------		
+5.5| Example for authentication
+
+	class AuthenticatedRequest[A](val username: String, request: Request[A]) extends WrappedRequest[A](request)
+
+	object Authenticated extends ActionBuilder[AuthenticatedRequest] {
+	  def invokeBlock[A](request: Request[A], block: (AuthenticatedRequest[A]) => Future[SimpleResult]) = {
+	    request.session.get("username").map { username =>
+	      block(new AuthenticatedRequest(username, request))
+	    } getOrElse {
+	      Future.successful(Forbidden)
+	    }
+	  }
+	}
+
+	def currentUser = Authenticated { request =>
+	  Ok("The current user is " + request.username)
+	}
+
+//----------------------------------------------------------------------------------------------------------------------------		
+6| ASYNCHRONOUS HTTP 
+*********************
+
+
+
+
+
+
+
+	
