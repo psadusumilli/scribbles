@@ -27,5 +27,7 @@ object UserController extends Controller{
     )
   }
 
-
+  def logout = Action {
+    Ok(views.html.login(userForm)).withNewSession
+  }
 }

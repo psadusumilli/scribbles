@@ -23,3 +23,4 @@ input{height: 30px !important;}
 .logout{font-size: 150%;padding:2%; color: white !important;}
 label{color:#1874CD;}
 .hover{background:yellowgreen}
+.error{color:indianred !important}

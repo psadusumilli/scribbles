@@ -5,6 +5,7 @@
 # Home page
 GET     /                           controllers.UserController.showLogin
 POST    /login                      controllers.UserController.login
+GET     /logout                     controllers.UserController.logout
 GET     /all                        controllers.EventController.all
 GET     /event/:name                controllers.EventController.get(name)
 
