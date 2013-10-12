@@ -59,3 +59,6 @@ input{
     padding:2%;
     color: white !important;
 }
+label{
+    color:#1874CD;
+}
