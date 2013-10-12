@@ -21,6 +21,11 @@ EventsPage = function(){
                 $(this).children(".event-date").addClass("green-date");
 
         });
+        $(".events-table tr").hover(function() {
+            $(this).addClass('hover');
+        }, function() {
+            $(this).removeClass('hover');
+        });
     };
 
     var showEvent = function(response){
