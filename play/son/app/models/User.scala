@@ -1,5 +1,8 @@
 package models
 
+import play.api.db.DB
+import play.api.Play.current
+
 case class User(val name:String, val password:String) {
 
   override def equals(obj: scala.Any): Boolean = {
@@ -14,8 +17,10 @@ case class User(val name:String, val password:String) {
 }
 object User{
   def isValid(user:User):Boolean = {
-    //TODO write code to fetch from DB
     val dbUser = new User("father","password")
+    DB.withConnection("diary"){ conn =>
+     }
+
     return user.equals(dbUser)
   }
 }
