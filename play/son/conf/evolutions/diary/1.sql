@@ -27,6 +27,7 @@ CREATE TABLE person(
 CREATE TABLE event(
     id VARCHAR(30) NOT NULL DEFAULT nextval('event_seq'),
     title VARCHAR(100) NOT NULL,
+    content VARCHAR(2000),
     datetime DATE NOT NULL,
     location_id INT,
     FOREIGN KEY(location_id) REFERENCES location(id)
