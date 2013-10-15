@@ -9,6 +9,7 @@ GET     /logout                     controllers.UserController.logout
 GET     /event/all                  controllers.EventController.all
 GET     /event/:id                  controllers.EventController.get(id:Long)
 GET     /new/event                  controllers.EventController.showNew
+POST     /image/upload               controllers.ImageController.upload
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

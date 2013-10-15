@@ -6,5 +6,9 @@
         <ul>
             @locations.map{location=> <li>@location.city</li>}
         </ul>
+        @form(action = routes.ImageController.upload, 'enctype -> "multipart/form-data") {
+            <input type="file" name="picture">
+            <p><input type="submit" value="upload"></p>
+        }
     </div>
 }
