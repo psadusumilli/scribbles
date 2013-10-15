@@ -18,14 +18,14 @@ object Event{
     SQL("select * from event").as(mapper *)
   }
 
-  def save(eventForm:EventForm):Long ={
+  def save(eventForm:EventForm):Long =DB.withConnection("diary"){ implicit c =>
      print(eventForm.title+" "+eventForm.person_ids.size)
      val id: Option[Long] = SQL("insert into event(title,content,datetime,location_id) values ({title},{content},{datetime},{location_id})")
       .on('title -> eventForm.title, 'content -> eventForm.content,'datetime -> eventForm.dateTime, 'location_id -> eventForm.location_id).executeInsert()
      id.get
   }
 
-  def byId(id: Long):Event = {
+  def byId(id: Long):Event = DB.withConnection("diary"){ implicit c =>
     SQL("select * from event e where e.id={event_id}").on("event_id"->id).as(mapper *).head
   }
 

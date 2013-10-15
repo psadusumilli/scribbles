@@ -10,7 +10,7 @@ object Location{
   def all(): List[Location] = DB.withConnection("diary") { implicit c =>
     SQL("select * from location").as(mapper *)
   }
-  def byId(id: Long): Location = {
+  def byId(id: Long): Location = DB.withConnection("diary") {implicit c =>
     SQL("select * from location l where l.id={location_id}").on("location_id"->id).as(mapper *).head
   }
   val mapper = {
