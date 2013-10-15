@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc._
-import models.Event
+import models.{Location, Event}
 import actions.Authenticated
 
 object EventController extends Controller {
@@ -12,5 +12,9 @@ object EventController extends Controller {
 
   def get(name:String) = Authenticated{
     Action{Ok(views.html.event(Event.findFor(name)))}
+  }
+
+  def showNew = Authenticated{
+    Action{Ok(views.html.new_event(Location.all()))}
   }
 }

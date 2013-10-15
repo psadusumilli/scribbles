@@ -4,11 +4,11 @@ import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 
-case class Location(val id:Integer, val city:String, val state:String, val country:String)
+case class Location(val id:Long, val city:String, val state:String, val country:String)
 
 object Location{
   val mapper = {
-    get[Integer]("id") ~
+    get[Long]("id") ~
     get[String]("city") ~
     get[String]("state") ~
     get[String]("country") map{
@@ -16,7 +16,7 @@ object Location{
     }
   }
 
-  def all(): List[Location] = DB.withConnection { implicit c =>
+  def all(): List[Location] = DB.withConnection("diary") { implicit c =>
     SQL("select * from location").as(mapper *)
   }
 

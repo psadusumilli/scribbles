@@ -1,0 +1,10 @@
+@(locations: List[Location])
+@import helper._
+
+@main("New Event") {
+    <div class="row">
+        <ul>
+            @locations.map{location=> <li>@location.city</li>}
+        </ul>
+    </div>
+}
