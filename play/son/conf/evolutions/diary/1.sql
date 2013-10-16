@@ -14,8 +14,8 @@ CREATE TABLE location(
 );
 CREATE TABLE image(
     id INTEGER DEFAULT nextval('image_seq'),
-    name VARCHAR(30) UNIQUE NOT NULL,
-    content BLOB NOT NULL
+    name VARCHAR(200) UNIQUE NOT NULL,
+    content BLOB
 );
 CREATE TABLE person(
     id INTEGER DEFAULT nextval('person_seq'),
