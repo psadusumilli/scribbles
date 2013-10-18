@@ -7,10 +7,6 @@ import models.User
 import play.api.Logger
 
 object UserController extends Controller{
-  val userForm = Form(
-                    mapping("name" -> nonEmptyText,"password" -> nonEmptyText(6,12))
-                    (User.apply)(User.unapply))
-
   def showLogin = Action{ implicit request =>
     Ok(views.html.login(userForm))
   }
@@ -31,4 +27,8 @@ object UserController extends Controller{
   def logout = Action {
     Ok(views.html.login(userForm)).withNewSession
   }
+
+  val userForm = Form(
+    mapping("name" -> nonEmptyText,"password" -> nonEmptyText(6,12))
+      (User.apply)(User.unapply))
 }
