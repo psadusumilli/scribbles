@@ -10,8 +10,6 @@ import play.api.data.Forms._
 
 object ImageController extends Controller{
 
-  val imageForm = Form(mapping("name"->nonEmptyText)(ImageForm.apply)(ImageForm.unapply))
-
   def upload = Authenticated{Action(parse.multipartFormData) { implicit request =>
 
     val form: ImageForm = imageForm.bindFromRequest().get
@@ -33,4 +31,6 @@ object ImageController extends Controller{
     }
    }
   }
+
+  val imageForm = Form(mapping("name"->nonEmptyText)(ImageForm.apply)(ImageForm.unapply))
 }

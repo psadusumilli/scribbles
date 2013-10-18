@@ -1,7 +1,8 @@
-1) jdbc integration -> SBT
-2) SBT
-3) Single Event display -> Gallery on dialog, layout
+1) user in sql, credentials verify
+2) new person creation form dialog in all events page
+3) new location add in all events page menu
 4) New event creation form
+5) all new page forms have image as multi-part
 5) sbt building a war
 6) running tests
 

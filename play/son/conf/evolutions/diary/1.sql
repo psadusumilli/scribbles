@@ -1,10 +1,17 @@
 # --- !Ups
+CREATE SEQUENCE admin_seq;
 CREATE SEQUENCE location_seq;
 CREATE SEQUENCE image_seq;
 CREATE SEQUENCE person_seq;
 CREATE SEQUENCE event_seq;
 CREATE SEQUENCE event_image_seq;
 CREATE SEQUENCE event_person_seq;
+
+CREATE TABLE admin(
+    id INTEGER DEFAULT nextval('admin_seq'),
+    name VARCHAR(50) NOT NULL,
+    password VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE location(
     id INTEGER DEFAULT nextval('location_seq'),
@@ -49,6 +56,7 @@ CREATE TABLE event_person(
 
 
 # --- !Downs
+DROP TABLE admin;
 DROP TABLE event;
 DROP TABLE event_image;
 DROP TABLE event_person;

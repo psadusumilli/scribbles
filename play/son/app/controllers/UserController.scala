@@ -7,28 +7,28 @@ import models.User
 import play.api.Logger
 
 object UserController extends Controller{
-  def showLogin = Action{ implicit request =>
-    Ok(views.html.login(userForm))
-  }
+  def showLogin = Action{ implicit request => Ok(views.html.login(userForm))}
 
   def login = Action{ implicit request =>
     userForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.login(errors)),
-      user => {
-        if (User.isValid(user)) {
-          Logger.info("logged in: "+ user)
-          Redirect(routes.EventController.all).withSession("user"->user.name)
+        errors => BadRequest(views.html.login(errors)),
+        user => {
+          if (User.isNotValid(user.name, user.password))
+            Unauthorized(views.html.login(userForm))
+          else{
+            Logger.info("login: "+ user.name)
+            Redirect(routes.EventController.all()).withSession("user"->user.name)
+          }
         }
-        else Unauthorized(views.html.login(userForm))
-      }
     )
   }
 
-  def logout = Action {
-    Ok(views.html.login(userForm)).withNewSession
-  }
+  def logout = Action {Ok(views.html.login(userForm)).withNewSession}
 
   val userForm = Form(
-    mapping("name" -> nonEmptyText,"password" -> nonEmptyText(6,12))
-      (User.apply)(User.unapply))
+    mapping(
+      "name" -> nonEmptyText,
+      "password" -> nonEmptyText(6,12))
+      (UserForm.apply)(UserForm.unapply))
 }
+case class UserForm(name:String, password:String)

@@ -1,17 +1,12 @@
 package controllers
 
 import play.api.mvc._
-import models.{EventForm, Location, Event}
+import models.{Location, Event}
 import actions.Authenticated
 import play.api.data._
 import play.api.data.Forms._
 
 object EventController extends Controller {
-
-  val eventForm = Form(
-    mapping("title"->text(4,99),"content"->text(4,1000),"datetime"->nonEmptyText, "location_id"->longNumber, "person_ids"->list(longNumber))
-    (EventForm.apply)(EventForm.unapply))
-  
   def all = Authenticated{
     Action{Ok(views.html.events(Event.all))}
   }
@@ -23,4 +18,14 @@ object EventController extends Controller {
   def showNew = Authenticated{
     Action{Ok(views.html.new_event(Location.all(),ImageController.imageForm))}
   }
+
+  val eventForm = Form(
+    mapping(
+      "title"->text(4,99),
+      "content"->text(4,1000),
+      "datetime"->nonEmptyText,
+      "location_id"->longNumber,
+      "person_ids"->list(longNumber))
+      (EventForm.apply)(EventForm.unapply))
 }
+case class EventForm(title:String, content:String, dateTime:String, location_id:Long, person_ids:List[Long])
