@@ -1,4 +1,4 @@
-@(locations: List[Location])
+@(locations: List[Location], imageForm:Form[ImageForm])
 @import helper._
 
 @main("New Event") {
@@ -7,6 +7,7 @@
             @locations.map{location=> <li>@location.city</li>}
         </ul>
         @form(action = routes.ImageController.upload, 'enctype -> "multipart/form-data") {
+            @inputText(imageForm("name"),'id -> "image-name",'_showConstraints -> false)
             <input type="file" name="picture">
             <p><input type="submit" value="upload"></p>
         }

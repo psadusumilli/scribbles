@@ -21,6 +21,6 @@ object EventController extends Controller {
   }
 
   def showNew = Authenticated{
-    Action{Ok(views.html.new_event(Location.all()))}
+    Action{Ok(views.html.new_event(Location.all(),ImageController.imageForm))}
   }
 }

@@ -7,9 +7,9 @@ import play.Logger
 import play.api.db._
 import play.api.Play.current
 
-case class Image(id:Long,name:String,content:Clob) {
+case class Image(id:Long,name:String,content:Clob)
+case class ImageForm(name:String)
 
-}
 object Image{
   def save(file:File):Long = DB.withConnection("diary"){implicit c =>
     val idOption: Option[Long]  = SQL("insert into image (name) values ({name})").on('name -> file.getName).executeInsert()
