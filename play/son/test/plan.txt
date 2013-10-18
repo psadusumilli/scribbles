@@ -1,4 +1,4 @@
-1) user in sql, credentials verify
+1) Menu in events page
 2) new person creation form dialog in all events page
 3) new location add in all events page menu
 4) New event creation form

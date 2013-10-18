@@ -6,10 +6,13 @@
 GET     /                           controllers.UserController.showLogin
 POST    /login                      controllers.UserController.login
 GET     /logout                     controllers.UserController.logout
+
 GET     /event/all                  controllers.EventController.all
 GET     /event/:id                  controllers.EventController.get(id:Long)
 GET     /new/event                  controllers.EventController.showNew
+
 POST    /image/upload               controllers.ImageController.upload
+GET     /person/all                 controllers.PersonController.all
 GET     /person/new                 controllers.PersonController.showCreate
 POST    /person/new/submit          controllers.PersonController.create
 

@@ -9,6 +9,10 @@ object PersonController extends Controller{
     Action{Ok(views.html.new_person(personForm))}
   }
 
+  def all = Authenticated{
+    Action{Ok("all people")}
+  }
+
   def create = Authenticated{
     Action{ implicit request =>
       personForm.bindFromRequest.fold(
