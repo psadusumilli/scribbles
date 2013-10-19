@@ -15,8 +15,12 @@ object EventController extends Controller {
     Action{Ok(views.html.event(Event.byId(id)))}
   }
 
-  def showNew = Authenticated{
-    Action{Ok(views.html.new_event(Location.all(),ImageController.imageForm))}
+  def create = Authenticated{
+    Action{Ok(views.html.new_event(Location.all()))}
+  }
+
+  def submit = Authenticated{
+    Action{Ok("submitted event")}
   }
 
   val eventForm = Form(

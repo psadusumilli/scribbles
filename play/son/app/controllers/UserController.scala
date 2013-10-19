@@ -7,7 +7,7 @@ import models.User
 import play.api.Logger
 
 object UserController extends Controller{
-  def showLogin = Action{ implicit request => Ok(views.html.login(userForm))}
+  def home = Action{ implicit request => Ok(views.html.login(userForm))}
 
   def login = Action{ implicit request =>
     userForm.bindFromRequest.fold(

@@ -1,0 +1,17 @@
+@(locations: List[Location])
+@import helper._
+
+@main("Places..") {
+<div class="row">
+    <div class="span4 offset2">
+        <table class="table">
+            @locations.map{location=>
+            <tr>
+                <td>@location.city</td>
+                <td>@location.state</td>
+                <td>@location.country</td>
+            </tr>}
+        </table>
+    </div>
+</div>
+}

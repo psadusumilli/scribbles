@@ -1,20 +1,21 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
+GET     /                      controllers.UserController.home
+GET     /logout                controllers.UserController.logout
+POST    /login                 controllers.UserController.login
 
-# Home page
-GET     /                           controllers.UserController.showLogin
-POST    /login                      controllers.UserController.login
-GET     /logout                     controllers.UserController.logout
+GET     /event/all             controllers.EventController.all
+GET     /event/new             controllers.EventController.create
+GET     /event/:id             controllers.EventController.get(id:Long)
+POST    /event/submit          controllers.EventController.submit
 
-GET     /event/all                  controllers.EventController.all
-GET     /event/:id                  controllers.EventController.get(id:Long)
-GET     /new/event                  controllers.EventController.showNew
+GET     /image/:id             controllers.ImageController.show(id:Long)
+POST    /image/upload          controllers.ImageController.upload
 
-POST    /image/upload               controllers.ImageController.upload
-GET     /person/all                 controllers.PersonController.all
-GET     /person/new                 controllers.PersonController.showCreate
-POST    /person/new/submit          controllers.PersonController.create
+GET     /person/all            controllers.PersonController.all
+GET     /person/new            controllers.PersonController.create
+POST    /person/submit         controllers.PersonController.submit
 
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /places/all            controllers.LocationController.all
+GET     /places/new            controllers.LocationController.create
+POST    /places/submit         controllers.LocationController.submit
+
+GET     /assets/*file          controllers.Assets.at(path="/public", file)

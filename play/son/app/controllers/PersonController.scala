@@ -3,17 +3,18 @@ import play.api.mvc._
 import actions.Authenticated
 import play.api.data._
 import play.api.data.Forms._
+import models.Person
 
 object PersonController extends Controller{
-  def showCreate = Authenticated{
-    Action{Ok(views.html.new_person(personForm))}
-  }
-
   def all = Authenticated{
-    Action{Ok("all people")}
+    Action{Ok(views.html.persons(Person.all))}
   }
 
   def create = Authenticated{
+    Action{Ok(views.html.new_person(personForm))}
+  }
+
+  def submit = Authenticated{
     Action{ implicit request =>
       personForm.bindFromRequest.fold(
       errors => BadRequest(views.html.new_person(errors)),
@@ -23,7 +24,10 @@ object PersonController extends Controller{
   }
 
   val personForm = Form(
-    mapping("name" -> nonEmptyText,"profile" -> nonEmptyText(6,12),"image_id" -> longNumber)
+    mapping(
+      "name" -> nonEmptyText,
+      "profile" -> nonEmptyText(6,12),
+      "img_id" -> longNumber)
       (PersonForm.apply)(PersonForm.unapply))
 }
-case class PersonForm(name:String,profile:String,image_id:Long)
+case class PersonForm(name:String,profile:String,img_id:Long)

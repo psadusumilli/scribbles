@@ -3,9 +3,9 @@
 
 @main("New Person"){
    <div class="row">
-       form(routes.PersonController.create) {
+       form(routes.PersonController.submit) {
            @inputText(personForm("name"),'id -> "person-name",'_showConstraints -> false)
-           @inputText(personForm("password"), 'id -> "person-profile",'_showConstraints -> false)
+           @inputText(personForm("profile"), 'id -> "person-profile",'_showConstraints -> false)
            <input type="submit" value="Create">
        }
 
