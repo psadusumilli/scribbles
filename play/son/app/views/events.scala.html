@@ -3,7 +3,16 @@
 
 @main("Shravan Logs..") {
 <div class="span6 all-events offset6">
-    <h1 class="events-title">EVENTS OF A BOY</h1>
+    <h1 class="my-title">EVENTS OF A BOY</h1>
+    <a href="/event/new" class="my-anchor">New</a>
+    <table class="table event-table">
+        @events.map{event=>
+        <tr class="event-row">
+            <td class="event-date">@event.date</td>
+            <td class="event-title">@event.title</td>
+            <td class="event-location">@event.location.name</td>
+        </tr>}
+    </table>
 </div>
 <div id="event"></div>
 }

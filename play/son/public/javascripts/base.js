@@ -1,6 +1,5 @@
 EventsPage = function(){
     var eventBox = $("#event");
-
     var setupEventSelect = function(){
        $(".event-row").click(function(){
             $.ajax({
@@ -9,35 +8,68 @@ EventsPage = function(){
             });
        });
     };
-
-    var stylizeEventTable = function(){
-        $(".events-table tr").each(function(){
+    var stylizeTable = function(){
+        $(".event-table tr").each(function(){
             var randomNum = Math.ceil(Math.random()*9);
             if(randomNum % 2 == 0)
-                $(this).children(".event-date").addClass("red-date");
+                $(this).children(".event-date").addClass("column-color1");
             if(randomNum % 3 == 0)
-                $(this).children(".event-location").addClass("blue-location");
+                $(this).children(".event-location").addClass("column-color2");
             if(randomNum % 5 == 0)
-                $(this).children(".event-date").addClass("green-date");
+                $(this).children(".event-date").addClass("column-color3");
 
         });
-        $(".events-table tr").hover(function() {
+        $(".event-table tr").hover(function() {
             $(this).addClass('hover');
         }, function() {
             $(this).removeClass('hover');
         });
     };
-
     var showEvent = function(response){
        eventBox.dialog({"height":600, "width":900, modal:true});
        eventBox.html(response);
     };
-
     this.boot = function(){
-       stylizeEventTable();
+       stylizeTable();
        setupEventSelect();
-
     };
 };
 
-$(document).ready(function(){new EventsPage().boot()});
+LocationsPage = function(){
+    var locationBox = $("#new-location");
+    var setupNewLocation = function(){
+       $(".new-location").click(function(e){
+            e.preventDefault();
+       });
+    };
+    var stylizeTable = function(){
+        $(".location-table tr").each(function(){
+            var randomNum = Math.ceil(Math.random()*9);
+            if(randomNum % 2 == 0)
+                $(this).children(".location-city").addClass("column-color1");
+            if(randomNum % 3 == 0)
+                $(this).children(".location-state").addClass("column-color2");
+            if(randomNum % 5 == 0)
+                $(this).children(".location-country").addClass("column-color3");
+
+        });
+        $(".location-table tr").hover(function() {
+            $(this).addClass('hover');
+        }, function() {
+            $(this).removeClass('hover');
+        });
+    };
+    var showNewLocation = function(response){
+       locationBox.dialog({"height":600, "width":900, modal:true});
+       locationBox.html(response);
+    };
+    this.boot = function(){
+       stylizeTable();
+       setupNewLocation();
+    };
+};
+
+$(document).ready(function(){
+    new EventsPage().boot();
+    new LocationsPage().boot();
+    });

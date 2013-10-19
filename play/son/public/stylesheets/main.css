@@ -3,27 +3,35 @@ body {height:100%; margin:0; padding:0;}
 label{color:yellowgreen; font-weight:normal !important; font-family:"Josefin Sans","Helvetica Neue",Helvetica,Arial,sans-serif !important}
 input{height: 30px !important;}
 h1,h2{font-family: 'Pathway Gothic One', sans-serif !important;}
-.navbar .nav>li>a:focus, .navbar .nav>li>a:hover{color:yellowgreen !important;}
 
 #bg {position:fixed; top:0; left:0; width:100%; height:100%;}
 #content {position:relative; z-index:1;}
 #event{background: white !important;}
+#my-navbar{background: none;font-size: 180%; box-shadow: none !important; text-shadow:none !important; border: none;color: white !important;}
 
-.main-box{padding:50px 50px 50px 50px;}
 .sidebar-img{max-width:95%;}
-.event-date{width:20%;}
-.events-table{color: white;font-size: 130%;}
-.events-title{color:white; font-size:420%;}
-.event-title{width:45%;}
-.event-location{width:35%;}
-.login-box{padding:10% 20%;}
-.ui-widget-header{display: none !important;}
-.single-event-date{}
-.single-event-location{}
-.event-dialog{padding:5%;}
-.green-date{background:#8968CD;}
-.red-date{background:#8DB6CD;}
-.blue-location{background:#1874CD;}
-.my-anchor{font-size: 150%;color: white !important;}
+.main-box{padding:10px 50px 50px 50px;}
 .hover{background:yellowgreen}
 .error{color:indianred !important}
+.ui-widget-header{display: none !important;}
+.navbar .nav>li>a:focus, .navbar .nav>li>a:hover{color:yellowgreen !important;}
+.nav>li>a{color:white !important; text-shadow: none !important;}
+.brand{color:white !important; text-shadow: none !important;}
+
+.my-title{color:white; font-size:420%;}
+.my-anchor{font-size: 150%;color: white !important;}
+.column-color1{background:#8968CD;}
+.column-color2{background:#1874CD;}
+.column-color3{background:#8DB6CD;}
+
+.login-box{padding:10% 20%;}
+.location-table{color: white;font-size: 130%;}
+
+.event-table{color: white;font-size: 130%;}
+.event-date{width:20%;}
+.event-title{width:45%;}
+.event-location{width:35%;}
+.event-single-date{}
+.event-single-location{}
+.event-dialog{padding:5%;}
+

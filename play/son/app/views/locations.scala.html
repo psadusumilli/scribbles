@@ -3,13 +3,15 @@
 
 @main("Places..") {
 <div class="row">
-    <div class="span4 offset2">
-        <table class="table">
+    <div class="span6 offset5">
+        <h1 class="my-title">PLACES</h1>
+        <a href="/place/new" class="my-anchor new-location">New</a>
+        <table class="table location-table">
             @locations.map{location=>
-            <tr>
-                <td>@location.city</td>
-                <td>@location.state</td>
-                <td>@location.country</td>
+            <tr class="location-row">
+                <td class="location-city">@location.city</td>
+                <td class="location-state">@location.state</td>
+                <td class="location-country">@location.country</td>
             </tr>}
         </table>
     </div>

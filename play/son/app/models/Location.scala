@@ -5,7 +5,9 @@ import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 
-case class Location(id:Long,city:String,state:String,country:String)
+case class Location(id:Long,city:String,state:String,country:String){
+  def name:String = city+" "+state+" "+country
+}
 
 object Location{
   def all(): List[Location] = DB.withConnection("diary") { implicit c =>
