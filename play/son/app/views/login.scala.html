@@ -1,13 +1,22 @@
 @(userForm:Form[UserForm])
-
 @import helper._
-
-@main("Login"){
-    <div class="login-box">
-        @form(routes.UserController.login) {
-            @inputText(userForm("name"),'id -> "login-name",'_showConstraints -> false)
-            @inputText(userForm("password"), 'id -> "login-password",'type -> "password",'_showConstraints -> false)
-            <input type="submit" value="Login">
-        }
+<!DOCTYPE html>
+<html>
+@head("Login")
+<body>
+<div id="bg"><img src="@routes.Assets.at("images/body.jpg")" width="100%" height="100%" alt=""></div>
+<div class="container-fluid">48
+    <div class="row-fluid main-box">
+        <div id="content">
+            <div class="login-box">
+                @form(routes.UserController.login) {
+                @inputText(userForm("name"),'id -> "login-name",'_showConstraints -> false)
+                @inputText(userForm("password"), 'id -> "login-password",'type -> "password",'_showConstraints -> false)
+                <input type="submit" value="Login">
+                }
+            </div>
+        </div>
     </div>
-}
+</div>
+</body>
+</html>
