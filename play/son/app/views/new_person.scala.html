@@ -2,10 +2,13 @@
 @import helper._
 <div class="row new-person-dialog">
     <h1 class="my-title">New Person..</h1>
-    @form(routes.PersonController.submit) {
+    @form(routes.PersonController.submit,'enctype -> "multipart/form-data") {
         @inputText(personForm("name"),'id -> "person-name",'_showConstraints -> false)
         @textarea(field = personForm("profile"), args = 'rows -> 3, 'cols -> 400,'_showConstraints -> false)
+        <input type="file" name="picture">
         <input type="submit" value="Create">
     }
-
 </div>
+
+
+

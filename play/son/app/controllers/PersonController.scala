@@ -16,7 +16,6 @@ object PersonController extends Controller{
   }
 
   def submit = Authenticated{Action(parse.multipartFormData) {implicit request =>
-
       request.body.file("picture").map { picture =>
         val file: File = new File("/tmp/" + picture.filename)
         picture.ref.moveTo(file,replace = true)
