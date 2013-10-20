@@ -8,7 +8,6 @@ GET     /event/:id             controllers.EventController.get(id:Long)
 POST    /event/submit          controllers.EventController.submit
 
 GET     /image/:id             controllers.ImageController.show(id:Long)
-POST    /image/upload          controllers.ImageController.upload
 
 GET     /person/all            controllers.PersonController.all
 GET     /person/new            controllers.PersonController.create

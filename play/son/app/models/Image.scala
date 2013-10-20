@@ -8,14 +8,21 @@ import play.Logger
 import play.api.db._
 import play.api.Play.current
 import org.h2.jdbc.JdbcClob
+import java.sql
+import scala.collection.mutable.ListBuffer
 
 case class Image(id:Long,name:String,content:Blob)
-case class ImageForm(name:String)
 
 object Image{
   def byId(id: Long): Image = DB.withConnection("diary"){ implicit c =>
-    //TODO read content blob and pipe to response stream
-    null
+    val stmt:PreparedStatement = c.prepareStatement("select * from image where id="+id)
+    val rs: sql.ResultSet = stmt.executeQuery()
+    val images = new ListBuffer[Image]()
+    while(rs.next())
+      images += new Image(rs.getLong("id"),rs.getString("name"),rs.getBlob("content"))
+    rs.close()
+    stmt.close()
+    images.head
   }
 
   def save(file:File):Long = DB.withConnection("diary"){implicit c =>
