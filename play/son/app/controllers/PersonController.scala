@@ -3,31 +3,42 @@ import play.api.mvc._
 import actions.Authenticated
 import play.api.data._
 import play.api.data.Forms._
-import models.Person
+import models.{Image, Person}
+import java.io.File
 
 object PersonController extends Controller{
   def all = Authenticated{
-    Action{Ok(views.html.persons(Person.all))}
+    Action{Ok(views.html.persons(Person.all()))}
   }
 
   def create = Authenticated{
     Action{Ok(views.html.new_person(personForm))}
   }
 
-  def submit = Authenticated{
-    Action{ implicit request =>
-      personForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.new_person(errors)),
-      person => Redirect(routes.EventController.all)
-      )
+  def submit = Authenticated{Action(parse.multipartFormData) {implicit request =>
+
+      request.body.file("picture").map { picture =>
+        val file: File = new File("/tmp/" + picture.filename)
+        picture.ref.moveTo(file,replace = true)
+        val image_id: Long = Image.save(file)
+        file.delete()
+
+        personForm.bindFromRequest.fold(
+          errors => BadRequest(views.html.new_person(errors)),
+          person => {Person.save(person.name,person.profile,image_id).toString
+                    Ok(views.html.persons(Person.all()))}
+        )
+      }.getOrElse {
+        Redirect(routes.PersonController.all()).flashing("error" -> "Missing file")
+      }
+
     }
   }
 
   val personForm = Form(
     mapping(
       "name" -> nonEmptyText,
-      "profile" -> nonEmptyText(6,12),
-      "img_id" -> longNumber)
+      "profile" -> nonEmptyText(6,12))
       (PersonForm.apply)(PersonForm.unapply))
 }
-case class PersonForm(name:String,profile:String,img_id:Long)
+case class PersonForm(name:String,profile:String)

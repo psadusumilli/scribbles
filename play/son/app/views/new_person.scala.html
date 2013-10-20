@@ -4,7 +4,7 @@
     <h1 class="my-title">New Person..</h1>
     @form(routes.PersonController.submit) {
         @inputText(personForm("name"),'id -> "person-name",'_showConstraints -> false)
-        @inputText(personForm("profile"), 'id -> "person-profile",'_showConstraints -> false)
+        @textarea(field = personForm("profile"), args = 'rows -> 3, 'cols -> 400,'_showConstraints -> false)
         <input type="submit" value="Create">
     }
 
