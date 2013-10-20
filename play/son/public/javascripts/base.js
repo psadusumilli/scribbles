@@ -69,7 +69,31 @@ LocationsPage = function(){
     };
 };
 
+PersonsPage = function(){
+    var personBox = $("#new-person");
+    var setupNewPerson = function(){
+       $(".new-person").click(function(e){
+            $.ajax({
+                url: "/person/new",
+                success: showDialog
+            });
+            e.preventDefault();
+            return false;
+       });
+    };
+    var showDialog = function(response){
+        personBox.dialog({"height":600, "width":900, modal:true});
+        personBox.html(response);
+    }
+    this.boot = function(){
+       setupNewPerson();
+    };
+};
+
+
+
 $(document).ready(function(){
     new EventsPage().boot();
     new LocationsPage().boot();
+    new PersonsPage().boot();
     });

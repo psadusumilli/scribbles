@@ -13,11 +13,12 @@ object ImageController extends Controller{
       val filename = picture.filename
       val file: File = new File("/tmp/" + filename)
       picture.ref.moveTo(file,true)
-      Image.save(file)
+      val id: Long = Image.save(file)
       file.delete()
-      Ok("File uploaded")
+      Ok(id.toString)
     }.getOrElse {
-      Redirect(routes.EventController.all).flashing("error" -> "Missing file")
+      //TODO got to change the image error routing
+      Redirect(routes.EventController.all()).flashing("error" -> "Missing file")
     }
    }
   }

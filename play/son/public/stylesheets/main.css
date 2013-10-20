@@ -15,7 +15,7 @@ h1,h2{font-family: 'Pathway Gothic One', sans-serif !important;}
 .error{color:indianred !important}
 .ui-widget-header{display: none !important;}
 .navbar .nav>li>a:focus, .navbar .nav>li>a:hover{color:yellowgreen !important;}
-.nav>li>a{color:white !important; text-shadow: none !important;}
+.nav>li>a{color:white !important; text-shadow: none !important;font-weight:bold;}
 .brand{color:white !important; text-shadow: none !important;}
 
 .my-title{color:white; font-size:420%;}
@@ -36,3 +36,4 @@ h1,h2{font-family: 'Pathway Gothic One', sans-serif !important;}
 .event-single-location{}
 .event-dialog{padding:5%;}
 
+.new-person-dialog{padding: 2% 3% 2% 5%;}

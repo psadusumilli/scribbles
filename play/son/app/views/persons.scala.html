@@ -3,8 +3,9 @@
 
 @main("People.."){
 <div class="row">
-   <div class="span6 offset2">
-       <div><a class="my-anchor" href="/person/new">New</a></div>
+   <div class="span6 offset5">
+       <h1 class="my-title">PEOPLE</h1>
+       <div><a class="my-anchor new-person" href="/person/new">New</a></div>
        @persons.map{ person =>
             <div class="person-box span2">
                 <h2>@person.name</h2>

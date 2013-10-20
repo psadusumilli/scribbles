@@ -1,13 +1,11 @@
 @(personForm:Form[PersonForm])
 @import helper._
+<div class="row new-person-dialog">
+    <h1 class="my-title">New Person..</h1>
+    @form(routes.PersonController.submit) {
+        @inputText(personForm("name"),'id -> "person-name",'_showConstraints -> false)
+        @inputText(personForm("profile"), 'id -> "person-profile",'_showConstraints -> false)
+        <input type="submit" value="Create">
+    }
 
-@main("New Person"){
-   <div class="row">
-       form(routes.PersonController.submit) {
-           @inputText(personForm("name"),'id -> "person-name",'_showConstraints -> false)
-           @inputText(personForm("profile"), 'id -> "person-profile",'_showConstraints -> false)
-           <input type="submit" value="Create">
-       }
-
-   </div>
-}
+</div>
