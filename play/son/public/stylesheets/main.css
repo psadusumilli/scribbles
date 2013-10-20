@@ -10,7 +10,7 @@ h1,h2{font-family: 'Pathway Gothic One', sans-serif !important;}
 #my-navbar{background: none;font-size: 180%; box-shadow: none !important; text-shadow:none !important; border: none;color: white !important;}
 
 .sidebar-img{max-width:95%;}
-.main-box{padding:10px 50px 50px 50px;}
+.main-box{padding:0% 4% 4% 4%;}
 .hover{background:yellowgreen}
 .error{color:indianred !important}
 .ui-widget-header{display: none !important;}
@@ -23,6 +23,7 @@ h1,h2{font-family: 'Pathway Gothic One', sans-serif !important;}
 .column-color1{background:#8968CD;}
 .column-color2{background:#1874CD;}
 .column-color3{background:#8DB6CD;}
+.home-title{font-size:220%;color:blueviolet;}
 
 .login-box{padding:10% 20%;}
 .location-table{color: white;font-size: 130%;}
