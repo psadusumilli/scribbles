@@ -43,6 +43,7 @@ EventsPage = function(){
     var showNewEvent = function(response){
        eventNewBox.dialog({"height":600, "width":900, modal:true});
        eventNewBox.html(response);
+       $("#event-datetime").datepicker({dateFormat:"yy-mm-dd"});
     };
     this.boot = function(){
        stylizeTable();
