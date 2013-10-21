@@ -12,7 +12,7 @@
                 '_label -> "Place",'_showConstraints -> false)
         @select(eventForm("person_ids"),
                 persons.map{person => person.id.toString -> person.name},
-                '_label -> "People",'_showConstraints -> false)
+                '_label -> "People",'_showConstraints -> false,'multiple -> true)
 
         <input type="file" name="picture">
         <input type="submit" value="Create">
