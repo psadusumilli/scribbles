@@ -7,7 +7,7 @@
     <a href="/event/new" class="my-anchor new-event">| New</a>
     <table class="table event-table">
         @events.map{event=>
-        <tr class="event-row">
+        <tr class="event-row" id="@event.id">
             <td class="event-date">@event.date</td>
             <td class="event-title">@event.title</td>
             <td class="event-location">@event.location.name</td>
