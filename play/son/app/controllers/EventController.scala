@@ -31,7 +31,7 @@ object EventController extends Controller {
 
   val eventForm = Form(
     mapping(
-      "title"->text(4,99),
+      "title"->nonEmptyText,
       "content"->nonEmptyText,
       "datetime"->nonEmptyText,
       "location_id"->longNumber,

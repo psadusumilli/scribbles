@@ -3,7 +3,7 @@
 
 <div class="row new-event-dialog">
     <h1>New Event..</h1>
-    @form(routes.EventController.submit) {
+    @form(routes.EventController.submit,'enctype -> "multipart/form-data") {
         @inputText(eventForm("title"),'id -> "event-title",'_showConstraints -> false)
         @textarea(field = eventForm("content"), args = 'rows -> 3, 'cols -> 400,'_showConstraints -> false)
 
