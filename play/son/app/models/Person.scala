@@ -4,7 +4,7 @@ import play.api.db._
 import anorm._
 import anorm.SqlParser._
 import play.api.Play.current
-import play.Logger
+import play.Logger._
 
 case class Person (id:Long,name:String, profile:String,image:Image){
   def imageUrl:String =  "/image/"+image.id
@@ -19,7 +19,7 @@ object Person{
   def save(name: String, profile: String, image_id: Long): Long = DB.withConnection("diary"){implicit c =>
     val id: Option[Long] = SQL("insert into person(name,profile,img_id) values ({name},{profile},{image_id})")
       .on('name -> name).on('profile -> profile).on('image_id -> image_id).executeInsert()
-    Logger.info("saved person: "+name)
+    info("saved person: "+name)
     id.get
   }
 

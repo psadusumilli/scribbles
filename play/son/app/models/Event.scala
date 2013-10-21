@@ -8,7 +8,7 @@ import play.api.db.DB
 import anorm.~
 import play.api.Play.current
 import controllers.EventForm
-import play.Logger
+import play.Logger._
 
 case class Event (id:Long, title:String, content:String, location:Location, dateTime:Date){
     def date = new SimpleDateFormat("dd MMM yyyy").format(dateTime)
@@ -20,10 +20,20 @@ object Event{
   }
 
   def save(eventForm:EventForm):Long = DB.withConnection("diary"){ implicit c =>
-     print(eventForm.title+" "+eventForm.person_ids.size)
-     val id: Option[Long] = SQL("insert into event(title,content,datetime,location_id) values ({title},{content},{datetime},{location_id})")
-      .on('title -> eventForm.title, 'content -> eventForm.content,'datetime -> eventForm.dateTime, 'location_id -> eventForm.location_id).executeInsert()
-     Logger.info("saved event: "+id+"|"+eventForm.title)
+     info(eventForm.title+" "+eventForm.person_ids.size+"|"+eventForm.person_ids)
+
+     val id: Option[Long] =
+      SQL("insert into event(title,content,datetime,location_id) values ({title},{content},{datetime},{location_id})")
+      .on('title -> eventForm.title,
+          'content -> eventForm.content,
+          'datetime -> eventForm.dateTime,
+          'location_id -> eventForm.location_id).executeInsert()
+     info("saved event:"+id+"|"+eventForm.title)
+
+
+
+
+
      id.get
   }
 

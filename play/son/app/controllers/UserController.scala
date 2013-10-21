@@ -4,7 +4,7 @@ import play.api.mvc._
 import play.api.data.Forms._
 import play.api.data._
 import models.User
-import play.api.Logger
+import play.api.Logger._
 
 object UserController extends Controller{
   def home = Action{ implicit request => Ok(views.html.login(userForm))}
@@ -16,7 +16,7 @@ object UserController extends Controller{
           if (User.isNotValid(user.name, user.password))
             Unauthorized(views.html.login(userForm))
           else{
-            Logger.info("login: "+ user.name)
+            info("login: "+ user.name)
             Redirect(routes.EventController.all()).withSession("user"->user.name)
           }
         }

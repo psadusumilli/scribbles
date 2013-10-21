@@ -1,13 +1,11 @@
 package models
 
-import java.sql.{Blob, PreparedStatement, Clob}
+import java.sql.{Blob, PreparedStatement}
 import java.io.{InputStream, FileInputStream, File}
 import anorm._
-import anorm.SqlParser._
-import play.Logger
+import play.Logger._
 import play.api.db._
 import play.api.Play.current
-import org.h2.jdbc.JdbcClob
 import java.sql
 import scala.collection.mutable.ListBuffer
 
@@ -34,7 +32,7 @@ object Image{
     stmt.setBinaryStream(1,inputStream,file.length())
     stmt.executeUpdate();
     inputStream.close()
-    Logger.info("saved image: "+file.getName+" with id: "+id)
+    info("saved image: "+file.getName+" with id: "+id)
     id
   }
 
