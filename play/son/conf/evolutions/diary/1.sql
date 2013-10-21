@@ -32,7 +32,7 @@ CREATE TABLE person(
     FOREIGN KEY(img_id) REFERENCES image(id)
 );
 CREATE TABLE event(
-    id VARCHAR(30) NOT NULL DEFAULT nextval('event_seq'),
+    id INTEGER NOT NULL DEFAULT nextval('event_seq'),
     title VARCHAR(100) NOT NULL,
     content VARCHAR(2000),
     datetime DATE NOT NULL,
