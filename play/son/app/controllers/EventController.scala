@@ -21,7 +21,9 @@ object EventController extends Controller {
   }
 
   def submit = Authenticated{
-    Action{implicit request =>
+    Action(parse.multipartFormData){implicit request =>
+      info(request.body.toString)
+      info(request.body.asFormUrlEncoded.get("person_ids").toString);
       eventForm.bindFromRequest().fold(
         errors =>{
           error("errors:"+eventForm.errorsAsJson.toString())
