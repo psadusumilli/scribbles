@@ -5,6 +5,7 @@ import models.{Person, Location, Event}
 import actions.Authenticated
 import play.api.data._
 import play.api.data.Forms._
+import play.Logger
 
 object EventController extends Controller {
   def all = Authenticated{
@@ -22,7 +23,9 @@ object EventController extends Controller {
   def submit = Authenticated{
     Action{implicit request =>
       eventForm.bindFromRequest().fold(
-        errors => BadRequest(views.html.new_event(Location.all(),Person.all(),errors)),//TODO
+        errors =>{
+          Logger.info("errors:"+eventForm.errorsAsJson.toString())
+          BadRequest(views.html.new_event(Location.all(),Person.all(),errors))},//TODO
         event => Event.save(event)
       )
       Ok(views.html.events(Event.all))
