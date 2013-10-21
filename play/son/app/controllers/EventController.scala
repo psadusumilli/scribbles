@@ -16,7 +16,7 @@ object EventController extends Controller {
   }
 
   def create = Authenticated{
-    Action{Ok(views.html.new_event(Location.all(),Person.all()))}
+    Action{Ok(views.html.new_event(Location.all(),Person.all(),eventForm))}
   }
 
   def submit = Authenticated{
@@ -26,7 +26,7 @@ object EventController extends Controller {
   val eventForm = Form(
     mapping(
       "title"->text(4,99),
-      "content"->text(4,1000),
+      "content"->nonEmptyText,
       "datetime"->nonEmptyText,
       "location_id"->longNumber,
       "person_ids"->list(longNumber))

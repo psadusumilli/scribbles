@@ -1,8 +1,20 @@
-@(locations: List[Location], persons: List[Person])
+@(locations: List[Location], persons: List[Person], eventForm:Form[EventForm])
 @import helper._
 
 <div class="row new-event-dialog">
     <h1>New Event..</h1>
     @form(routes.EventController.submit) {
+        @inputText(eventForm("title"),'id -> "event-title",'_showConstraints -> false)
+        @textarea(field = eventForm("content"), args = 'rows -> 3, 'cols -> 400,'_showConstraints -> false)
+
+        @select(eventForm("location_id"),
+                locations.map{location => location.id.toString -> location.name},
+                '_label -> "Place",'_showConstraints -> false)
+        @select(eventForm("person_ids"),
+                persons.map{person => person.id.toString -> person.name},
+                '_label -> "People",'_showConstraints -> false)
+
+        <input type="file" name="picture">
+        <input type="submit" value="Create">
     }
 </div>
