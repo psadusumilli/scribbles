@@ -20,7 +20,13 @@ object EventController extends Controller {
   }
 
   def submit = Authenticated{
-    Action{Ok("submitted event")}
+    Action{implicit request =>
+      eventForm.bindFromRequest().fold(
+        errors => BadRequest(views.html.new_event(Location.all(),Person.all(),errors)),//TODO
+        event => Event.save(event)
+      )
+      Ok(views.html.events(Event.all))
+    }
   }
 
   val eventForm = Form(

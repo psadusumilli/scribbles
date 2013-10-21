@@ -21,7 +21,7 @@ textarea{width:85% !important;}
 
 .my-title{color:white; font-size:420%;}
 .my-anchor{font-size: 150%;color: white !important;}
-.my-submit{background: yellowgreen;border: none;color: white;}
+.my-button{background: yellowgreen;border: none;color: white; margin-top:5px;}
 
 .column-color1{background:#8968CD;}
 .column-color2{background:#1874CD;}

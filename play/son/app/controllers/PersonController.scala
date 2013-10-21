@@ -23,7 +23,7 @@ object PersonController extends Controller{
         file.delete()
 
         personForm.bindFromRequest.fold(
-          errors => BadRequest(views.html.new_person(errors)),
+          errors => BadRequest(views.html.new_person(errors)),//TODO
           person => {Person.save(person.name,person.profile,image_id).toString
                     Ok(views.html.persons(Person.all()))}
         )
