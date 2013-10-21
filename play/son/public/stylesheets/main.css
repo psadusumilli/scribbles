@@ -16,7 +16,7 @@ textarea{width:85% !important;}
 .error{color:indianred !important}
 .ui-widget-header{display: none !important;}
 .navbar .nav>li>a:focus, .navbar .nav>li>a:hover{color:yellowgreen !important;}
-.nav>li>a{color:white !important; text-shadow: none !important;font-weight:bold;}
+.nav>li>a{color:white !important; text-shadow: none !important;}
 .brand{color:white !important; text-shadow: none !important;}
 
 .my-title{color:white; font-size:420%;}
@@ -24,7 +24,7 @@ textarea{width:85% !important;}
 .column-color1{background:#8968CD;}
 .column-color2{background:#1874CD;}
 .column-color3{background:#8DB6CD;}
-.home-title{font-size:220%;color:blueviolet;}
+.home-title{font-size:220%;}
 
 .login-box{padding:10% 20%;}
 .location-table{color: white;font-size: 130%;}
@@ -36,6 +36,7 @@ textarea{width:85% !important;}
 .event-single-date{}
 .event-single-location{}
 .event-dialog{padding:5%;}
+.new-event-dialog{padding: 2% 3% 2% 5%;}
 
-.new-person-dialog{padding: 2% 3% 2% 5%;}
 .person-box{color:white}
+.new-person-dialog{padding: 2% 3% 2% 5%;}

@@ -1,11 +1,22 @@
 EventsPage = function(){
     var eventBox = $("#event");
+    var eventNewBox = $("#new-event");
     var setupEventSelect = function(){
        $(".event-row").click(function(){
             $.ajax({
                 url: "/event/"+$(this).attr("id"),
                 success: showEvent
             });
+       });
+    };
+    var setupNewEvent = function(){
+       $(".new-event").click(function(e){
+            $.ajax({
+                url: "/event/new",
+                success: showNewEvent
+            });
+            e.preventDefault();
+            return false;
        });
     };
     var stylizeTable = function(){
@@ -29,9 +40,14 @@ EventsPage = function(){
        eventBox.dialog({"height":600, "width":900, modal:true});
        eventBox.html(response);
     };
+    var showNewEvent = function(response){
+       eventNewBox.dialog({"height":600, "width":900, modal:true});
+       eventNewBox.html(response);
+    };
     this.boot = function(){
        stylizeTable();
        setupEventSelect();
+       setupNewEvent();
     };
 };
 

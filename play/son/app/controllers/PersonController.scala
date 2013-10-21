@@ -37,7 +37,7 @@ object PersonController extends Controller{
   val personForm = Form(
     mapping(
       "name" -> nonEmptyText,
-      "profile" -> nonEmptyText(6,12))
+      "profile" -> nonEmptyText)
       (PersonForm.apply)(PersonForm.unapply))
 }
 case class PersonForm(name:String,profile:String)

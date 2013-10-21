@@ -1,10 +1,8 @@
-@(locations: List[Location])
+@(locations: List[Location], persons: List[Person])
 @import helper._
 
-@main("New Event") {
-<div class="row">
-    <div class="span4 offset2">
-        <h1>New Event</h1>
-    </div>
+<div class="row new-event-dialog">
+    <h1>New Event..</h1>
+    @form(routes.EventController.submit) {
+    }
 </div>
-}

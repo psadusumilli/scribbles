@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc._
-import models.{Location, Event}
+import models.{Person, Location, Event}
 import actions.Authenticated
 import play.api.data._
 import play.api.data.Forms._
@@ -16,7 +16,7 @@ object EventController extends Controller {
   }
 
   def create = Authenticated{
-    Action{Ok(views.html.new_event(Location.all()))}
+    Action{Ok(views.html.new_event(Location.all(),Person.all()))}
   }
 
   def submit = Authenticated{

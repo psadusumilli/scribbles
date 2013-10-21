@@ -4,7 +4,7 @@
 @main("Shravan Logs..") {
 <div class="span6 all-events offset6">
     <h1 class="my-title">EVENTS OF A BOY</h1>
-    <a href="/event/new" class="my-anchor">New</a>
+    <a href="/event/new" class="my-anchor new-event">| New</a>
     <table class="table event-table">
         @events.map{event=>
         <tr class="event-row">
@@ -15,4 +15,5 @@
     </table>
 </div>
 <div id="event"></div>
+<div id="new-event"></div>
 }
