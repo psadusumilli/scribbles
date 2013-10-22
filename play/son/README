@@ -1,4 +1,12 @@
-This is your new Play 2.1 application
-=====================================
 
-This file will be packaged with your application, when using `play dist`.
+Sharing code for a sample Play application.
+Built a event log for my son's life with domain like Event, People and Place and their CRUD with associations.
+The codebase has most of the features explained in 'Play for Scala Developers' docs.
+
+*Jquery, Bootswatch for visual elements
+*Anorm as SQL mapper for H2 filesystem based database
+*Evolution for sql management
+*Image upload to DB, Chunked streaming from CLOBs
+
+  
+![--](https://dl.dropboxusercontent.com/u/37661559/people.png)
