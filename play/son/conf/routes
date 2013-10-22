@@ -7,14 +7,15 @@ GET     /event/new             controllers.EventController.create
 GET     /event/:id             controllers.EventController.get(id:Long)
 POST    /event/submit          controllers.EventController.submit
 
+GET     /image/person/:id      controllers.ImageController.showPerson(id:Long)
 GET     /image/:id             controllers.ImageController.show(id:Long)
 
 GET     /person/all            controllers.PersonController.all
 GET     /person/new            controllers.PersonController.create
 POST    /person/submit         controllers.PersonController.submit
 
-GET     /place/all            controllers.LocationController.all
-GET     /place/new            controllers.LocationController.create
-POST    /place/submit         controllers.LocationController.submit
+GET     /place/all             controllers.LocationController.all
+GET     /place/new             controllers.LocationController.create
+POST    /place/submit          controllers.LocationController.submit
 
 GET     /assets/*file          controllers.Assets.at(path="/public", file)

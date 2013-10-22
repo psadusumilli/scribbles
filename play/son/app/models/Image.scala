@@ -8,10 +8,17 @@ import play.api.db._
 import play.api.Play.current
 import java.sql
 import scala.collection.mutable.ListBuffer
+import anorm.SqlParser._
 
 case class Image(id:Long,name:String,content:Blob)
 
 object Image{
+
+  def byPersonId(person_id: Long): Image = DB.withConnection("diary"){ implicit c =>
+    val image_id: Long = SQL("select img_id from person where id={person_id}").on('person_id -> person_id).as(personIdRow *).head
+    Image.byId(image_id)
+  }
+
   def byId(id: Long): Image = DB.withConnection("diary"){ implicit c =>
     val stmt:PreparedStatement = c.prepareStatement("select * from image where id="+id)
     val rs: sql.ResultSet = stmt.executeQuery()
@@ -34,6 +41,10 @@ object Image{
     inputStream.close()
     info("saved image: "+file.getName+" with id: "+id)
     id
+  }
+
+  val personIdRow = {
+    get[Long]("img_id") map{case img_id => img_id }
   }
 
 }
