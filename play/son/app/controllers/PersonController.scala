@@ -23,13 +23,11 @@ object PersonController extends Controller{
         file.delete()
 
         personForm.bindFromRequest.fold(
-          errors => BadRequest(views.html.new_person(errors)),//TODO
-          person => {Person.save(person.name,person.profile,image_id).toString
-                    Ok(views.html.persons(Person.all()))}
+          errors => BadRequest(views.html.new_person(errors)),
+          person =>Person.save(person.name,person.profile,image_id).toString
         )
-      }.getOrElse {
-        Redirect(routes.PersonController.all()).flashing("error" -> "Missing file")
       }
+      Redirect(routes.PersonController.all())
     }
   }
 

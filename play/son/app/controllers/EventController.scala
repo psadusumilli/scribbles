@@ -37,7 +37,7 @@ object EventController extends Controller {
         errors => BadRequest(views.html.new_event(Location.all(),Person.all(),errors)),
         event => Event.save(event,person_ids,image_id)
       )
-      Ok(views.html.events(Event.all))
+      Redirect(routes.EventController.all)
     }
   }
 
