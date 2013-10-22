@@ -8,5 +8,11 @@
         <span class="event-single-date">@event.date | </span>
         <span class="event-single-location">@event.location</span>
     </div>
-    <div>@event.content</div>
+    <div class="event-images">
+        @event.images.map{image => <span class="event-image" ><img src="/image/@image"></span>}
+    </div>
+    <p>@event.content</p>
+    <div class="event-persons">
+        @event.persons.map{person => <span class="event-person"><img src="/person/image/@person"></span>}
+    </div>
 </div>

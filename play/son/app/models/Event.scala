@@ -9,8 +9,15 @@ import anorm.~
 import play.api.Play.current
 import controllers.EventForm
 import play.Logger._
+import scala.collection.parallel.mutable
+import scala.collection.mutable.ListBuffer
 
 case class Event (id:Long, title:String, content:String, location:Location, dateTime:Date){
+    val images = ListBuffer[Long]()
+    val persons = ListBuffer[Long]()
+
+    def addPerson(person_ids:List[Long]) {person_ids.map{person_id => persons += person_id} }
+    def addImage(image_ids:List[Long]) = {image_ids.map{image_id => images += image_id}}
     def date = new SimpleDateFormat("dd MMM yyyy").format(dateTime)
 }
 
@@ -43,7 +50,10 @@ object Event{
   }
 
   def byId(id: Long):Event = DB.withConnection("diary"){ implicit c =>
-    SQL("select * from event e where e.id={event_id}").on("event_id"->id).as(dbRow *).head
+    val event: Event = SQL("select * from event e where e.id={event_id}").on("event_id" -> id).as(dbRow *).head
+    event.addImage(SQL("select img_id from event_image where event_id={event_id}").on("event_id" -> id).as(imageIdRow *))
+    event.addPerson(SQL("select person_id from event_person where event_id={event_id}").on("event_id" -> id).as(personIdRow *))
+    event
   }
 
   val dbRow = {
@@ -55,4 +65,12 @@ object Event{
     case id~title~content~datetime~location_id => Event(id,title,content,Location.byId(location_id),datetime)
     }
   }
+
+  val imageIdRow = {
+    get[Long]("img_id") map{case image_id => image_id}
+  }
+  val personIdRow = {
+    get[Long]("person_id") map{case person_id => person_id }
+  }
+
 }
