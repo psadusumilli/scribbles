@@ -21,28 +21,28 @@ object Event{
 
   def save(eventForm:EventForm, person_ids:Seq[String]):Long = DB.withConnection("diary"){
     implicit c =>
+
     def saveEvent:Long = {
       val id: Option[Long] =
-          SQL("insert into event(title,content,datetime,location_id) values ({title},{content},{datetime},{location_id})")
-      .on('title -> eventForm.title,
-            'content -> eventForm.content,
-            'datetime -> eventForm.dateTime,
-            'location_id -> eventForm.location_id).executeInsert()
+        SQL("insert into event(title,content,datetime,location_id) values ({title},{content},{datetime},{location_id})")
+          .on('title -> eventForm.title,
+          'content -> eventForm.content,
+          'datetime -> eventForm.dateTime,
+          'location_id -> eventForm.location_id).executeInsert()
       info("saved event:id=" + id.get + "|title=" + eventForm.title)
       id.get
     }
 
     val id: Long = saveEvent
-    person_ids.map(person_id =>
-    {SQL("insert into event_person(event_id, person_id) values({event_id},{person_id})")
-      .on('event_id -> id, 'person_id -> person_id).executeInsert()
-      info("saved event person_id: "+person_id)}
-    )
+    savePeople
 
-    //save associated people
 
-    //save associated image
-
+    def savePeople {
+      person_ids.map(person_id =>
+        SQL("insert into event_person(event_id, person_id) values({event_id},{person_id})")
+          .on('event_id -> id, 'person_id -> person_id).executeInsert()
+      )
+    }
     id
   }
 

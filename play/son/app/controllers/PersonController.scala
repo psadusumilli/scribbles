@@ -30,7 +30,6 @@ object PersonController extends Controller{
       }.getOrElse {
         Redirect(routes.PersonController.all()).flashing("error" -> "Missing file")
       }
-
     }
   }
 
