@@ -22,13 +22,10 @@ object EventController extends Controller {
 
   def submit = Authenticated{
     Action(parse.multipartFormData){implicit request =>
-      info(request.body.toString)
-      info(request.body.asFormUrlEncoded.get("person_ids").toString);
+      val person_ids: Seq[String] = request.body.asFormUrlEncoded.get("person_ids").get
       eventForm.bindFromRequest().fold(
-        errors =>{
-          error("errors:"+eventForm.errorsAsJson.toString())
-          BadRequest(views.html.new_event(Location.all(),Person.all(),errors))},//TODO
-        event => Event.save(event)
+        errors => BadRequest(views.html.new_event(Location.all(),Person.all(),errors)),
+        event => Event.save(event,person_ids)
       )
       Ok(views.html.events(Event.all))
     }
