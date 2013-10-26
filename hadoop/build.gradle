@@ -1,7 +1,26 @@
+subprojects{
+    apply plugin: 'java'
+    apply plugin: 'maven'
+
+    version = '1.0'
+    sourceCompatibility = '1.7'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        compile 'commons-lang:commons-lang:2.5'
+        compile 'log4j:log4j:1.2.16'
+        compile 'com.googlecode.lambdaj:lambdaj:2.2'
+        compile 'org.apache.hadoop:hadoop-client:2.2.0'
+        testCompile 'junit:junit:4.1'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
 
-group='com.vijayrc.hadoop'
+group ='com.vijayrc.hadoop'
 version = '1.0'
 sourceCompatibility = 1.7
 
@@ -10,6 +29,11 @@ repositories {
 }
 
 dependencies {
+    compile project(':wordcount')
     compile 'org.apache.hadoop:hadoop-client:2.2.0'
-    testCompile 'junit:junit:4.11'
+    compile 'com.googlecode.lambdaj:lambdaj:2.2'
+    compile 'commons-lang:commons-lang:2.5'
+    compile 'log4j:log4j:1.2.16'
+    testCompile 'junit:junit:4.1'
+
 }
