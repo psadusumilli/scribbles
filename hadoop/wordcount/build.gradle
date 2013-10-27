@@ -1,0 +1,7 @@
+jar {
+    manifest {
+        attributes("Implementation-Title": "Hadoop-WordCount",
+                   "Implementation-Version": version,
+                   "Main-Class": "com.vijayrc.hadoop.wordcount.MyJob" )
+    }
+}
