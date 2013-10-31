@@ -1,5 +1,5 @@
 package com.vijayrc.algos.graph
 
-class Edge(y:Vertex, weight:Int) {
+class Edge(val y:Vertex, val weight:Int) {
 
 }

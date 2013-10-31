@@ -2,7 +2,7 @@ package com.vijayrc.algos.graph
 
 import java.util.UUID
 
-class Vertex(key:UUID,value:Any) {
+class Vertex(val key:UUID,val value:Any) {
   override def toString: String = key+"-"+value
 
   override def equals(obj: scala.Any): Boolean = {
