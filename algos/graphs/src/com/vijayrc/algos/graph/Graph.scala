@@ -10,16 +10,16 @@ import java.util.UUID
 * if undirected, must add another edge entry to the pair vertex
 */
 class Edge(val y:Vertex, val weight:Int) {
-  def print = println("\t"+y.key+"|"+y.value+"|"+weight)
+  def print(){println("\t"+"|"+y.value+"|"+weight)}
 }
 
 class Vertex(val key:UUID,val value:Any) {
   val edges  = new mutable.MutableList[Edge]
 
   def print(){
-      println(key+"|"+value+"|"+edges.size)
-      edges.map(edge => edge.print)
-      println("----------------------------------")
+      println(value)
+      edges.map(edge => edge.print())
+      println("-------")
   }
   def addEdge(edge:Edge,directed:Boolean){
     if(edge.y == this) return
