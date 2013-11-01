@@ -8,18 +8,20 @@ object Run extends App{
     val graph = new Graph
     val noOfVertices = 10
 
+    def randomId = UUID.randomUUID()
     def randomNo  = Math.round (Math.random()*noOfVertices).toInt
     def randomVertices = graph.vertices.slice(randomNo,randomNo)
 
-    for(i <- 1 to noOfVertices) graph.addVertex(new Vertex(UUID.randomUUID(),i))
+    for(i <- 1 to noOfVertices)
+      graph.addVertex(new Vertex(randomId,i))
 
     graph.vertices.map{
       vertex => randomVertices.map{
         randomVertex =>
-        graph.addEdge(vertex, new Edge(randomVertex,randomNo),directed = true)
+          vertex.addEdge(new Edge(randomVertex,randomNo),directed = true)
       }
     }
-    print(graph)
+    graph.print
 
   }
 
