@@ -10,9 +10,9 @@ class StackTest extends FunSuite{
     stack.show()
   }
   test("should push/pop to array based stack"){
-    val stack:Stack = new StackArray(10)
+    val stack:Stack = new StackArray(2)
     stack.push("1").push("3").pop()
-    stack.push("4").push("2")
+    stack.push("4").push("2").push("5").push("6")
     stack.show()
   }
 
