@@ -15,7 +15,6 @@ class Edge(val y:Vertex, val weight:Int) {
 
 class Vertex(val key:UUID,val value:Any) {
   val edges  = new mutable.MutableList[Edge]
-
   def print(){
       println(value)
       edges.map(edge => edge.print())

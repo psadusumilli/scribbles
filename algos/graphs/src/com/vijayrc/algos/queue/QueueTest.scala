@@ -14,7 +14,6 @@ class QueueTest extends FunSuite{
     val queue:Queue = new QueueArray(1)
     for(i <- 1 to 5)queue.enqueue(i)
     for(i <- 1 to 4)queue.dequeue()
-    println("show:")
     queue.show()
   }
 

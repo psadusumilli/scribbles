@@ -12,13 +12,13 @@ class StackArray(val initialSz:Integer) extends Stack{
   }
   def pop(): Any = {
     if(index < 0) return
-    if(index <= (arr.length/4)) shrink()
+    if(index != 0 && index <= (arr.length/4)) shrink()
     val value = arr(index)
     index -= 1
     value
   }
   def show(){
-    arr.slice(index,arr.length).reverse.foreach(a => if (a != null) print(a.toString+"|"))
+    arr.slice(0,index+1).foreach(a => print(a.toString+"|"))
     println()
   }
 

@@ -6,7 +6,7 @@ class QueueArray(val initialSz:Integer) extends Queue{
   private var tailIndex:Integer = 0
 
   def enqueue(item: Any): Queue = {
-    if(bandSz == arr.length) {println("grow");grow()}
+    if(bandSz == arr.length) grow()
     arr(tailIndex) = item
     tailIndex += 1
     this
@@ -14,6 +14,7 @@ class QueueArray(val initialSz:Integer) extends Queue{
 
   def dequeue(): Any = {
     val item = arr(headIndex)
+    arr(headIndex) = null
     headIndex += 1
     if(bandSz <= arr.length/4) shrink()
     item
@@ -27,9 +28,8 @@ class QueueArray(val initialSz:Integer) extends Queue{
   private def grow(){
     val newArr = new Array[Any](2*bandSz)
     var newIndex = 0
-    //copy the band into new array
     arr.slice(headIndex,tailIndex).foreach(item =>
-    if(item != null){
+        if(item != null){
           newArr(newIndex) = item
           newIndex += 1
         }
