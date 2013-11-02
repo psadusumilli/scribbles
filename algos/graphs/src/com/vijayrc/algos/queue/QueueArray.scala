@@ -6,19 +6,22 @@ class QueueArray(val initialSz:Integer) extends Queue{
   private var tailIndex:Integer = 0
 
   def enqueue(item: Any): Queue = {
-    arr(headIndex) = item
+    arr(tailIndex) = item
+    tailIndex += 1
     this
   }
 
   def dequeue(): Any = {
     val item = arr(headIndex)
-    headIndex -= 1
+    headIndex += 1
     item
   }
 
   def isEmpty(): Boolean = ???
 
-  def show() {}
+  def show() {
+    arr.slice(headIndex,tailIndex).foreach(item => print(item +"|"))
+  }
 
   /**double capacity whenever limits reached*/
   private def grow(){

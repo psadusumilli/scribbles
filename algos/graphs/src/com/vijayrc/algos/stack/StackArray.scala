@@ -18,7 +18,7 @@ class StackArray(val initialSz:Integer) extends Stack{
     value
   }
   def show(){
-    arr.reverse.foreach(a => if (a != null) print(a.toString+"|"))
+    arr.slice(index,arr.length).reverse.foreach(a => if (a != null) print(a.toString+"|"))
     println()
   }
 
