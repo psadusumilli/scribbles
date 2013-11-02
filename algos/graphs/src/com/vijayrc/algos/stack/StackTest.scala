@@ -14,6 +14,8 @@ class StackTest extends FunSuite{
     stack.push("1").push("3").pop()
     stack.push("4").push("2").push("5").push("6")
     stack.show()
+    (1 to 10).foreach(x=>stack.pop())
+    stack.show()
   }
 
 }

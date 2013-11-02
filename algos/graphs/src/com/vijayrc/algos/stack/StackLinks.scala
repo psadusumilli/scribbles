@@ -3,7 +3,7 @@ package com.vijayrc.algos.stack
 class Node(val value:Any, val next:Node){
   def print = value.toString
 }
-
+/** just have a head node linking others**/
 class StackLinks extends Stack{
   var head:Node = null
 
