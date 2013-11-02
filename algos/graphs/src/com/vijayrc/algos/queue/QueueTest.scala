@@ -11,9 +11,10 @@ class QueueTest extends FunSuite{
     queue.show()
   }
   test("should work for a array based queue"){
-    val queue:Queue = new QueueArray(10)
+    val queue:Queue = new QueueArray(1)
     for(i <- 1 to 5)queue.enqueue(i)
-    for(i <- 1 to 2)queue.dequeue()
+    for(i <- 1 to 4)queue.dequeue()
+    println("show:")
     queue.show()
   }
 
