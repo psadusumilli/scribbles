@@ -2,6 +2,7 @@ package com.vijayrc
 
 import org.scalatest.FunSuite
 
+
 class IOTest extends FunSuite {
   private val io = new IO
 

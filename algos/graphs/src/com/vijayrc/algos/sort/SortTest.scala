@@ -3,10 +3,16 @@ package com.vijayrc.algos.sort
 import org.scalatest.FunSuite
 
 class SortTest extends FunSuite{
-
   test("sort using selection"){
     val sort:Sort = new SelectionSort
     val items: Array[Value] = sample(22)
+    show("before",items)
+    sort.on(items)
+    show("after",items)
+  }
+  test("sort using bubble"){
+    val sort:Sort = new InsertionSort
+    val items: Array[Value] = sample(10)
     show("before",items)
     sort.on(items)
     show("after",items)
