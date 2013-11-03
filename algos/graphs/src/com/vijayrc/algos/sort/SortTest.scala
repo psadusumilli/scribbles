@@ -11,6 +11,13 @@ class SortTest extends FunSuite{
     sort.on(items)
     show("after",items)
   }
+  test("sort using insertion"){
+    val sort:Sort = new InsertionSort
+    val items: Array[Value] = sample(10)
+    show("before",items)
+    sort.on(items)
+    show("after",items)
+  }
 
 
   private def sample(sz:Int):Array[Value] = {
