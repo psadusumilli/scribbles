@@ -12,6 +12,8 @@ import java.util.List;
  * O(n2) comparisons
  * O(n) swaps
  * Not adaptive
+ *
+ * TODO this is wrong implementation, check out scala, this leads to more swaps
  */
 public class SelectionSort<T extends Comparable> extends AbstractSort<T> {
     public void on(List<T> input) {
