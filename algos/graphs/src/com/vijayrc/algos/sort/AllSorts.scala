@@ -50,7 +50,7 @@ class BubbleSort extends Sort{
   def on(items: Array[Value]): Array[Value] = {
     for(i <- 0 until items.size){
       var swapped = false
-      for(j <- items.size to i+1 by -1){ // starting with sz, decreasing by 1 upto 'i+1' (left growing subset)
+      for(j <- items.size-1 to i+1 by -1){ // starting with sz, decreasing by 1 upto 'i+1' (left growing subset)
         if(items(j) < items(j-1)){
             swap(j,j-1,items)
             swapped = true
@@ -64,7 +64,7 @@ class BubbleSort extends Sort{
 /**
  * INSERTION
  * ##########
- * move from left (i ->+ sz)
+ * move from left (i -> sz)
  * in LEFT SUBSET (0 <- i) compare/swap adjacent elements in 'right to left' direction
  * called 'insert' because the ith element keeps moving itself in the sorted place in LEFT SUBSET
  *
@@ -81,6 +81,24 @@ class InsertionSort extends Sort{
           swap(j,j-1,items)
       }
     }
+    items
+  }
+}
+
+/**
+ * SHELLSHORT
+ * ##########
+ * pick a band size h=3j+1 until 3j+1 >= sz
+ * move from left (i -> sz), pick elements at band width i+h, i+2h
+ * do insertion sort on them
+ * decrease the band size and again do insertion sort on picked elements
+ *
+ */
+class ShellSort extends Sort{
+  def on(items: Array[Value]): Array[Value] = {
+    var band = 0
+    for(i <- 1 to items.size ;h = (3*i)+1 if h < items.size ){band = h}
+    println(items.size+"|"+band)
     items
   }
 }
