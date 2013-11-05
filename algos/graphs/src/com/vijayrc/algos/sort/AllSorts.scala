@@ -1,5 +1,7 @@
 package com.vijayrc.algos.sort
 
+import com.vijayrc.algos.stack.{StackLinks, Stack}
+
 /**
  * Selection < Bubble < Insertion < Shell < Merge, Binary, Heap < Quick
  * SBISMBHQ
@@ -96,9 +98,50 @@ class InsertionSort extends Sort{
  */
 class ShellSort extends Sort{
   def on(items: Array[Value]): Array[Value] = {
-    var band = 0
-    for(i <- 1 to items.size ;h = (3*i)+1 if h < items.size ){band = h}
-    println(items.size+"|"+band)
+    val size = items.size
+    var h = 1
+    while(h < size/3){ h = 3*h + 1}
+    while(h > 0){
+      for(i <- 0 to size; j= i+h if j < size)
+        if(items(j) < items(i)) swap(i,j,items)
+      h -= 1 //TODO h = h/3 not working
+    }
     items
+  }
+}
+
+/**
+ * MERGESORT
+ * #########
+ * pick the midpoint, loop and compare elements in right/left subset and copy smallest to new array
+ * do this recursively from bottom up, smallest subset to the final size
+ * needs an extra array space
+ */
+class MergeSort extends Sort{
+  def on(items: Array[Value]): Array[Value] = {
+    recurse(items)
+    items
+  }
+
+  def recurse(items: Array[Value]) {
+    val sz: Int = items.size
+    if(sz < 2) return
+    val mid = sz / 2
+    val A = items.slice(0, mid)
+    val B = items.slice(mid, sz)
+
+    recurse(A)
+    recurse(B)
+
+    var a,b,t = 0
+    val temp = new Array[Value](sz)
+    while (a < A.size && b < B.size) {
+      if (A(a) > B(b)) {temp(t) = B(b);b += 1}
+      else {temp(t) = A(a);a += 1}
+      t += 1
+    }
+    if(a < A.size){A.slice(a,A.size) copyToArray(temp,t)}
+    if(b < B.size){B.slice(b,B.size) copyToArray(temp,t)}
+    temp copyToArray items
   }
 }

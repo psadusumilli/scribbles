@@ -7,8 +7,8 @@ import java.util.List;
  * Not stable
  * O(1) extra space
  * O(n^3/2) time as shown
- * Adaptive: O(n·lg(n)) time when nearly sorted
- * http://goanna.cs.rmit.edu.au/~stbird/Tutorials/ShellSort.html
+ * Adaptive: O(nï¿½lg(n)) time when nearly sorted
+ * TODO this is wrong, gap should not reduce by 1 but in diff way, see scala
  */
 public class ShellSort<T extends Comparable> extends AbstractSort<T> {
     public void on(List<T> input) {

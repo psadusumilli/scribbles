@@ -7,6 +7,7 @@ class SortTest extends FunSuite{
   test("sort using bubble"){test(new BubbleSort,22)}
   test("sort using insertion"){test(new InsertionSort,22)}
   test("sort using shell"){test(new ShellSort,10)}
+  test("sort using merge"){test(new MergeSort,50)}
 
   private def test(sort:Sort, sz:Int){
     val items: Array[Value] = sample(sz)

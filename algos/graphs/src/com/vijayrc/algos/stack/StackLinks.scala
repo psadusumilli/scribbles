@@ -13,7 +13,7 @@ class StackLinks extends Stack{
     this
   }
   def pop():Any = {
-    if(head == null) null
+    if(head == null) { return null}
     val value = head.value
     head = head.next
     value
