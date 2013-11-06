@@ -1,6 +1,7 @@
 package com.vijayrc.algos.probs
 
 import com.vijayrc.algos.stack.{StackArray, Stack}
+import org.scalatest.FunSuite
 
 class Dijkstra2Stack {
   private val values:Stack = new StackArray(4)
@@ -49,4 +50,11 @@ class Dijkstra2Stack {
     any.toString.toInt
   }
 
+}
+class Dijkstra2StackTest extends FunSuite{
+  test("should evaluate simple expressions"){
+    val dijkstra = new Dijkstra2Stack
+    val evaluate: Int = dijkstra.evaluate("(((2*3)*(2+6))-(4*3))")
+    assert(36 == evaluate)
+  }
 }

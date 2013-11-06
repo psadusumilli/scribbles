@@ -33,7 +33,7 @@ class NthLargest() {
   }
 }
 
-class Test extends FunSuite{
+class NthLargestTest extends FunSuite{
   test("should work"){
     val nthLargest = new NthLargest
     val nth: Int = 3

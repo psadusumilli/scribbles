@@ -18,10 +18,6 @@ class StackTest extends FunSuite{
     (1 to 10).foreach(x=>stack.pop())
     stack.show()
   }
-  test("should evaluate simple expressions"){
-    val dijkstra = new Dijkstra2Stack
-    val evaluate: Int = dijkstra.evaluate("(((2*3)*(2+6))-(4*3))")
-    assert(36 == evaluate)
-  }
+
 
 }
