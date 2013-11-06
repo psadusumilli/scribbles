@@ -1,16 +1,17 @@
 package com.vijayrc.algos.sort
 
-import com.vijayrc.algos.stack.{StackLinks, Stack}
 
 /**
  * Selection < Bubble < Insertion < Shell < Merge, Binary, Heap < Quick
  * SBISMBHQ
- * Swaps are costlier than compares
+ * cost can be calculated depending on swaps, comparison, memory
+ * stability is to maintain the sort order even on multiple key sorts
+ * remember there is a big difference in logic when an array is used. we used list in java examples
  */
 
 class AllSorts {}
 
-/**
+/*******************************************************************************************
 * SELECTION
 * ##########
 * move from left (i ->+ sz)
@@ -22,6 +23,7 @@ class AllSorts {}
 * O(n2) comparisons
 * O(n) swaps
 * not adaptive for already sorted sets
+* not stable
 */
 class SelectionSort extends Sort{
   def on(items: Array[Value]): Array[Value] = {
@@ -36,7 +38,7 @@ class SelectionSort extends Sort{
     items
   }
 }
-/**
+/********************************************************************************************
  * BUBBLESORT
  * ##########
  * move from left to right (i->sz)
@@ -47,6 +49,7 @@ class SelectionSort extends Sort{
  * O(n2) comparisons
  * 0->O(n2) swaps| presorted->reverse sorted
  * adaptive O(n) time for already sorted sets, better than 'selection' sort
+ * stable
  */
 class BubbleSort extends Sort{
   def on(items: Array[Value]): Array[Value] = {
@@ -63,9 +66,9 @@ class BubbleSort extends Sort{
     items
   }
 }
-/**
+/*******************************************************************************************
  * INSERTION
- * ##########
+ *
  * move from left (i -> sz)
  * in LEFT SUBSET (0 <- i) compare/swap adjacent elements in 'right to left' direction
  * called 'insert' because the ith element keeps moving itself in the sorted place in LEFT SUBSET
@@ -87,14 +90,14 @@ class InsertionSort extends Sort{
   }
 }
 
-/**
+/*******************************************************************************************
  * SHELLSHORT
  * ##########
  * pick a band size h=3j+1 until 3j+1 >= sz
  * move from left (i -> sz), pick elements at band width i+h, i+2h
  * do insertion sort on them
  * decrease the band size and again do insertion sort on picked elements
- *
+ * Not stable
  */
 class ShellSort extends Sort{
   def on(items: Array[Value]): Array[Value] = {
@@ -110,19 +113,25 @@ class ShellSort extends Sort{
   }
 }
 
-/**
+/*******************************************************************************************
  * MERGESORT
  * #########
- * pick the midpoint, loop and compare elements in right/left subset and copy smallest to new array
- * do this recursively from bottom up, smallest subset to the final size
+ * split the items, loop and compare elements in right/left subset and copy smallest to new array (merge)
+ * do this recursive sort and merge from bottom i.e smallest subset (sz=2) to the final size
  * needs an extra array space
+ *
+ * Stable
+ * O(n) extra space for arrays (as shown)
+ * O(lg(n)) extra space for linked lists
+ * O(n*lg(n)) time
+ * Not adaptive
+ * Does not require random access to data
  */
 class MergeSort extends Sort{
   def on(items: Array[Value]): Array[Value] = {
     recurse(items)
     items
   }
-
   def recurse(items: Array[Value]) {
     val sz: Int = items.size
     if(sz < 2) return
@@ -143,5 +152,38 @@ class MergeSort extends Sort{
     if(a < A.size){A.slice(a,A.size) copyToArray(temp,t)}
     if(b < B.size){B.slice(b,B.size) copyToArray(temp,t)}
     temp copyToArray items
+  }
+}
+
+/***************************************************************************************8
+ * QUICKSORT
+ * #########
+ * pick the left-most as partition element
+ * move l from left-right, r from right-left
+ * swap elements to right places by comparing with partition
+ * after each recurse, the partition element goes into the final sorted place
+ *
+ * Not stable
+ * O(lg(n)) extra space (see discussion)
+ * O(n2) time, but typically O(n·lg(n)) time
+ * Not adaptive
+ */
+class QuickSort extends Sort{
+  def on(items: Array[Value]): Array[Value] = {
+    recurse(items,0,items.size -1)
+    items
+  }
+
+  def recurse(items: Array[Value],low:Integer, high:Integer){
+     if(low >= high) return
+     val partition = low
+     var l = low; var r = high
+     while(l<r && l < items.size && r > 0){
+       while(items(l) < items (partition)) l+=1
+       while(items(r) > items (partition)) r-=1
+       swap(l,r,items)
+     }
+    recurse(items,low,l-1)
+    recurse(items,l+1,high)
   }
 }
