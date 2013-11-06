@@ -1,6 +1,7 @@
 package com.vijayrc.algos.stack
 
 import org.scalatest.FunSuite
+import com.vijayrc.algos.probs.Dijkstra2Stack
 
 class StackTest extends FunSuite{
   test("should push/pop to link based stack"){
