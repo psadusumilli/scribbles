@@ -1,0 +1,17 @@
+1)  download the hadoop archive hadoop-2.2.0 into ~/tools
+2)  unzip the archive
+3)  set PATH to hadoop-2.2.0/bin
+4)  setup new java multi-module project with gradle
+5)  add dependency compile 'org.apache.hadoop:hadoop-client:2.2.0'
+6)  write code for map-reduce-job
+7)  gradle build jar like wordcount.jar
+8)  for the wordcount example, put input data text files according to MyJob.java
+9)  for LOCAL machine run, Did not edit any files in hadoop/etc
+10) from terminal: hadoop jar wordcount.jar
+11) check output in ~/dump/output folder
+12) for SINGLE NODE CLUSTER, edit the config files as mentioned in hadoop tutorial namely the
+        mapred-site.xml, yarn-site.xml, capacity-scheduler.xml
+
+
+
+

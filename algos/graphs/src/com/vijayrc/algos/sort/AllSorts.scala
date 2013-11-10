@@ -161,12 +161,14 @@ class MergeSort extends Sort{
  * pick the left-most as partition element
  * move l from left-right, r from right-left
  * swap elements to right places by comparing with partition
- * after each recurse, the partition element goes into the final sorted place
+ * after each recurse, a new partition element is found at final sorted place
  *
  * Not stable
  * O(lg(n)) extra space (see discussion)
  * O(n2) time, but typically O(n·lg(n)) time
  * Not adaptive
+  *
+  * TODO consult the java version, array based going wrong
  */
 class QuickSort extends Sort{
   def on(items: Array[Value]): Array[Value] = {
@@ -175,15 +177,82 @@ class QuickSort extends Sort{
   }
 
   def recurse(items: Array[Value],low:Integer, high:Integer){
-     if(low >= high) return
-     val partition = low
-     var l = low; var r = high
-     while(l<r && l < items.size && r > 0){
-       while(items(l) < items (partition)) l+=1
-       while(items(r) > items (partition)) r-=1
-       swap(l,r,items)
-     }
+    if(high-low < 2) return
+    val mid = (high+low)/2
+    var l = low; var r = high
+    show(items)
+    while(l<=r){
+       while(items(l)<items(mid) && l < mid) {l+=1}
+       while(items(r)>items(mid) && r > mid) {r-=1}
+       if(l <= r){
+         swap(l, r,items)
+         l+=1
+         r-=1
+       }
+    }
+    if(l > items.size) return
+    recurse(items,0,l-1)
+    recurse(items,l,high)
+  }
+}
+
+/********************************************************************************************
+ * QUICKSORT 3 WAY
+ * meant for arrays with few distinct items
+ * TODO something wrong in code
+ */
+class QuickSort3Way extends Sort{
+  def on(items: Array[Value]): Array[Value] = {
+
+    items
+  }
+  def recurse(items: Array[Value],low:Integer, high:Integer){
+    if(low >= high) return
+    var l = low; var r = high; var i= low
+    while(i < items.length){
+      if(items(i) < items(l)){swap(l,i,items);l+=1; i+=1}
+      if(items(i) > items(l)){swap(i,r,items); r-=1;}
+      if(items(i) == items(l)) i+=1 //end index of common partition elements band
+
+    }
     recurse(items,low,l-1)
-    recurse(items,l+1,high)
+    recurse(items,i+1,high)
+  }
+}
+
+
+/**
+* HEAPSORT (BOTTOM UP)
+* move from right to left, take last 2 elements say k,k+1(leafs), compare them with its parent node (k/2)
+* parent node should be always bigger than children, so swap
+* continue until index 0 is reached
+*/
+class HeapSort extends Sort{
+  def on(items: Array[Value]): Array[Value] = {
+    var j = items.size-1
+    while(j-1 > 0){
+      val child1 = items(j)
+      val child2 = items(j-1)
+      val parent = items(j/2)
+      println(child1+","+child2+","+parent)
+      if(child1 > parent){swap(j,j/2,items); balance(j,items)}
+      if(child2 > parent){swap(j-1,j/2,items); balance(j,items)}
+      j = j-2
+    }
+    items
+  }
+
+  private def balance(i:Int,items:Array[Value]){
+    val parent = items(i)
+    val childIndex1 = 2*i
+    val childIndex2 = childIndex1+1
+    if(childIndex1 < items.length && items(childIndex1)> parent){
+      swap(childIndex1,i,items)
+      balance(childIndex1,items)
+    }
+    if(childIndex2 < items.length && items(childIndex2)> parent){
+      swap(childIndex2,i,items)
+      balance(childIndex2,items)
+    }
   }
 }
