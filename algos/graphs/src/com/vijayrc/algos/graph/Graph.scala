@@ -8,30 +8,45 @@ import java.util.UUID
 /**
 * build linked list of edges (adjacency lists) for every vertex
 * if undirected, must add another edge entry to the pair vertex
+* a vertex hold a list of edges, which in turn contain the pairing vertex plus weight
+ * http://www.codeproject.com/Articles/32212/Introduction-to-Graph-with-Breadth-First-Search-BF
 */
-class Edge(val y:Vertex, val weight:Int) {
-  def print(){println("\t"+"|"+y.value+"|"+weight)}
+class Edge(val node:Node, val weight:Int) {
+  def print(){println("\t"+"|"+node.value+"|"+weight)}
 }
 
-class Vertex(val key:UUID,val value:Any) {
+class Node(val key:UUID,val value:Any) {
   val edges  = new mutable.MutableList[Edge]
+  var seen = false
+
   def print(){
       println(value)
       edges.map(edge => edge.print())
       println("-------")
   }
+
   def addEdge(edge:Edge,directed:Boolean){
-    if(edge.y == this) return
+    if(edge.node == this) return
     if(!edges.contains(edge)) edges.+=(edge)
-    if(!directed) edge.y.addEdge(new Edge(this,edge.weight),directed = true)
+    if(!directed) edge.node.addEdge(new Edge(this,edge.weight),directed = true)
   }
-  override def equals(obj: scala.Any): Boolean =  key.equals(obj.asInstanceOf[Vertex].key)
+
+  def unvisitedEdgeNode:Node = {
+    edges.find(edge => !edge.node.seen) match{
+      case Some(edge) => edge.node
+      case None => null
+    }
+  }
+
+  override def equals(obj: scala.Any): Boolean = {
+    key.equals(obj.asInstanceOf[Node].key)
+  }
 }
 
 class Graph {
-  val vertices = new ListBuffer[Vertex]
-  def addVertex(vertex:Vertex) = vertices += vertex
-  def print = vertices.map{vertex => vertex.print()}
+  val nodes = new ListBuffer[Node]
+  def addNode(node:Node) = nodes += node
+  def print = nodes.map{node => node.print()}
 }
 
 
