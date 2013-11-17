@@ -1,0 +1,27 @@
+1) non-personalised average:  just a average of ratings by all users for a movie
+2) non-personalised product association:
+    probability of buying X and Y together = P(X & Y)/P(X)P(Y) 
+    probability of buying X -> P(X) = sales of X item/total sales of all items
+    The above formula avoids the issue of a popular article like bread taking over the association.
+    Association must be specific like anchovi paste+garlic, diaper+napkins
+---------------------------------------------------------------------------------------------------------------------    
+3) data collection is by building user preference model (explicit/implicit)
+    3.1) explicit -> star ratings, review,thumbs and likes
+    3.2) implicit -> buy, follow, track
+---------------------------------------------------------------------------------------------------------------------    
+4) ranking normalisation:
+    recommenders should not be high-risk, high-return with low confidence level     
+    4.1) damped mean:  
+    Take every new item rating as middle (3 in 1..5), every rating that comes in is a piece of evidence to change it.
+    this avoids a few ratings driving the final rating.
+    
+    4.2) sites like Hacker news, Reddit..etc all have their own custom formulae for ranking with time decay, penalties, damping.
+            Reddit uses a logirthimic dampener to raise ratings 1, 100, 1000,10000 
+            Hacker news uses penalties for controversial articles
+            Reddit uses binomial distribution for comments ranking.
+---------------------------------------------------------------------------------------------------------------------    
+5) content based recommenders:
+   5.1) user profile:
+        explicit/implicit user ratings/interests against content attributes
+        build a vector of keyword preferences
+        TFIDF - term frequency inverse document frequency
