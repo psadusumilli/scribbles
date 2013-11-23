@@ -20,7 +20,8 @@
             Hacker news uses penalties for controversial articles
             Reddit uses binomial distribution for comments ranking.
 ---------------------------------------------------------------------------------------------------------------------    
-5) content based recommenders:
+5) user-item based recommenders:
+
    5.0) intro:
         explicit/implicit user ratings/interests against content attributes
         build a vector of keyword preferences
@@ -41,6 +42,7 @@
         user profile vector is built from his/her previous movie ratings, weightage of vector attributes is a tricky business.
         user profile can be permanent, decaying, shifting with changing movie preferences.
 --------------------------------------------------------------------------------------------------------------    
+
 6) user based recommenders:
    6.1) collaborative filtering:
         
@@ -56,6 +58,63 @@
                      sum of deviation of item i rating from other users
                      multiplied by affinity
                      divided by sum of affinity weights    
+
+6) user-user based recommenders:
+   6.1) collaborative filtering: SIMILARITY FUNCTIONS AND PREDICTIONS BASED ON IT.
+        
+        6.1.1) RATING PREDICTION 1:
+        P(a,i) = sum[r(u,i)* w(a,u)] where u is{1->n}  / sum(w(a,u)
+
+        Prediction of rating of item 'i' for user 'a' =  
+                     sum of (item i ratings given by other users multiplied by their affinity to user a)
+                     divided by sum of the affinity weights
+
+        -----------------------------------------------------------------------------------------------------             
+        6.1.2) RATING PREDICTION 2:using normalisation:
+               considers user 'a' personal rating range (can be a happy 4 pointer or grumpy 2pointer always):
+        
+        P(a,i) = avg(r(a)) + {sum[{r(u,i)-avg(r(u))}* w(a,u)]/ sum(w(a,u)}            
+
+        Prediction = avg rating by user 'a' for all items +
+                     sum of deviation of item i's rating considering user u's rating scale preferences
+                     multiplied by affinity
+                     divided by sum of affinity weights
+        -----------------------------------------------------------------------------------------------------
+        6.1.3) RATING PREDICTION 3: using Z Score: for a user u and item i
+            Z(u,i) = r(u,i)-avg(r(u))/stdDev(u)
+            P(a,i) = avg(a)+ std(u)*sum[z(u,i)*w(a,u)]*stdDev(a)/sum(w(a,u))
+        -----------------------------------------------------------------------------------------------------
+
+        6.1.4) Similarity function:
+
+            Pearson Correlation - affinity weight between users x and y 
+            w(x,y) = sum{[r(x,i)-avg(r(x))]*[r(y,i)-avg(r(y))]/stdDev(x)*stdDev(y)} where i=1->m common items  
+
+            Vector/cosine Similarity - cos of angle between user vectors on common items    
+--------------------------------------------------------------------------------------------------------------                
+7) item-item based recommenders:
+   for eg in Amazon:
+   user-user recommenders dont work out when you have a huge item base with few rankings, leading to sparsity 
+   computation becomes heavy when number of users is high
+
+   
+
+
+
+
+
+
+
+        
+           
+
+
+
+
+
+
+
+>>>>>>> notes on recommender systems
 
 
 
