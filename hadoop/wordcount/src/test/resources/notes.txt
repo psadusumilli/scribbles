@@ -1,0 +1,29 @@
+
+HDFS:
+-----
+1) An HDFS cluster has two types of node operating in a master-worker pattern: a name-
+node (the master) and a number of datanodes (workers).
+2) The namenode manages the filesystem namespace. It maintains the filesystem tree and
+   the metadata for all the files and directories in the tree.
+   For example, one namenode might manage all the block pools rooted under /user, say, and a second
+   namenode might handle files(blocks) under /share.
+   Files are stored in blocks(64MB, read about seek/transfer speed)
+
+3) Datanodes are the workhorses of the filesystem. They store and retrieve blocks when
+   they are told to (by clients or the namenode), and they report back to the namenode
+   periodically with lists of blocks that they are storing
+4) STRUCTURE:
+   1 namenode -> N children datanodes
+   1 File -> N blocks -> can be part of multiple block pools
+   1 block pool -> can interact with multiple namenodes via the latter datanotes
+   1 namenode -> 1 namespace volume with blocks picked from block pools
+   1 namenode -> N secondary namenode for backup
+
+5) Failover controller governs the transition from the active namenode to the standby namenode
+6) Fencing is the system to prevent the primary and standby from running simultaneously.
+
+
+
+
+
+

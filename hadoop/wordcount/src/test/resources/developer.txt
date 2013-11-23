@@ -6,35 +6,19 @@
 6)  write code for map-reduce-job
 7)  gradle build jar like wordcount.jar
 8)  for the wordcount example, put input data text files according to MyJob.java
+_______________________________________________________________________________________
+LOCAL STANDALONE RUN:
 9)  for LOCAL(no daemons) machine run, Did not edit any files in hadoop/etc
 10) from terminal: hadoop jar wordcount.jar
 11) check output in ~/dump/output folder
+_______________________________________________________________________________________
+SINGLE NODE RUN WITH HDFS:
+http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html
 12) for SINGLE NODE CLUSTER (daemons run on a single machine), edit the config files as mentioned in hadoop tutorial namely the
-        mapred-site.xml, yarn-site.xml, capacity-scheduler.xml
+        mapred-site.xml,
+        yarn-site.xml,
+        capacity-scheduler.xml
 13) made hdfs operating folder -> ~/dump/hadoop/hdfs
-
-HDFS:
------
-1) An HDFS cluster has two types of node operating in a master-worker pattern: a name-
-node (the master) and a number of datanodes (workers).
-2) The namenode manages the filesystem namespace. It maintains the filesystem tree and
-   the metadata for all the files and directories in the tree.
-   For example, one namenode might manage all the block pools rooted under /user, say, and a second
-   namenode might handle files(blocks) under /share.
-   Files are stored in blocks(64MB, read about seek/transfer speed)
-
-3) Datanodes are the workhorses of the filesystem. They store and retrieve blocks when
-   they are told to (by clients or the namenode), and they report back to the namenode
-   periodically with lists of blocks that they are storing
-4) STRUCTURE:
-   1 namenode -> N children datanodes
-   1 File -> N blocks -> can be part of multiple block pools
-   1 block pool -> can interact with multiple namenodes via the latter datanotes
-   1 namenode -> 1 namespace volume with blocks picked from block pools
-   1 namenode -> N secondary namenode for backup
-
-5) Failover controller governs the transition from the active namenode to the standby namenode
-6) Fencing is the system to prevent the primary and standby from running simultaneously.
 
 
 

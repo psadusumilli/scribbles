@@ -21,7 +21,46 @@
             Reddit uses binomial distribution for comments ranking.
 ---------------------------------------------------------------------------------------------------------------------    
 5) content based recommenders:
-   5.1) user profile:
+   5.0) intro:
         explicit/implicit user ratings/interests against content attributes
         build a vector of keyword preferences
         TFIDF - term frequency inverse document frequency
+        case based reasoning - filtering a camera by specs like pixels,zoom etc. Similar to mobile deals wizard.
+        longterm - build user profile based on content attributes.
+        shortterm - ephemeral just apply at that time with database of cases.
+   5.1) TF*IDF:
+        TF -> term frequency -> no of times a term occurs in a document
+        IDF -> inverse document frequency -> log (no of docs/no of docs with term)
+        this stops very common words like 'the/is/was/..' and identifies real core words.
+   
+   5.2) Keyword vector:
+        Vector space model with many dimensions, for eg
+        user-taste vector     U = 20*romance+20*tomhanks+50*action (3d vector)
+        castaway movie vector M = 34*romance+60*tomhanks+6*action
+        cos angle between U & M vectors gives the user preference to the movie. cos = U.M/[M][U]
+        user profile vector is built from his/her previous movie ratings, weightage of vector attributes is a tricky business.
+        user profile can be permanent, decaying, shifting with changing movie preferences.
+--------------------------------------------------------------------------------------------------------------    
+6) user based recommenders:
+   6.1) collaborative filtering:
+        
+        6.1.1) formula1:
+        P(a,i) = sum[r(u,i)* w(a,u)] where u is{1->n}  / sum(w(a,u)
+
+        Prediction of rating of item 'i' for user 'a' =  sum of (item i ratings given by other users multiplied by their affinity to user a)/sum of the affinity weights
+
+        6.1.2) formula2:
+        P(a,i) = avg(r(a)) + {sum[{r(u,i)-avg(r(u))}* w(a,u)]/ sum(w(a,u)}            
+
+        Prediction = avg rating by user 'a' for all items +
+                     sum of deviation of item i rating from other users
+                     multiplied by affinity
+                     divided by sum of affinity weights    
+
+
+
+
+
+
+
+
