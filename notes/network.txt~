@@ -1,0 +1,77 @@
+High Performance Browser Networking
+____________________________________________________________________________________________________________________________________________
+Chap1:Networking 101
+*********************
+1) DELAYS:
+***********
+    	Probagation delay:    	
+        Amount of time required for a message to travel from the sender to receiver, which is a function of distance over speed with which the signal propagates. 
+	Propagation time is dictated by the distance and the medium through which the signal travels, the propagation speed is usually within a small constant factor of the speed of light
+
+    	Transmission delay:
+        Amount of time required to push all the packet’s bits into the link, which is a function of the packet’s length and data rate of the link. 
+	Tansmission delay is dictated by the available data rate of the transmitting link and has nothing to do with the distance between the client and the server. 
+        As an example, let’s assume we want to transmit a 10 Mb file over two links: 1 Mbps and 100 Mbps. 
+	It will take 10 seconds to put the entire file on the “wire” over the 1 Mbps link and only 0.1 seconds over the 100 Mbps link.
+
+	Processing delay:
+	Amount of time required to process the packet header, check for bit-level errors, and determine the packet’s destination. Happens at routers, intermediate hops.
+	Queuing delay:
+	Amount of time the incoming packet is waiting in the queue until it can be processed. Waiting before routers.
+____________________________________________________________________________________________________________________________________________
+2) LAST MILE LATENCY:
+***********************
+	Its the last link between ISP and home/office, which is the slowest.
+	tracroute google.com
+3) BANDWIDTH:
+*****************
+	Optical fibers have a distinct advantage when it comes to bandwidth 
+	because each fiber can carry many different wavelengths (channels) of light through a process known as wavelength-division multiplexing (WDM). 
+	Hence, the total bandwidth of a fiber link is the multiple of per-channel data rate and the number of multiplexed channels.
+
+	The backbones, or the optic fiber links, that form the core data paths of the Internet are capable of moving hundreds of terabits per second. 
+	However, the available capacity at the 	edges of the network is much, much less, and varies wildly based on deployed technology: 
+	dial-up, DSL, cable, a host of wireless technologies, fiber-to-the-home, and even the performance of the local router. 
+____________________________________________________________________________________________________________________________________________
+Chap2: Building blocks of TCP/IP
+*********************************
+	IP: Internet Protocol is what provides the host-to-host routing and addressing,
+
+	TCP: Transmission Control Protocol, is what provides the abstraction of a reliable network running over an unreliable channel.
+	When you work with a TCP stream, you are guaranteed that all bytes sent will be identical with bytes received and that they will arrive in the same order to the client. 
+	As such, TCP is optimized for accurate delivery, rather than a timely one.
+
+	HTTP standard never specified TCP as underlying protocol, UDP could've be chosen.
+
+	TCP HANDSHAKE:
+	******************
+	Every TCP connection starts with 3 step handshake:
+	STEP1: SYN: Client picks a random sequence number x and sends a SYN packet, which may also include additional TCP flags and options.
+	STEP2: SYN ACK: Server increments x by one, picks own random sequence number y, appends it own set of flags and options, and dispatches the response.
+	STEP3: ACK:Client increments both x and y by one and completes the handshake by dispatching the last ACK packet in the handshake
+
+	The delay(58ms London-NY) imposed by the three-way handshake makes new TCP connections expensive to create.
+	It is one of the big reasons why connection reuse is a critical optimization for any application running over TCP.
+
+	TCP Fast Open (TFO) is a mechanism, which allows data transfer within the SYN packet, could decrease HTTP transaction network latency
+	Congestion Collapse can happen due to resistance between IP (DATAGRAM PROTOCOL) and TCP, leading to servers emiiting multiple copies of same packet.
+
+	FLOW CONTROL:
+	*****************
+	Flow control is a mechanism to prevent the sender from overwhelming the receiverwith data it may not be able to process.
+	The receiver may be busy, under heavy load, or	may only be willing to allocate a fixed amount of buffer space. 
+	To address this, each side	of the TCP connection advertises its own receive window (rwnd), which communicates the size of the available buffer space to hold the incoming data.
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
