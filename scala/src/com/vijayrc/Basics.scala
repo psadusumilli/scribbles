@@ -48,7 +48,7 @@ class Basics {
 
   def array():Unit = {
     val curses = new Array[String](3)
-    curses(0)= "stan
+    curses(0)="stan"
     curses(1)="kyle"
     curses(2)="cartman"
     for ( i <- 0 to 2) print(curses( i )+" ")
