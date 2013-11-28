@@ -1,7 +1,52 @@
 High Performance Browser Networking
+________________________________________________________________________________________________________________________________________________________________________
+CHAPTER 0: General:
+***********************
+OSI
+****
+Physical(wire)->Datalink()->Network(IP)->Transport(TCP)->Session(TLS)->Application(HTTP)
+
+Bandwith
+***********
+It is dataflow rate=100Mb/s which is dependent more on medium (optic, copper), technology.
+
+RTT:
+****
+It is roundtrip time which is a product of distance,bandwidth,intermediate stops.
+
+IP
+***
+is layer below TCP/UDP, has the primary task of delivering datagrams from the source to the destinationhost based on their addresses. 
+To do so, the messages are encapsulated within an IP packet which identifies the source and the destination addresses, as well as a number of other routing parameters.
+If packets are dropped, its the responsibility of above protocol like TCP to compensate.
+____________________________________________________________________________________________________________________________________
+NAT:Network Address Translation 
+********************************
+Given that IP4 is 32 bits, 2^32 is the max number of unique IP addresses globally
+IP6 is in progress
+NAT is a temp hack which became permanent, its like a telephone operator in your office.
+One front-facing globally unique IP/port for LAN (office ntwk) and a table of local IPs./ports (for each employee)
+
+Static NAT:
+***********
+Mapping an unregistered IP address to a registered IP address on a one-to-one basis. 
+Particularly useful when a device needs to be accessible from outside the network.
+ 
+Dynamic NAT:
+************
+Maps an unregistered IP address to a registered IP address from a group of registered IP addresses.
+
+Overloading:
+************
+A form of dynamic NAT that maps multiple unregistered IP addresses to a single registered IP address by using different ports. 
+This is known also as PAT (Port Address Translation), single address NAT or port-level multiplexed NAT.
+ 
+Overlapping:
+************
+When the IP addresses used on your internal network are registered IP addresses in use on another network, the router must maintain a lookup table of these addresses so that it can intercept them and replace them with registered unique IP addresses. 
 ____________________________________________________________________________________________________________________________________________
-Chap1:Networking 101
-*********************
+CHAPTER 2: Networking 101
+******************************
 1) DELAYS:
 ***********
     	Probagation delay:    	
@@ -33,8 +78,8 @@ ________________________________________________________________________________
 	However, the available capacity at the 	edges of the network is much, much less, and varies wildly based on deployed technology: 
 	dial-up, DSL, cable, a host of wireless technologies, fiber-to-the-home, and even the performance of the local router. 
 ____________________________________________________________________________________________________________________________________________
-Chap2: Building blocks of TCP/IP
-*********************************
+CHAPTER 2: Building blocks of TCP/IP
+***************************************
 	IP: Internet Protocol is what provides the host-to-host routing and addressing,
 
 	TCP: Transmission Control Protocol, is what provides the abstraction of a reliable network running over an unreliable channel.
@@ -61,65 +106,8 @@ Chap2: Building blocks of TCP/IP
 	Flow control is a mechanism to prevent the sender from overwhelming the receiverwith data it may not be able to process.
 	The receiver may be busy, under heavy load, or	may only be willing to allocate a fixed amount of buffer space. 
 	To address this, each side	of the TCP connection advertises its own receive window (rwnd), which communicates the size of the available buffer space to hold the incoming data.
-
-	
-
-=======
-
-General:
-_________________________________________________________________________________________________________________________________________________________________________
-
-OSI
-****
-
-Physical(wire)->Datalink()->Network(IP)->Transport(TCP)->Session(TLS)->Application(HTTP)
-
-Bandwith
-********
-It is dataflow rate=100Mb/s which is dependent more on medium (optic, copper), technology.
-
-RTT:
-****
-It is roundtrip time which is a product of distance,bandwidth,intermediate stops.
-
-IP
-***
-is layer below TCP/UDP, has the primary task of delivering datagrams from the source to the destinationhost based on their addresses. 
-To do so, the messages are encapsulated within an IP packet which identifies the source and the destination addresses, as well as a number of other routing parameters.
-If packets are dropped, its the responsibility of above protocol like TCP to compensate.
-
-NAT:Network Address Translation 
-********************************
-Given that IP4 is 32 bits, 2^32 is the max number of unique IP addresses globally
-IP6 is in progress
-NAT is a temp hack which became permanent, its like a telephone operator in your office.
-One front-facing globally unique IP/port for LAN (office ntwk) and a table of local IPs./ports (for each employee)
-
-Static NAT:
-***********
-Mapping an unregistered IP address to a registered IP address on a one-to-one basis. 
-Particularly useful when a device needs to be accessible from outside the network.
- 
-Dynamic NAT:
-************
-Maps an unregistered IP address to a registered IP address from a group of registered IP addresses.
-
-Overloading:
-************
-A form of dynamic NAT that maps multiple unregistered IP addresses to a single registered IP address by using different ports. 
-This is known also as PAT (Port Address Translation), single address NAT or port-level multiplexed NAT.
- 
-Overlapping:
-************
-When the IP addresses used on your internal network are registered IP addresses in use on another network, the router must maintain a lookup table of these addresses so that it can intercept them and replace them with registered unique IP addresses. 
-
-
-
-_________________________________________________________________________________________________________________________________________________________________________
-CHAPTER 2: TCP
-************
-TCP connection lifecycle with Slow start to avoid congestion which in turn leads to packet loss.
-TCP primary ambition is to avoid packet loss thus leads to a slow startup.
+	TCP connection lifecycle with Slow start to avoid congestion which in turn leads to packet loss.
+	TCP primary ambition is to avoid packet loss thus leads to a slow startup.
 
 	3 step handshake (SYN, SYN_ACK, ACK)
 	Receive Window
@@ -192,7 +180,6 @@ TCP primary ambition is to avoid packet loss thus leads to a slow startup.
 	Proportional Rate Reduction (PRR) is a new algorithm specified by RFC 6937, whose goal is to improve the speed of recovery when a packet is lost.
 	Developed in Google, now default in linux 3.2+
 
-
 	Bandwidth-delay product (BDP)
 	******************************
 	Product of data link’s capacity and its end-to-end delay. 
@@ -221,7 +208,7 @@ TCP primary ambition is to avoid packet loss thus leads to a slow startup.
 		messages where a latest message overrides other
 		
 	Recommendations to tune TCP
-	****************************
+	**********************************
 	"Upgrade to latest kernel": 
 		simplest bcos they r tuned perfectly.
 	“Increasing TCP’s Initial Congestion Window”: 
@@ -238,7 +225,7 @@ TCP primary ambition is to avoid packet loss thus leads to a slow startup.
 
 _____________________________________________________________________________________________________________________________________________________________
 CHAPTER 3: UDP- User Datagram Protocol:
-****************************************
+**********************************************
 Came in 1980 after TCP/IP
 Chose to omit many features of TCP/IP
 Usually called Unreliable Datagram Protocol
@@ -246,12 +233,12 @@ Used in DNS
 Become first class browser protocol after WebRTC (Web Real Time Communication) (skype)
 
 Datagram
-*********
+************
 A self-contained, independent entity of data carrying sufficient information to be routed from the source to the destination nodes without reliance on earlier exchanges
 between the nodes and the transporting network.
 
 NAT & UDP:
-**********
+*************
 The issue with NAT translation, at least as far as UDP is concerned, is precisely the routing table that it must maintain to deliver the data. NAT middleboxes rely on connection
 state, whereas UDP has none.
 Delivering outbound UDP traffic does not require any extra work, but routing a reply requires that we have an entry in the translation table, which will tell us the IP and port
@@ -289,10 +276,9 @@ Authentication
 Integrity
 *********
 	A mechanism to detect message tampering and forgery. Checksum created from payload from agreed-upon key using TLS in-built MAC(Message Authentication Code) algorithm.
-	
 
 TLS Handshake:
-**************
+*****************
  Regular TCP SYN,SYN-ACK,ACK
  Server gives public certificate , an optional 32 byte sessionid
  Client makes symmetric key based on Server Public certificate, stores the server sessionid if given
@@ -302,7 +288,7 @@ TLS Handshake:
  Session Keys can help if the server cannot handle huge loads of unique sessionids, the data now is stored on the client side.	
 
 ALPN:
-*****
+*******
 Since HTTP/HTTPS is prevalent, new extensions like SPDY. WebSockets need to piggyback on them until the intermediary devices like router/hub become compatible.
 Application Layer Protocol Negotiation (ALPN) is a TLS extension that introduces support for application protocol negotiation into the TLS handshake
 (Figure 4-2), thereby eliminating the need for an extra roundtrip required by the HTTP Upgrade workflow. 
@@ -438,8 +424,8 @@ Example: Consider a page load with N resources(js,css,html) from server
 ********
 HTTP 1.0 					-> N TCP handshakes + N RTT
 HTTP 1.1 KeepAlive 			-> 1 TCP handshake + N RTT
-HTTP 1.1 KA+ Pipelining
-Server serial processing of resources -> 1 TCP handshake +  1 RTT for all N resources 
+HTTP 1.1 KA+ Pipelining		-> 1 TCP handshake +  1 RTT for all N resources 
+Server serial processing of resources 
 
 head-of-line blocking:
 **********************
@@ -463,6 +449,7 @@ Even 6 TCP connections is not enough, then fetch ur page resources from multiple
 Concatenation
 ***************
 Multiple JavaScript or CSS files are combined into a single resource 
+
 Spriting
 ********
 Multiple images are combined into a larger, composite image.
@@ -477,7 +464,48 @@ The image is part of the DOM now, so no caching, no separate request.
 
 __________________________________________________________________________________________________________________________________________________________________________________________________
 CHAPTER: HTTP 2.0
-******************
+*********************
+SPDY made in Google, targeted a 50% reduction in page load time (PLT)
+Chrome & some browsers, some sites now support SPDY
+SPDY was the catalyst for HTTP 2.0, but SPDY is not HTTP 2.0.
+
+It is expected that HTTP/2.0 will:
+	• Substantially and measurably improve end-user perceived latency in most cases, over HTTP 1.1 using TCP.
+	• Address the “head of line blocking” problem in HTTP.
+	• Not require multiple TCP connections to a server to enable parallelism, thus improving its use of TCP, especially regarding congestion control.
+	• Retain the semantics of HTTP 1.1, leveraging existing documentation, including (but not limited to) HTTP methods, status codes, URIs, and where appropriate,header fields.
+	• Clearly define how HTTP 2.0 interacts with HTTP 1.x, especially in intermediaries.
+	• Clearly identify any new extensibility points and policy for their appropriate
+
+Architecture:
+****************
+A Binary Framing layer is between TLS and HTTP which communicates in binary encoded messages instead of plaintext
+HTTP Semantics do not change so applications can be blissfully unaware.
+
+Stream, Messages and Frames
+*********************************
+• All communication is performed with a single TCP connection.
+• The stream is a virtual channel within a connection, which carries bidirectional messages. Each stream has a unique integer identifier (1, 2, ..., N).
+• The message is a logical HTTP message, such as a request, or response, which consists of one or more frames.
+• The frame is the smallest unit of communication, which carries a specific type of data—e.g., HTTP headers, payload, and so on.
+• Interleave multiple requests in parallel without blocking on any one
+• Interleave multiple responses in parallel without blocking on any one
+• Use a single single connection to deliver multiple requests and responses in parallel
+• Deliver lower page load times by eliminating unnecessary latency
+• Remove unnecessary HTTP 1.x workarounds from our application code
+• Avoid Head of Line Blocking.
+• each stream can be assigned a 31-bit priority value: (0->[2^31-1]). DOM, CSSOM streams are typically assigned higher priority. 
+• A http-2.0 implementing server will send the higher priority streams first
+
+
+
+
+
+
+
+
+
+
 
 
 
