@@ -412,7 +412,7 @@ Recommendations:
 	<link rel="prerender" href="//example.org/next_page.html"> =>Prerender specified page in anticipation of next user destination.
 
 __________________________________________________________________________________________________________________________________________________________________________________________________
-CHAPTER: HTTP 1.1
+CHAPTER 11: HTTP 1.1
 ******************
 • Persistent connections to allow connection reuse (PRIMARY FEATURE) (single TCP connection to fetch html, required js, css)
 • Chunked transfer encoding to allow response streaming
@@ -463,7 +463,7 @@ In practice, a common rule of thumb is to consider inlining for resources under 
 The image is part of the DOM now, so no caching, no separate request.
 
 __________________________________________________________________________________________________________________________________________________________________________________________________
-CHAPTER: HTTP 2.0
+CHAPTER 12: HTTP 2.0
 *********************
 SPDY made in Google, targeted a 50% reduction in page load time (PLT)
 Chrome & some browsers, some sites now support SPDY
@@ -494,7 +494,35 @@ Stream, Messages and Frames
 • Deliver lower page load times by eliminating unnecessary latency
 • Remove unnecessary HTTP 1.x workarounds from our application code
 • Avoid Head of Line Blocking.
-• each stream can be assigned a 31-bit priority value: (0->[2^31-1]). DOM, CSSOM streams are typically assigned higher priority. 
+• Each stream can be assigned a 31-bit priority value: (0->[2^31-1]). DOM, CSSOM streams are typically assigned higher priority. 
+• A http-2.0 implementing server will send the higher priority streams first
+• ALPN - Application Layer Protocol Negotiation is again used to check if HTTP 2.0 can be used.
+• HTTP2.0 will take another decade to full establish in Internet.
+
+Flow Control in HTTP2.0:
+*************************
+• Is hop-by-hop, not end-to-end.
+• Is based on window update frames: receiver advertises how many bytes it is prepared to receive on a stream and for the entire connection.
+• Flow control window size is updated by a WINDOW_UPDATE frame, which specifies the stream ID and the window size increment value.
+• Flow control is directional: receiver may choose to set any window size that it desires for each stream and for the entire connection.
+• Flow control can be disabled by a receiver, both for an individual stream or for the entire connection.
+
+Server Push
+**************
+A powerful new feature of HTTP 2.0 is the ability of the server to send multiple replies for a single client request. That is, in addition to the response for the original request,
+the server can push additional resources to the client (Figure 12-4), without the client having to explicitly request each one!
+For eg, a server need not wait to push css, js resources with just analysing the html requested by client.
+Apache’s mod_spdy looks for X-Associated-Content header,which lists the resources to be pushed.
+
+Header Compression
+**********************
+• Instead of retransmitting the same data on each request and response, HTTP 2.0 uses “header tables” on both the client and server to track and store previously sent key-value pairs.
+• Header tables persist for the entire HTTP 2.0 connection and are incrementally updated both by the client and server.
+• Each new header key-value pair is either appended to the existing table or replaces a previous value in the table.
+
+
+
+
 
 
 
