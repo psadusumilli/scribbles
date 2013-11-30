@@ -524,7 +524,39 @@ CHAPTER 13: Optimising Application Delivery
 **************************************************
 Best practices like domain sharding, image spriting, multiple TCP connections ..etc applied  for HTTP 1.1 should NOT be applied for HTTP 2.0 
 Look into mod_pagespeed of Apachex
+__________________________________________________________________________________________________________________________________________________________________________________________________
+ CHAPTER 5: Performance of Wireless Network
+***************************************************
+	Claude Shannon formula: C = BW*log2(1+S/N) 
+		where 	C => Channel Capacity
+				BW => Bandwidth in Hz
+				S => Signal 	
+Types of wireless networks
+	1) Personal area network (PAN): Within reach of a person peripherals |Cable replacement for Bluetooth, ZigBee, NFC  
+	2) Local area network (LAN): Within a building or campus Wireless extension of wired network| IEEE 802.11 (WiFi) 
+	3) Metropolitan area network(MAN) : Within a city Wireless inter-network connectivity| IEEE 802.15 (WiMAX)
+ 	4) Wide area network (WAN): Worldwide Wireless network access| Cellular (UMTS, LTE, etc.)
  
+* Doubling in available frequency range will double the data rate—e.g., going from 20 to 40 MHz of bandwidth can double the channel data rate,  which is exactly how 802.11n is improving its performance over earlier WiFi standards!
+* Different countries may, and often do, assign different spectrum ranges to the same wireless technology.
+* Low-frequency signals travel farther and cover large areas (macrocells), but at the cost of requiring larger antennas and having more clients competing for access. 
+   On the other hand, high-frequency signals can transfer more data but won’t travel as far, resulting in smaller coverage areas (microcells) and a requirement for more infrastructure.
+* Path loss, or path attenuation, is the reduction in signal power with respect to distance traveled—the exact reduction rate depends on the environment. 
+Near-far problem
+*******************
+A condition in which a receiver captures a strong signal and thereby makes it impossible for the receiver to detect a weaker signal, effectively “crowding out” the weaker signal.
+Cell-breathing
+***************
+A condition in which the coverage area, or the distance of the signal, expands and shrinks based on the cumulative noise and interference levels
+Modulation:
+**************
+Modulation is the process of digital-to-analog conversion, and different “modulation alphabets” can be used to encode the digital signal with different efficiency. 
+The combination of the alphabet and the symbol rate is what then determines the final throughput of the channel. 
+__________________________________________________________________________________________________________________________________________________________________________________________________
+ CHAPTER 6: WiFi
+******************
+
+
 
 
 
