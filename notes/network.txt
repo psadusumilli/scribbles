@@ -555,6 +555,161 @@ The combination of the alphabet and the symbol rate is what then determines the 
 __________________________________________________________________________________________________________________________________________________________________________________________________
  CHAPTER 6: WiFi
 ******************
+* Technically, a device must be submitted to and certified by the WiFi Alliance to carry the WiFi name and logo, but in practice, the name is used to refer to any product based on the IEEE 802.11 standards.
+* Operating in the unlicensed 2.4 GHz ISM band allowed anyone to easily provide a “wireless extension” to their existing local area network. 
+* 802.3 is wire Ethernet , 802.11(b->n..) family is wireless
+* Ethernet Standard is based on 
+	CSMA - Carrier Sense Multiple Access - Listen before you send, check if anyone is transmitting, then send
+	CSMA/CD - Collision Detection - if a collision is detected, then both parties stop transmitting immediately and sleep for a random interval (with exponential backoff).
+* WiFi relies on collision avoidance (CSMA/CA), where each sender attempts to avoid collisions by transmitting only when the channel is sensed to be idle, and then sends its full message frame in its entirety.
+* 2.4 GHz band provides three non-overlapping 20 MHz radio channels: 1, 6, and 11
+
+• WiFi provides NO bandwidth or latency guarantees or assignment to its users.
+• WiFi provides variable bandwidth based on signal-to-noise in its environment.
+• WiFi transmit power is limited to 200 mW, and likely less in your region.
+• WiFi has a limited amount of spectrum in 2.4 GHz and the newer 5 GHz bands.
+• WiFi access points overlap in their channel assignment by design.
+• WiFi access points and peers compete for access to the same radio channel.
+
+* Instead of direct TCP packet loss, you are much more likely to see higher variability in packet arrival times due to the underlying collisions and retransmissions performed by the lower link and physical layers.
+
+ * adaptive bitrate streaming is used for long-lived streams such as video and audio content like Youtube., Netflix. They store multiple bit-rate versions of the same file again split into segments (5-10sec chunks), serving them dynamically as the bit rate changes.
+
+* DTIM: delivery traffic indication message, used to maintain a live connection
+__________________________________________________________________________________________________________________________________________________________________________________________________
+ CHAPTER 7: Mobile Networks
+********************************
+Network|Desc|data rate| latency
+1G | no data Analog systems
+2G | First digital systems as overlays or parallel to analog systems | 100–400 Kbit/s | 300–1000 ms
+3G | Mbit/s Dedicated digital networks deployed in parallel to analog systems | 0.5–5 Mbit/s | 100–500 ms
+4G | Gbit/s Digital and packet-only networks | 1–50 Mbit/s |  < 100 ms
+
+History:
+*********
+1979 	| 1G  from Japan, an analog system with no data.
+1991 	| 2G from Finland based on GSMA
+199* 	| GPRS (General Radio Packet Service)+2G => 2.5G
+2003 	| EDGE (Enhanced Data rates for GSM Evolution) + 2G=>2.75G	 
+
+Industry standards for RAN (Radio Access Network)
+****************************************************
+199* 	| ETSI (European Telecom Standards Institute) gave GSMA - 80->85%
+		| IS 95 (US Qualcomm) 15%
+		Both were incompatible
+
+1998 	| 3GPP Org	=> 3G successor to GSMA			
+		| 3GPP2  Org => 3G successor to IS 95 based on CDMA2000
+
+ALL
+****
+Generation 		Organization 		Release
+----------------------------------------------------------------------------------------------------------------------------------------
+2G 				3GPP 				GSM
+				3GPP2 				IS-95 (cdmaOne)
+----------------------------------------------------------------------------------------------------------------------------------------
+2.5/2.75G		3GPP 				GPRS, EDGE (EGPRS)
+				3GPP2 				CDMA2000
+----------------------------------------------------------------------------------------------------------------------------------------	
+3G				3GPP 				UMTS
+				3GPP2 				CDMA 2000 1x EV-DO Release 0
+----------------------------------------------------------------------------------------------------------------------------------------	
+3.5/3.75/3.9G 	3GPP 				HSPA, HSPA+, LTE (High Speed Packet Access)
+				3GPP2 				EV-DO Revision A, EV-DO Revision B, EV-DO Advanced
+----------------------------------------------------------------------------------------------------------------------------------------	
+4G				3GPP 				LTE-Advanced, HSPA+ Revision 11+
+									No 3GPP2, convergence happening here
+----------------------------------------------------------------------------------------------------------------------------------------
+ 
+4G Network
+*************
+Requirements of IMT-Advanced include the following:
+• Based on an IP packet switched network
+• Interoperable with previous wireless standards (3G and 2G)
+• 100 Mbit/s data rate for mobile clients and Gbit/s+ when stationary
+• Sub 100 ms control-plane latency and sub 10 ms user-plane latency
+• Dynamic allocation and sharing of network resources between users
+• Use of variable bandwidth allocation, from 5 to 20 MHz
+
+LTE-Advanced is a standard that was specifically developed to satisfy all the IMT-Advanced criteria.
+LTE-Advanced is still 3.9G as it does not satify all requirements.
+
+LTE - Long Term Advanced
+****************************
+• All IP core network
+• Simplified network architecture to lower costs
+• Low latencies in user (<10 ms) and control planes (<100 ms)
+• New radio interface and modulation for high throughput (100 Mbps)
+• Ability to use larger bandwidth allocations and carrier aggregation
+• MIMO as a requirement for all devices
+
+HSPA+ is Leading Worldwide 4G Adoption
+********************************************
+HSPA+ was first introduced in 3GPP release 7, back in 2007, is widely implemented by carriers owing to the cost effectiveness with incremental updates instead of radically changing infrastructure for 4G.
+
+MIMO: Multiple Input Multiple Output , LTE depends on UE (User Equipment), smartphones can have 2-4 radios unlike older phones with 1 radio
+
+RRC: Radio Resource Controller:  
+	* assumes full responsibility over scheduling of who talks when, allocated bandwidth, the signal power used, the power state of each device, and a dozen other variables.
+	* in LTA state machine, 
+		RRC Idle [ low-power state (<15 mW) and only listening to control traffic ], 
+		RRC Connected [Device radio is in a high-power state (1000–3500 mW) while it either transmits data or waits for data]
+			| Continuous reception: Highest power state, established network context, allocated network resources.
+			| Short Discontinuous Reception (Short DRX):  Established network context, no allocated network resources.
+			| Long Discontinuous Reception (Long DRX): Established network context, no allocated network resources.
+	* in 3G-HSPA state machine
+		Idle: The device radio is in a low-power state and only listening to control traffic from the network
+		Cell DCH: The device is in a high-power state, and network resources are assigned both for upstream and downstream data transfer.
+		Cell FACH: An intermediate power state, which consumes significantly less power than DCH, no dedicated network resources, still transfers data at low rate.
+	* in CDMA
+		Idle: The device radio is in a low-power state and only listening to control traffic from the network. 
+		Connected:  The device is in a high-power state and network resources are assigned for both upstream and downstream data transfers.
+	
+
+
+
+
+
+
+
+			
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				 
+
+
 
 
 
