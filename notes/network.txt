@@ -19,6 +19,32 @@ IP
 is layer below TCP/UDP, has the primary task of delivering datagrams from the source to the destinationhost based on their addresses. 
 To do so, the messages are encapsulated within an IP packet which identifies the source and the destination addresses, as well as a number of other routing parameters.
 If packets are dropped, its the responsibility of above protocol like TCP to compensate.
+
+netstat command:
+********************
+netstat -a 	= all ports
+netstat -at 	= all tcp ports
+netstat -au 	= all udp ports
+netstat -l	= all listening ports
+netstat -lt 	= all listening tcp ports
+netstat -s 	= show statistics
+netstat -p 	= show process
+netstat -ap | grep ssh = show port used bu processs say ssh
+
+
+ICMP: Internet Control Message Protocol
+*******************************************
+ It is used by network devices, like routers, to send error messages indicating, for example, that a requested service is not available or that a host or router could not be reached. ICMP can also be used to relay query messages.[1] It is assigned protocol number 1.[2] ICMP[3] differs from transport protocols such as TCP and UDP in that it is not typically used to exchange data between systems, nor is it regularly employed by end-user network applications (with the exception of some diagnostic tools like ping and traceroute).
+For example, every device (such as an intermediate router) forwarding an IP datagram first decrements the time to live (TTL) field in the IP header by one. If the resulting TTL is 0, the packet is discarded and an ICMP Time To Live exceeded in transit message is sent to the datagram's source address.
+Although ICMP messages are contained within standard IP packets, ICMP messages are usually processed as a special case, distinguished from normal IP processing, rather than processed as a normal sub-protocol of IP. In many cases, it is necessary to inspect the contents of the ICMP message and deliver the appropriate error message to the application that generated the original IP packet, the one that sent the packet that prompted the sending of the ICMP message.
+
+
+
+
+
+	
+
+
 ____________________________________________________________________________________________________________________________________
 NAT:Network Address Translation 
 ********************************
@@ -649,8 +675,10 @@ HSPA+ was first introduced in 3GPP release 7, back in 2007, is widely implemente
 
 MIMO: Multiple Input Multiple Output , LTE depends on UE (User Equipment), smartphones can have 2-4 radios unlike older phones with 1 radio
 
-RRC: Radio Resource Controller:  
+RRC: Radio Resource Controller:
+**********************************  
 	* assumes full responsibility over scheduling of who talks when, allocated bandwidth, the signal power used, the power state of each device, and a dozen other variables.
+	* In LTE, each radio base station (eNodeB) hosts the RRC, which maintains the RRC state machine and performs all resource assignment for each active user in its cell.
 	* in LTA state machine, 
 		RRC Idle [ low-power state (<15 mW) and only listening to control traffic ], 
 		RRC Connected [Device radio is in a high-power state (1000–3500 mW) while it either transmits data or waits for data]
@@ -664,7 +692,71 @@ RRC: Radio Resource Controller:
 	* in CDMA
 		Idle: The device radio is in a low-power state and only listening to control traffic from the network. 
 		Connected:  The device is in a high-power state and network resources are assigned for both upstream and downstream data transfers.
+	* Why RRC state machine is important?
+		Pandora pushes the entire song in one burst thereby leaving radio device free while it plays song, which is good for radio usage.
+		But Pandora pings every 60s for usage analytics, this brings the radio from idle to active, leading to latency/battery costs
+
+LTE Architecture:
+******************
+Radio Access Network: User device moves from one tower to the other based on tracking location, this is called Tower Handoffs.
+Core Network: Also called EPC (Evolved Packet Core) connects the radio network to the public Internet.
+Consists of 
+	SWG
+	*****
+	Service Gateway				
+	MME
+	*****
+	The Mobility Management Entity component is effectively a user database, which manages all the state for every user on the network: 
+	their location on the network, type of account, billing status, enabled services, plus all other user metadata.
+	PCRF
+	******
+	Policy and Charging Rules Function (PCRF) component is responsible for maintaining and evaluating these rules for the packet gateway
+	PGW -> Packet gateway (PGW)
+	*********************************
+	It is the public gateway that connects the mobile carrier to the public Internet. 
+	The PGW is the termination point for all external connections, regardless of the protocol. 
+	When a mobile device is connected to the carrier network, the IP address of the device is allocated and maintained by the PGW
+	PGW acts as a NAT assigning dynamic public IPs to devices
+Flow:
+*****
+• Data arrives at the external packet gateway, which connects the core network to the public Internet.
+• A set of routing and packet policies is applied at the packet gateway.
+• Data is routed from the public gateway to one or more serving gateways, which act as mobility anchors for the devices within the radio network.
+• A user database service performs the authentication, billing, provisioning of services, and location tracking of each user on the network.
+• Once the location of the user within the radio network is determined, the data is routed from the serving gateway to the appropriate radio tower.
+• The radio tower performs the necessary resource assignment and negotiation with the target device and then delivers the data over the radio interface.
+
+Latency:
+*********
+	#OUTBOUND data flow: A  user initiating a new request incurs several different latencies:
+	Control-plane latency=Fixed, one-time latency cost incurred for RRC negotiation and state transitions: <100 ms for idle to active, and <50 ms for dormant to active.
+	User-plane latency=Fixed cost for every application packet transferred between the device and the radio tower: <5 ms.
+	Core network latency=Carrier dependent cost for transporting the packet from the radio tower to the packet gateway: in practice, 30–100 ms.
+	Internet routing latency=Variable latency cost between the carrier’s packet gateway and the destination address on the public Internet
 	
+	#INBOUND data flow: network to user device
+	Step1:	First packet:	Network->PGW->SGW->MME sends paging-message to get device location->SGW
+	Step2: 	Context established, further communication between device and SGW only
+______________________________________________________________________________________________________________________________________________-
+CHAPTER 8- Optimising for Mobile Networks:
+*************************************************
+Radio is second only to screen in battery power usage.
+Radio usage is non-linear with data 
+Radio power is increasing with poweful spectrum
+
+• Polling is exceptionally expensive on mobile networks; minimize it.
+• Where possible, push delivery and notifications should be used.
+• Outbound and inbound requests should be coalesced and aggregated.
+• Noncritical requests should be deferred until the radio is active
+
+
+
+
+
+
+		
+			
+
 
 
 

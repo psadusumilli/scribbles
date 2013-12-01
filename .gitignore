@@ -21,3 +21,4 @@ test-output/
 *.wav
 *.pyc
 .gradle/
+./notes/network.txt~
