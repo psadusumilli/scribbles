@@ -864,8 +864,6 @@ Limitations:
 **************
 Flow from server to client only
 specifically designed to transfer UTF-8 data: binary streaming, while possible, is inefficient
-Again watch out for wireless networks
-
 
 
 
