@@ -31,6 +31,31 @@ netstat -s 	= show statistics
 netstat -p 	= show process
 netstat -ap | grep ssh = show port used bu processs say ssh
 
+tcpdump:
+***********
+tcpdump host vijayrc.com > 1.txt => start browsing vijayrc.com, capture all tcp trafffic into a text file
+tcpdump src vijayrc.com > 1.txt => capture traffic from src vijayrc.com and not from ur browser
+tcpdump dst vijayrc.com > 1.txt => capture traffic from browser and not from vijayrc.com
+tcpdump net 1.2.3.0/24 => capure over IP range
+tcpdump udp => capture udp alone, works for tcp, icmp
+tcpdump port 80 => capture for port 80 alone
+tcpdump src port 1025 
+tcpdump dst port 389
+tcpdump src port 1025 and tcp 
+tcpdump portrange 21-23
+tcpdump less 32 => packets lesser than 32bytes
+tcpdump greater 128 => packets greater than 128bytes
+
+//capture and read file
+tcpdump -s 1514 port 80 -w capture_file
+tcpdump -r capture_file
+
+//combo || &&
+tcpdump -nnvvS and src 10.5.2.3 and dst port 3389
+tcpdump -nvvXSs 1514 dst 192.168.0.2 and src net and not icmp
+tcpdump 'src 10.0.2.4 and (dst port 3389 or 22)'
+
+
 
 ICMP: Internet Control Message Protocol
 *******************************************

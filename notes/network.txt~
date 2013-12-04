@@ -31,6 +31,14 @@ netstat -s 	= show statistics
 netstat -p 	= show process
 netstat -ap | grep ssh = show port used bu processs say ssh
 
+tcpdump:
+***********
+tcpdump host vijayrc.com > 1.txt => start browsing vijayrc.com, capture all tcp trafffic into a text file
+tcpdump src vijayrc.com > 1.txt => capture traffic from src vijayrc.com and not from ur browser
+tcpdump dst vijayrc.com > 1.txt => capture traffic from browser and not from vijayrc.com
+tcpdump net 1.2.3.0/24 => capure over IP range
+tcpdump udp => capture udp alone, works for tcp, icmp
+
 
 ICMP: Internet Control Message Protocol
 *******************************************
@@ -864,12 +872,213 @@ Limitations:
 **************
 Flow from server to client only
 specifically designed to transfer UTF-8 data: binary streaming, while possible, is inefficient
+Again watch out for wireless networks
 
 
+______________________________________________________________________________________________________________________________________________
+CHAPTER 17- Web Sockets
+***********************
+
+WebSocket enables bidirectional, message-oriented streaming of text and binary data between client and server.
+• Connection negotiation and same-origin policy enforcement
+• Interoperability with existing HTTP infrastructure
+• Message-oriented communication and efficient message framing
+• Subprotocol negotiation and extensibility
+
+code:
+#####
+var ws = new WebSocket('wss://example.com/socket');
+	ws.onerror = function (error) { ... }
+	ws.onclose = function () { ... }
+	ws.onopen = function () {
+	ws.send("Connection established. Hello server!");
+}
+ws.onmessage = function(msg) {
+	if(msg.data instanceof Blob) {
+		processBlob(msg.data);
+	} else {
+		processText(msg.data);
+	}
+}
+
+Android browser does not support, SockJS and Socket.IO are alternatives
+ws:// - text based
+wss:// - tls based
+Supports text (DOMObject) and binary transfers(BlobObject/ArrayBuffer)
+
+ArrayBuffer:
+*************
+Server:
+#######
+struct someStruct {
+	char username[16];
+	unsigned short id;
+	float scores[32];
+};
+
+Client:
+#######
+ws.onmessage = function(msg){
+	var buffer = msg.data;
+	var usernameView = new Uint8Array(buffer, 0, 16);
+	var idView = new Uint16Array(buffer, 16, 1);
+	var scoresView = new Float32Array(buffer, 18, 32);
 
 
+	console.log("ID: " + idView[0] + " username: " + usernameView[0]);
+	for (var j = 0; j < 32; j++) { 
+		console.log(scoresView[j]) 
+	}
+}
 
+Method send() is asynchronous, use the WebSocket.bufferedAmt method to check if full upload is done.
+Does not have req/response headers, so you got use to your own metadata mechanism
+Works on top of HTTP 80/443 but not limited ot HTTP
+
+Binary Framing:
+*****************
+WebSocket uses a custom 'Binary framing format (Figure 17-1), which splits each application message into one or more frames, transports them to the destination, reassembles them, and finally
+notifies the receiver once the entire message has been received.
+Frame: The smallest unit of communication, each containing a variable-length frame header and a payload that may carry all or part of the application message.
+Message: A complete sequence of frames that map to a logical application message
+Head of line blocking will still occur when multiple messages are bundled together.
+WebSocket needs a dedicated TCP connection while in future multplexing can solve this problem.
+
+subprotocol negotiation
+************************
+var ws = new WebSocket('wss://example.com/socket',
+['appProtocol', 'appProtocol-v2']);
+ws.onopen = function () {
+if (ws.protocol == 'appProtocol-v2') {
+...
+} else {
+...
+}
+
+Deploying:
+**********
+Piggybacking on HTTPS is the safest for WebSockets as none of the intermediate routers, hubs can block it.
+But timeouts by servers, routers on long-held TCP connections by WebSockets is an issue
+
+Performance Checklist:
+*********************
+• Use secure WebSocket (WSS over TLS) for reliable deployments.
+• Pay close attention to polyfill performance (if necessary).
+• Leverage subprotocol negotiation to determine the application protocol.
+• Optimize binary payloads to minimize transfer size.
+• Consider compressing UTF-8 content to minimize transfer size.
+• Set the right binary type for received binary payloads.
+• Monitor the amount of buffered data on the client.
+• Split large application messages to avoid head-of-line blocking.
+• Leverage other transports where applicable.
+
+______________________________________________________________________________________________________________________________________________
+CHAPTER 18 - WebRTC	 
+*******************
+Web Real-Time Communication (WebRTC) is a collection of standards, protocols, and JavaScript APIs, the combination of which enables peer-to-peer audio, video, and data
+sharing between browsers (peers).
+• MediaStream: acquisition of audio and video streams
+• RTCPeerConnection: communication of audio and video data
+• RTCDataChannel: communication of arbitrary application data
+
+MEDIASTREAM:
+************
+A MediaStream object represents a real-time media stream and allows the application code to acquire data, manipulate individual tracks, and specify outputs. All the audio
+and video processing, such as noise cancellation, equalization, image enhancement, and more are automatically handled by the audio and video engines.
+
+getUserMedia() is a simple API to acquire audio and video streams from the underlying platform. The media is automatically optimized, encoded,
+and decoded by the WebRTC audio and video engines and is then routed to one or more outputs.
+
+<video autoplay></video>
+<script>
+	var constraints = {
+			audio: true,
+			video: {mandatory: {width: { min: 320 },height: { min: 180 }},
+			optional: [{ width: { max: 1280 }},	{ frameRate: 30 },	{ facingMode: "user" }]
+		}
+	}
+	function gotStream(stream) {
+		var video = document.querySelector('video');
+		video.src = window.URL.createObjectURL(stream);
+	}
+	function logError(error) { ... }
+	navigator.getUserMedia(constraints, gotStream, logError);
+</script>
+
+
+UDP is the protocol as timeliness is preferred over reliability
+	No guarantee of message delivery
+	No acknowledgments, retransmissions, or timeouts.
+	No guarantee of order of delivery
+	No packet sequence numbers, no reordering, no head-of-line blocking.
+	No connection state tracking
+	No connection establishment or teardown state machines.
+	No congestion control
+	No built-in client or network feedback mechanisms.
+
+
+RTCPeerConnection API
+**********************
+Requires
+• ICE: Interactive Connectivity Establishment (RFC 5245)
+	—STUN: Session Traversal Utilities for NAT (RFC 5389)
+	—TURN: Traversal Using Relays around NAT (RFC 5766)
+• SDP: Session Description Protocol (RFC 4566)
+• DTLS: Datagram Transport Layer Security (RFC 6347)
+• SCTP: Stream Control Transport Protocol (RFC 4960)
+• SRTP: Secure Real-Time Transport Protocol (RFC 3711)
+
+
+• RTCPeerConnection manages the full ICE workflow for NAT traversal.
+• RTCPeerConnection sends automatic (STUN) keepalives between peers.
+• RTCPeerConnection keeps track of local streams and remote streams.
+• RTCPeerConnection triggers automatic stream renegotiation as required.
+• RTCPeerConnection provides necessary APIs to generate the connection offer, accept the answer, allows us to query the connection for its current state, and more.
+
+DataChannel API enables exchange of arbitrary application data between peers—think WebSocket, but peer-to-peer
+
+Signaling and Session Negotiation
+*********************************
+Before any connectivity checks of session negotiation can occur, we must find out if the other peer is reachable and if it is willing to establish the connection. 
+We must extend an offer, and the peer must return an answer
+However, now we have a dilemma: if the other peer is not listening for incoming packets, how do we notify it of our intent? At a minimum, we need a shared signaling channel.
+For this, WebRTC defers to existing standards
+	Session Initiation Protocol (SIP) => Application-level signaling protocol, widely used for voice over IP (VoIP) and videoconferencing over IP networks.
+	Jingle => Signaling extension for the XMPP protocol, used for session control of voice over IP and videoconferencing over IP networks.
+	ISDN User Part (ISUP) => Signaling protocol used for setup of telephone calls in many public switched telephone networks around the globe.
+
+Skype is a great example of a peer-to-peer system with custom signaling: the audio and video communication are peer-to-peer, but Skype users have to connect to Skype’s signaling servers, which use their own proprietary protocol, to help initiate the peer-to-peer connection.
+Asterisk can act as a signaling server with SIP
+
+	Example: SDP Session Desc Protocol
+	************************************
+	var signalingChannel = new SignalingChannel();
+	var pc = new RTCPeerConnection({});
 	
+	navigator.getUserMedia({ "audio": true }, gotStream, logError);
+	
+	function gotStream(stream) {
+		pc.addstream(stream);
+		pc.createOffer(function(offer) {pc.setLocalDescription(offer);signalingChannel.send(offer.sdp);});
+	}
+	function logError() { ... }
+
+SDP:
+****
+WebRTC uses Session Description Protocol (SDP) to describe the parameters of the peerto- peer connection. SDP does not deliver any media itself; instead it is used to describe
+the “session profile,” which represents a list of properties of the connection: types of media to be exchanged (audio, video, and application data), network transports, used codecs and their settings, bandwidth information, and other metadata.
+
+ICE:
+*****
+Each RTCPeerConnection connection object contains an “ICE agent.”
+ICE agent is responsible for 
+• gathering local IP, port tuples (candidates).
+• performing connectivity checks between peers.
+• sending connection keepalives.
+
+First hits OS for local IP, then STUN for public IP, if not, go to TURN server as a last resort.
+
+
 
 
 
