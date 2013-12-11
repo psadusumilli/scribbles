@@ -1215,7 +1215,10 @@ Presentation File => The overall presentation and the properties of the media ar
 encoding, language, RTSP URLs, destination address, port, and other parameters. The presentation description file can be obtained by the client using HTTP, email or other means.
 In RTSP, each presentation and media stream is identified by an RTSP URL. 
 
-RSTP differs from HTTP
+RSTP differs from HTTP in
+	HTTP is stateless but RSTP must maintain session states
+	HTTP is request from client/response server but RSTP anyone can request in any direction
+	
 
 
 
