@@ -3,16 +3,18 @@ package com.vijayrc.info.boolean
 import scala.io.Source
 import org.scalatest.FunSuite
 import scala.collection.mutable
+import scala.collection.immutable.TreeMap
 
 /**
  *  CLASS CODE
  */
 class InvertedIndex {
-  val dict = new mutable.HashMap[String,mutable.MutableList[String]]()
+  var dict = TreeMap[String,mutable.SortedSet[String]]()
 
   def processDoc(filePath:String, fileId:String){
     val lines: Iterator[String] = Source.fromFile(filePath).getLines()
     lines.foreach(line => processLine(line,fileId))
+
   }
 
   def processLine(line: String, fileId:String){
@@ -20,10 +22,9 @@ class InvertedIndex {
   }
 
   def processToken(token: String, fileId:String){
-    val list = mutable.MutableList[String]()
+    val list = mutable.SortedSet[String]()
     if(!dict.contains(token)) {dict += (token -> list)}
     dict(token).+=(fileId)
-    println(dict(token).size)
   }
 
   def print(){
