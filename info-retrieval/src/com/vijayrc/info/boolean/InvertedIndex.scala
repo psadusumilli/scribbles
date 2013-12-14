@@ -13,31 +13,20 @@ class InvertedIndex {
 
   def processDoc(filePath:String, fileId:String){
     val lines: Iterator[String] = Source.fromFile(filePath).getLines()
-    lines.foreach(line => processLine(line,fileId))
+    lines.foreach(line => {line.split("\\s").foreach(token => processToken(token.replaceAll("[.|,|:|;]",""), fileId))})
   }
-
-  def processLine(line: String, fileId:String){
-    line.split("\\s").foreach(token => processToken(token.replaceAll("[.|,|:|;]",""), fileId))
-  }
-
   def processToken(token: String, fileId:String){
-    if(!treeMap.contains(token))
-      treeMap += (token -> mutable.SortedSet[Posting]())
-
+    if(!treeMap.contains(token)) treeMap += (token -> mutable.SortedSet[Posting]())
     val postings = treeMap(token)
     val postingsByFile = postings.filter(p => p.file.equals(fileId))
-    if(postingsByFile.isEmpty)
-      treeMap(token).+=(new Posting(fileId))
-    else
-      postingsByFile.foreach(p => p.increment)
+    if(postingsByFile.isEmpty) treeMap(token).+=(new Posting(fileId))
+    else postingsByFile.foreach(p => p.increment)
   }
-
   def print(){
     var str = ""
     treeMap.keys.foreach(key => {str+=key+"["; treeMap(key).foreach(posting => str += posting+"|"); str+="]\n"})
     println(str)
   }
-
 }
 
 class Posting(val file:String) extends Ordered[Posting]{
