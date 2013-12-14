@@ -19,13 +19,7 @@ Brutus AND Caesar AND NOT Calpurnia (! gate)
 110100 AND 110111 AND 101111 = 100100 so play1 and play4
 This model wont scale for huge data
 
-1.2 Inverted Index
-Sorted Dictionary of terms as KEYS, and lists of document ids where the term occurs as VALUES (POSTINGS)
-Deciding between ArrayList and LinkedList is a choice of memory (arraylist doubles up fixed sizes, linked list pointer sizes matter)
 
-Antony,3 	[play1->play2->play6]  
-Brutus,3	[play1->play1->play4]
-Caesar,5	[play1->play2->play4->play5->play6]
-...
+
 
 
