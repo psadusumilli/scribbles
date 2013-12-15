@@ -24,15 +24,14 @@ class InvertedIndex {
     treeMap.keys.foreach(term => {str+=term+"["+ treeMap(term).toString +"]\n"})
     println(str)
   }
-  def findDocsFor(ands:List[String]):List[String]={
-     val foundPostings = mutable.MutableList[mutable.SortedSet[Posting]]()
+  def findDocsFor(ands:List[String]):mutable.MutableList[String]={
+     val postingSets = mutable.SortedSet[PostingSet]()
+     ands.foreach(and => postingSets+=treeMap(and))
+     var mergedPostingSet = new PostingSet
+     postingSets.foreach(p => mergedPostingSet = mergedPostingSet.intersect(p))
+     mergedPostingSet.fileIds
+  }
 
-     ands
-  }
-  private def intersect(set1:Set[Posting],set2:Set[Posting]):Set[Posting] = {
-    if (set1.size >= set2.size) set1.intersect(set2)
-    else set2.intersect(set1)
-  }
 }
 
 /**
@@ -52,6 +51,9 @@ class Posting(val fileId:String) extends Ordered[Posting]{
 class PostingSet extends Ordered[PostingSet]{
   val set = mutable.SortedSet[Posting]()
 
+  def addAll(set:mutable.SortedSet[Posting]){
+    set.foreach(p => this.set.add(p))
+  }
   def add(fileId:String){
     val byFile = set.filter(p => p.fileId.equals(fileId))
     if(byFile.isEmpty) set.+=(new Posting(fileId))
@@ -61,6 +63,22 @@ class PostingSet extends Ordered[PostingSet]{
     var count = 0
     set.foreach(p=>count+=p.occurrences)
     count
+  }
+  def size:Int={
+    set.size
+  }
+  def fileIds: mutable.MutableList[String] = {
+    val fileIds = mutable.MutableList[String]()
+    set.foreach(p => fileIds+=p.fileId)
+    fileIds
+  }
+  def intersect(that:PostingSet):PostingSet ={
+    val merged = new PostingSet
+    if(set.isEmpty) merged.addAll(that.set)
+    else if (that.size ==0) merged.addAll(set)
+    else if(set.size > that.size) merged.addAll(set.intersect(that.set))
+    else merged.addAll(that.set.intersect(set))
+    merged
   }
   override def compare(that: PostingSet): Int = this.set.size.compare(that.set.size)
   override def toString: String = {var str=""; set.foreach(p => str += p.toString+"|");str}
@@ -76,6 +94,6 @@ class InvertedIndexTest extends FunSuite{
     index.processDoc(getClass.getResource("/boolean/file1.txt").getFile,"f1")
     index.processDoc(getClass.getResource("/boolean/file2.txt").getFile,"f2")
     index.print()
-    index.findDocsFor(List("South","episode"))
+    index.findDocsFor(List("family","episode")).foreach(print)
   }
 }
