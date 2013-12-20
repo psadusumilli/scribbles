@@ -29,6 +29,10 @@ Brutus,3	[play1->play1->play4]
 Caesar,5	[play1->play2->play4->play5->play6]
 ...
 Checkout the codebase for InvertedIndex API 
+Logic for finding intersection of 2 sorted sets
+	STEP1: take a pointer (p1,p2) for each set
+	STEP2: compare p1.value = p2.value, if equal, move them to Result Set, else move the pointer with a lower value to the next and repeat STEP1
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Chapter2:  VOCABULARY AND POSTING LISTS
 
@@ -38,17 +42,27 @@ stopwords like 'is, was, to, at' can be used, but sometimes they make a lot of s
 modern IR systems do not use stopwords owing to good compression algos available.
 "We will meet, will meet, meet' - tokens 6 | type(unique words) 3
 
-Token normalization
-**********************
- is the process of canonicalizing tokens so that matches occur despite superficial differences in the character sequences of the tokens 
+Token normalization=> is the process of canonicalizing tokens so that matches occur despite superficial differences in the character sequences of the tokens 
 The most standard way to normalize is to implicitly create equivalence classes, which are normally named after one member of the set
 (USA, U.S.A-> USA),(antidiscriminatory,anti-discriminatory->antidiscriminatory)
 
-Case-sensitiveness
-*******************
-you can make all tokens lowercase but sometimes phrases like 'General Motors' will not make sense,
+Case-sensitiveness=> you can make all tokens lowercase but sometimes phrases like 'General Motors' will not make sense,
 Easy technique is to not to lowercase words that appear in middle of sentences, which is to indicate they are done deliberately.
-Ste
+
+In case of words like 'democracy, democratic, democratization'
+Stemming=>Crude technique to remove last part of word to get 'democratic'. Common algo is Porter Algorithm(1980)
+
+Lemmatization=> A bit more intelligent to derive a common word from those combinations.
+Processing which does full morphological analysis to accurately identify the lemma for each word
+
+Skip Pointers=> While intersecting posting sets, you can form bands and skip using them. This will avoid 2 many comparisons between the pointers.
+A simple tech is to use sqrt(P) as skip length for a posting set of size P.
+
+Biword index=> combination words like 'Stanford University, Pop Music'
+Positional Index=>for every term in doc, store its position numbers also
+ 
+
+
 
 
 

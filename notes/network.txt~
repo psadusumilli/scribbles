@@ -601,7 +601,7 @@ ________________________________________________________________________________
 ******************
 * Technically, a device must be submitted to and certified by the WiFi Alliance to carry the WiFi name and logo, but in practice, the name is used to refer to any product based on the IEEE 802.11 standards.
 * Operating in the unlicensed 2.4 GHz ISM band allowed anyone to easily provide a “wireless extension” to their existing local area network. 
-* 802.3 is wire Ethernet , 802.11(b->n..) family is wireless---
+* 802.3 is wire Ethernet , 802.11(b->n..) family is wireless
 * Ethernet Standard is based on 
 	CSMA - Carrier Sense Multiple Access - Listen before you send, check if anyone is transmitting, then send
 	CSMA/CD - Collision Detection - if a collision is detected, then both parties stop transmitting immediately and sleep for a random interval (with exponential backoff).
