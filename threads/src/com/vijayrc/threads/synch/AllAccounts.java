@@ -1,6 +1,6 @@
 package com.vijayrc.threads.synch;
 
-import static com.vijayrc.threads.Printer.log;
+import static com.vijayrc.threads.util.Printer.log;
 
 public class AllAccounts {
     public interface Account{

@@ -1,6 +1,6 @@
 package com.vijayrc.threads.synch;
 
-import static com.vijayrc.threads.Printer.log;
+import static com.vijayrc.threads.util.Printer.log;
 
 public class DeadLock {
     private static final String lock1 = "lock1";

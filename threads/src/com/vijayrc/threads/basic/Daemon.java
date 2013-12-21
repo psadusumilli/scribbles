@@ -1,6 +1,6 @@
-package com.vijayrc.threads;
+package com.vijayrc.threads.basic;
 
-import static com.vijayrc.threads.Printer.log;
+import static com.vijayrc.threads.util.Printer.log;
 
 /**
  * jvm does not bother about daemon threads while shutting down

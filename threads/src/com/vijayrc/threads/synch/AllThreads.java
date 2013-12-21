@@ -1,7 +1,7 @@
 package com.vijayrc.threads.synch;
 
 import static com.vijayrc.threads.synch.AllAccounts.*;
-import static com.vijayrc.threads.Printer.log;
+import static com.vijayrc.threads.util.Printer.log;
 
 /**
  * Contrived example, don't confuse with a normal bank account

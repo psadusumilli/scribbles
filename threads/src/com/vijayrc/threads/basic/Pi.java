@@ -1,7 +1,10 @@
-package com.vijayrc.threads;
+package com.vijayrc.threads.basic;
 
-import static com.vijayrc.threads.Printer.log;
+import static com.vijayrc.threads.util.Printer.log;
 
+/**
+ * join, isAlive
+ */
 public class Pi extends Thread {
     boolean negative = true;
     double value;
