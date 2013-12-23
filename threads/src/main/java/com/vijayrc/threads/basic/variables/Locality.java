@@ -3,8 +3,11 @@ package com.vijayrc.threads.basic.variables;
 import static com.vijayrc.threads.util.Printer.log;
 
 /**
- * look inside ThreadLocal Api, you will find a ThreadLocal <Thread,Object>
+ * look inside ThreadLocal Api, you will find a ThreadLocal <Thread[Weak-reference],Object>
  * Each client should see unique amount they deposited in a single instance of Bank
+ * Regarding memory leaks, the threadlocalmap has a weakreference to the running thread,
+ * so if you have long running threads like connection pools in servers,
+ * the values stored in map will persist if not removed.
  */
 public class Locality {
     public static class Bank{
