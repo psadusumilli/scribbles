@@ -68,7 +68,6 @@ public class SemaGuns {
             return null;
         }
     }
-
     /**
      * soldier picks a weapon if available, or waits before storekeeper
      * fights for a random time, restores weapon to ammo
@@ -94,7 +93,6 @@ public class SemaGuns {
             Thread.sleep((int) (random() * 3000));
         }
     }
-
     /**
      * War begins
      */
