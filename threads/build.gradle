@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.7'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
+    mavenRepo name:'maven-hub',url:'http://mavenhub.com/mvn/central'
+}
+
+dependencies{
+    compile 'org.apache.httpcomponents:httpclient:4.2.3'
+    compile 'org.apache.httpcomponents:httpmime:4.2.3'
+    compile 'org.apache.httpcomponents:httpcore:4.2.2'
+    testCompile 'junit:junit:4.8.2'
+}
