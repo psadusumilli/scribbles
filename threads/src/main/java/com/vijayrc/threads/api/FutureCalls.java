@@ -14,7 +14,9 @@ import java.util.concurrent.*;
 import static com.vijayrc.threads.util.Printer.log;
 
 /**
- *
+ * Every 'user' is a Callable that hits a website link
+ * and returns the response string in a Future
+ * The executor gives each User 5 sec timeout to execute.
  */
 public class FutureCalls {
     public static class User implements Callable<String>{

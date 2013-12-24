@@ -14,6 +14,8 @@ import static java.util.Arrays.asList;
 /**
  * Battle of Stalingrad: Russian soldiers wih limited ammo
  * Staying alive means reusing guns returned to ammo from dead soldiers
+ * The ammo is guarded by a semaphore storekeeper who lets in soldiers as per weapon availability
+ * The ammo also has a death ray guarded by a mutexKeeper (a mutex is just a semaphore of size 1)
  */
 public class SemaGuns {
     /**
@@ -41,6 +43,8 @@ public class SemaGuns {
     public static class Ammo{
         private List<Weapon> weapons = new ArrayList<>();
         private Semaphore storeKeeper = new Semaphore(5,true);
+        private Semaphore mutexKeeper = new Semaphore(1,true);
+
         public Ammo() {
             for (String name : asList("ak47", "uzi", "knife", "bazooka", "rifle"))
               weapons.add(new Weapon(name));
@@ -51,7 +55,13 @@ public class SemaGuns {
         }
         public void take(Weapon weapon) throws Exception {
             findAndRestore(weapon);
-            storeKeeper.release();//release only when weapon is restored, change order, you'll get nullpointers
+            storeKeeper.release();//release only when weapon is restored, change order, you'll get null-pointers
+        }
+        public void giveRay() throws Exception {
+            mutexKeeper.acquire();
+        }
+        public void takeRay()throws Exception{
+            mutexKeeper.release();
         }
         private synchronized void findAndRestore(Weapon weapon) {
             for (Weapon weapon1 : weapons)
@@ -75,7 +85,10 @@ public class SemaGuns {
     public static class Soldier implements Runnable{
         private Ammo ammo;
         private String name;
+
         public Soldier(String name, Ammo ammo) {this.name = name; this.ammo = ammo;}
+        private void fight() throws InterruptedException {Thread.sleep((int) (random() * 3000)); }
+        private boolean eligible() {return random() %2 == 0;}
 
         @Override
         public void run() {
@@ -86,11 +99,15 @@ public class SemaGuns {
                 fight();
                 log(name+"|returned " + weapon);
                 ammo.take(weapon);
-            } catch (Exception e) {log(e);}
-        }
 
-        private void fight() throws InterruptedException {
-            Thread.sleep((int) (random() * 3000));
+                if(eligible()){
+                    ammo.giveRay();
+                    log(name+"|death ray, kill all nazis!!");
+                    fight();
+                    log(name+"|death ray depleted");
+                    ammo.takeRay();
+                }
+            } catch (Exception e) {log(e);}
         }
     }
     /**
