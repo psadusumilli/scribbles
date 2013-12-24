@@ -1,5 +1,7 @@
 package com.vijayrc.threads.api;
 
+import org.apache.commons.lang.time.StopWatch;
+
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
@@ -7,7 +9,7 @@ import static com.vijayrc.threads.util.Printer.log;
 
 /**
  * Use of fork-join to calculate fibonacci number at index n (f(10)=55,f(1)=1)
- *
+ * I have 4 logical processors
  */
 public class Forker {
     public static class Task {
@@ -17,7 +19,7 @@ public class Forker {
 
         public Long compute(){
             Long output = recurse(n);
-            log(Thread.currentThread()+"|"+output);
+            //log(Thread.currentThread()+"|"+output);
             return output;
         }
         public Long recurse(Long n){
@@ -46,15 +48,29 @@ public class Forker {
     }
 
     public static void main(String[] args){
-        log("without fork-join="+new Task(10).compute());
+        withoutWorkers();
+        withWorkers();
+        log("main end");
+    }
 
+    private static void withoutWorkers() {
+        StopWatch watch = new StopWatch();
+        watch.start();
+        Long output = new Task(30).compute();
+        watch.stop();
+        log("without workers=" + output+"|time="+watch.getTime());
+    }
+
+    private static void withWorkers() {
         int processors = Runtime.getRuntime().availableProcessors();
         log("no of processors: " + processors);
         ForkJoinPool pool = new ForkJoinPool(processors);
-        Worker worker = new Worker(new Task(10));
-        pool.invoke(worker);
+        Worker worker = new Worker(new Task(30));
 
-        log("with workers=" + worker.result());
-        log("main end");
+        StopWatch watch = new StopWatch();
+        watch.start();
+        pool.invoke(worker);
+        watch.stop();
+        log("with workers=" + worker.result()+"|time="+watch.getTime());
     }
 }
