@@ -8,7 +8,7 @@ import static com.vijayrc.threads.util.Printer.log;
  * Account state is changed with a time-gap in between
  * Without locking, order gets messed up
  */
-public class AllThreads {
+public class AllActions {
     public abstract static class Base implements Runnable{
         protected Account account;
         protected void sleep(){

@@ -3,7 +3,7 @@ package com.vijayrc.threads.basic;
 import static com.vijayrc.threads.util.Printer.log;
 
 /**
- * to show hwo one thread can interrupt other
+ * to show how one thread can interrupt other
  */
 public class Night {
     public static class Alarm extends Thread{
