@@ -1,4 +1,4 @@
-package com.vijayrc.threads.basic.lock;
+package com.vijayrc.threads.lock;
 
 import static com.vijayrc.threads.util.Printer.log;
 

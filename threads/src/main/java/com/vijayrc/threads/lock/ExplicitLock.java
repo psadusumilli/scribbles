@@ -1,4 +1,4 @@
-package com.vijayrc.threads.basic.lock;
+package com.vijayrc.threads.lock;
 
 import java.util.concurrent.locks.*;
 import java.util.concurrent.locks.ReentrantLock;
