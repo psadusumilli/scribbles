@@ -1,11 +1,10 @@
 package com.vijayrc.threads.api;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.LinkedList;
 import java.util.List;
 
 import static com.vijayrc.threads.util.Printer.log;
+import static org.apache.commons.lang.StringUtils.join;
 
 public class BoundedQueue<T> {
     private List<T> queue = new LinkedList<>();
@@ -27,8 +26,7 @@ public class BoundedQueue<T> {
         print();
         return t;
     }
-
-    private void print(){log(StringUtils.join(queue, ","));}
+    private void print(){log(join(queue, ","));}
 
     public static class Producer extends Thread{
         private BoundedQueue<String> queue;
