@@ -7,7 +7,7 @@ public class Gang {
      * each gang member waits on a interrupt call from his boss
      * the lock is the string constant "phone"
      * since they execute in a synchronised context, they respond one-by-one
-     * the gang is heirarchical, g1->g2, g1.interrupt would call everyone recursively
+     * the gang is hierarchial, g1->g2, g1.interrupt would call everyone recursively
      */
     public static class Member extends Thread{
         public Member(ThreadGroup group,String name) {super(group,name);}
@@ -24,7 +24,6 @@ public class Gang {
             }
         }
     }
-
     public static void main(String[] args){
         ThreadGroup mainGroup = Thread.currentThread().getThreadGroup();
         log("main thread's group|"+mainGroup);

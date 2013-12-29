@@ -29,7 +29,6 @@ public class Factory {
             items.remove(remove);
         }
     }
-
     public static abstract class Actor extends Thread{
         protected final Inventory inventory;
         protected boolean stop;
@@ -71,14 +70,12 @@ public class Factory {
             }
         }
     }
-
     /**
      * consumer waits and notifies when inventory is empty
      * or just keep consuming
      */
     public static class Consumer extends Actor{
         public Consumer(Inventory inventory) {super(inventory);}
-
         @Override
         public void run() {
             synchronized (inventory){
@@ -98,7 +95,6 @@ public class Factory {
             }
         }
     }
-
     public static void main(String[] args) throws InterruptedException {
         Inventory inventory = new Inventory();
         Producer producer = new Producer(inventory);

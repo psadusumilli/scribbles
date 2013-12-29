@@ -43,5 +43,4 @@ public class ExplicitLock {
         g1.join();g2.join();g3.join();
         log("party over");
     }
-
 }

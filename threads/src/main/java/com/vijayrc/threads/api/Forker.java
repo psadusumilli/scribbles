@@ -18,9 +18,7 @@ public class Forker {
         public boolean isSmall(){return n < 5;}
 
         public Long compute(){
-            Long output = recurse(n);
-            //log(Thread.currentThread()+"|"+output);
-            return output;
+            return recurse(n);
         }
         public Long recurse(Long n){
             if(n <= 1 )return n;
