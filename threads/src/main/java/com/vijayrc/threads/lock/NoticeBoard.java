@@ -18,62 +18,71 @@ import static org.apache.commons.lang.StringUtils.join;
  * It exploits the fact that while only a single thread at a time (a writer thread) can modify the shared data, in many cases any number of threads can concurrently read the data (hence reader threads).
  * In theory, the increase in concurrency permitted by the use of a read-write lock will lead to performance improvements over the use of a mutual exclusion lock.
  * In practice this increase in concurrency will only be fully realized on a multi-processor, and then only if the access patterns for the shared data are suitable.
+ *
+ * In this example, the single Writer holds a lock on Board for 20s and writes every 2 sec.
+ * Meanwhile 4 Readers can still read the updates
  */
 public class NoticeBoard {
     public static class Board {
         private final List<String> messages = new ArrayList<>();
-        private final ReadWriteLock rwl = new ReentrantReadWriteLock();
-        private final Lock r = rwl.readLock();
-        private final Lock w = rwl.writeLock();
-
-        public String read() {
-            r.lock();
-            try { return join(messages, "|"); }
-            finally { r.unlock(); }
-        }
-        public void write(String message) {
-            w.lock();
-            try { messages.add(message); }
-            finally { w.unlock(); }
-        }
+        public String read() {return join(messages, "|");}
+        public void write(String message) {messages.add(message);}
     }
     public static class Reader implements Runnable{
         private Board board;
         private String name;
-        public Reader(String name, Board board) {this.name = name ;this.board = board;}
+        private Lock lock;
+        public Reader(String name, Board board, ReadWriteLock rwl) {
+            this.name = name ;this.board = board;this.lock = rwl.readLock();
+        }
         @Override
         public void run() {
-            for(int i=0;i<40;i++){
+            for(int i=0;i<30;i++){
+                lock.lock();
                 log(name+" read "+board.read());
-                try { Thread.sleep(500);
+                try {
+                    log(name+" reader sleeping");
+                    Thread.sleep((long) (Math.random()*5000));
                 } catch (InterruptedException e) {log(e);}
+                lock.unlock();
             }
         }
     }
     public static class Writer implements Runnable{
         private Board board;
         private String name;
-        public Writer(String name, Board board) {this.name = name; this.board = board;}
+        private Lock lock;
+        public Writer(String name, Board board,ReadWriteLock lock) {
+            this.name = name; this.board = board; this.lock = lock.writeLock();
+        }
         @Override
         public void run() {
-            for(int i=0;i<10;i++){
+            for(int i=0;i<30;i++){
                 String msg = "m"+i;
+                lock.lock();
                 board.write(msg);
-                log(name+" wrote "+msg);
-                try { Thread.sleep(2000);
-                } catch (InterruptedException e) {log(e);}
+                log(name + " wrote " + msg);
+                lock.unlock();
+
+                if(i%5==0){
+                    try { Thread.sleep(5000);log(name+" writer sleeping");
+                    } catch (InterruptedException e) {log(e);}
+                }
             }
         }
     }
     public static void main(String[] args){
-        Board b = new Board();
-        ExecutorService executors = Executors.newFixedThreadPool(6);
+        final Board b = new Board();
+        final ReadWriteLock rwl = new ReentrantReadWriteLock();
+        ExecutorService exe = Executors.newFixedThreadPool(6);
         try {
-            executors.submit(new Writer("W",b));
+            exe.submit(new Writer("W", b, rwl));
             for(int i = 1;i<5;i++)
-                executors.submit(new Reader("R"+i,b));
+                exe.submit(new Reader("R"+i,b,rwl));
         } finally {
-            executors.shutdown();
+            exe.shutdown();
         }
     }
 }
+
+
