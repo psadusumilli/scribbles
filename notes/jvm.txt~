@@ -73,7 +73,7 @@ The fundamental components responsible for Java's sandbox are:
 	safety features built into the Java virtual machine (and the language)
 	the security manager and the Java API
 
-3.1| 'CLASS LOADER'
+3.1| 'CLASS lOADER'
 Rules to write a custom class loader
 	0	Make sure your class loader prevents loading any class that impersonates like 'java.lang' apis
 	1	If packages exist that this class loader is not allowed to load from, the class loader checks whether the requested class is in one of those 
