@@ -15,13 +15,14 @@ import org.scalatest.FunSuite
  * This approach uses a continuation closure to encapsulate the actor and its state
  */
 trait MyActor extends Actor{
-  private var count = 0
-  protected var threads = Set[String]()
-  protected def track(msg:Any) {threads += Thread.currentThread().getName; count+=1}
-  def print(){
-    println("Total messages="+count)
-    threads.foreach(println)
+  protected var threads = Map[String, Int]()
+
+  protected def track(msg:Any) {
+    val name = Thread.currentThread().getName
+    if(!threads.contains(name)) threads += (name -> 0)
+    threads += (name -> (threads(name) + 1))
   }
+  def print(){threads.foreach(println)}
 }
 class LoopReceiveActor extends MyActor{
   def act() {
