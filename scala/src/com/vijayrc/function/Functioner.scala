@@ -39,7 +39,7 @@ class Functioner {
     //filter elements < (first element - offset)
     //function isBelow has 2 free variables, first, offset
     //'first' is it's first surrounding function 'belowFirst'
-    //'offset' is the second surronding function 'closureScopes'
+    //'offset' is the second surrounding function 'closureScopes'
     val offset = 3
     val belowFirst  =  ( inputList : List[Int] )  =>  {
       val first = inputList( 0 )

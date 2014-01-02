@@ -18,7 +18,9 @@ class StageTest extends FunSuite{
     val heroine = new HeroineAkaReactingActor
     heroine.start()
     heroine ! ("love you darling", hero)
-    Thread.sleep(10000) //wait for all actors to respond before closing test main thread
+    Thread.sleep(2000) //wait for all actors to respond before closing test main thread
+    heroine ! ("hate you darling", hero)
+    Thread.sleep(2000) //wait for all actors to respond before closing test main thread
 
   }
 
