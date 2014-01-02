@@ -2,6 +2,7 @@ package com.vijayrc.actors
 
 import scala.actors.Actor
 import org.scalatest.FunSuite
+import scala.collection.mutable
 
 /**
  * RECEIVE
@@ -15,14 +16,20 @@ import org.scalatest.FunSuite
  * This approach uses a continuation closure to encapsulate the actor and its state
  */
 trait MyActor extends Actor{
-  protected var threads = Map[String, Int]()
+  protected var threadLoads = Map[String, Int]()
+  protected var mailboxSizes = new mutable.MutableList[Int]
 
   protected def track(msg:Any) {
     val name = Thread.currentThread().getName
-    if(!threads.contains(name)) threads += (name -> 0)
-    threads += (name -> (threads(name) + 1))
+    if(!threadLoads.contains(name)) threadLoads += (name -> 0)
+    threadLoads += (name -> (threadLoads(name) + 1))
+    mailboxSizes += mailboxSize
   }
-  def print(){threads.foreach(println)}
+  def print(){
+    mailboxSizes.foreach(println)
+    threadLoads.foreach(println)
+    println("final mailbox-size="+mailboxSize)
+  }
 }
 class LoopReceiveActor extends MyActor{
   def act() {
@@ -62,10 +69,10 @@ class WhileReactActor extends MyActor{
 }
 
 class StageTest extends FunSuite{
-  test("see what happens for a while-receive-actor"){testRun(new WhileReceiveActor)}
-  test("see what happens for a loop-receive-actor"){testRun(new LoopReceiveActor)}
-  test("see what happens for a while-react-actor"){testRun(new WhileReactActor)}
-  test("see what happens for a loop-react-actor"){testRun(new LoopReactActor)}
+  test("see what happens for a while-receive-actor"){testRun(new WhileReceiveActor)} // 1 thread, 20000 msgs
+  test("see what happens for a loop-receive-actor"){testRun(new LoopReceiveActor)} // many threads, 20000 msgs
+  test("see what happens for a while-react-actor"){testRun(new WhileReactActor)} //1 thread, 1 msg
+  test("see what happens for a loop-react-actor"){testRun(new LoopReactActor)}//many threads, 20000 msgs
 
   def testRun(actor: MyActor) {
     actor.start()
