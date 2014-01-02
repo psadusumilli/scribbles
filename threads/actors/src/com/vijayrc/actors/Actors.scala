@@ -4,20 +4,10 @@ import scala.actors.Actor
 import org.scalatest.FunSuite
 import scala.collection.mutable
 
-/**
- * RECEIVE
- * When the receive primitive is used, the actor is internally backed by a dedicated thread.
- * This obviously limits scalability and requires the thread to suspend and block when waiting for new messages.
- *
- * REACT
- * The react primitive allows and event-driven execution strategy,
- * which does not directly couple actors to threads.
- * Instead, a thread pool can be used for a number of actors.
- * This approach uses a continuation closure to encapsulate the actor and its state
- */
 trait MyActor extends Actor{
-  protected var threadLoads = Map[String, Int]()
-  protected var mailboxSizes = new mutable.MutableList[Int]
+  private var threadLoads = Map[String, Int]()
+  private var mailboxSizes = new mutable.MutableList[Int]
+  private var execCount = 0
 
   protected def track(msg:Any) {
     val name = Thread.currentThread().getName
@@ -26,10 +16,11 @@ trait MyActor extends Actor{
     mailboxSizes += mailboxSize
   }
   def print(){
-    mailboxSizes.foreach(println)
+    //mailboxSizes.foreach(println)
     threadLoads.foreach(println)
-    println("final mailbox-size="+mailboxSize)
+    println("mailbox-size="+mailboxSize+"|execCount="+execCount+"|actor state="+getState+"|active count="+Thread.activeCount())
   }
+  protected def increment(){ execCount+=1 }
 }
 class LoopReceiveActor extends MyActor{
   def act() {
@@ -37,6 +28,7 @@ class LoopReceiveActor extends MyActor{
       receive{
         case msg => track(msg)
       }
+      increment()
     }
   }
 }
@@ -46,6 +38,7 @@ class WhileReceiveActor extends MyActor{
       receive{
         case msg => track(msg)
       }
+      increment()
     }
   }
 }
@@ -55,6 +48,7 @@ class LoopReactActor extends MyActor{
       react{
         case msg => track(msg)
       }
+      increment()
     }
   }
 }
@@ -64,6 +58,7 @@ class WhileReactActor extends MyActor{
       react{
         case msg => track(msg)
       }
+      increment()
     }
   }
 }

@@ -1,11 +1,37 @@
-
-An actor can suspend with a full stack frame (receive) or it can suspend with just a continuation closure (react). 
-The first form of suspension corresponds to thread-based, the second form to event-based programming. 
-Threads support blocking operations such as system I/O, and can be executed on multiple processor cores in parallel. 
+_________________________________________________________________________________________________________________________________________
+Thread-based implementation:
+The behavior of a concurrent process is defined by implementing a thread-specific method.
+The execution state is maintained by an associated thread stack.
+Threads support blocking operations such as system I/O, and can be executed on multiple processor cores in parallel.
+_________________________________________________________________________________________________________________________________________
+Event-based implementation:
+The behavior is defined by a number of (non-nested) event handlers which are called from inside an event loop.
+The execution state of a concurrent process is maintained by an associated record or object.
 Event-based computation, on the other hand, is more lightweight and scales to large numbers of actors
+An actor suspends when react fails to remove a matching message from the mailbox:
+can get blocked and block other actors
+_________________________________________________________________________________________________________________________________________
+    class Task extends Runnable {
+    def run() { ... }
+    }
+A task is generated in the following three cases:
+1. Spawning a new actor using actor { body } generates a task that executes body.
+2. Calling react where a message can be immediately removed from the mailbox generates a task that processes the message.
+3. Sending a message to an actor suspended in a react that enables it to continue generates a task that processes the message
+4. Pending tasks are kept in a task queue inside a global scheduler object.
+5. Tasks are executed by Forked Workers
+
+In unified model is to use a thread pool to execute actors, and to resize the thread pool whenever it is necessary to support general thread operations.
+If actors use only operations of the event-based model, the size of the thread pool can be fixed.
+This is different if some of the actors use blocking operations such as 'receive' or system I/O.
+In the case where every worker thread is occupied by a suspended actor and there are pending tasks, the thread pool has to grow
+In JVM, a approximation of monitoring time-stamp of the last “library activity” indicates “all worker threads blocked”.
+-------------------------------------------------------------------------------
 
 while-receive-actor
 	(ForkJoinPool-1-worker-13,19999)
+mailbox-size=0|execCount=19999|actor state=Blocked|active count=6
+
 loop-receive-actor
 	(ForkJoinPool-1-worker-1,3137)
 	(ForkJoinPool-1-worker-5,2497)
@@ -14,9 +40,13 @@ loop-receive-actor
 	(ForkJoinPool-1-worker-11,1956)
 	(ForkJoinPool-1-worker-7,2735)
 	(ForkJoinPool-1-worker-13,2001)
-	(ForkJoinPool-1-worker-3,4046) // is this better than loop-react because it returns also
+	(ForkJoinPool-1-worker-3,4046)
+mailbox-size=0|execCount=19999|actor state=Blocked|active count=11
+--------------------------------------------------------------------------------
 while-react-actor
-	ForkJoinPool-1-worker-11,1) // exception thrown 
+	ForkJoinPool-1-worker-11,1)
+mailbox-size=1|execCount=0|actor state=Terminated|active count=3
+
 loop-react-actor
 	(ForkJoinPool-1-worker-1,2370)
 	(ForkJoinPool-1-worker-5,2261)
@@ -25,7 +55,65 @@ loop-react-actor
 	(ForkJoinPool-1-worker-11,2523)
 	(ForkJoinPool-1-worker-7,2381)
 	(ForkJoinPool-1-worker-13,3315)
-	(ForkJoinPool-1-worker-3,2085) // exception thrown to release thread, continuation closure used.
+	(ForkJoinPool-1-worker-3,2085)
+mailbox-size=0|execCount=0|actor state=Suspended|active count=11
+_________________________________________________________________________________________________________________________________________
+From source:
+
+
+ThreadPoolConfig
+ val corePoolSize = getIntegerProp("actors.corePoolSize") match {
+     case Some(i) if i > 0 => i
+     case _ => {
+       val byCores = rt.availableProcessors() * 2
+       if (byCores > minNumThreads) byCores else minNumThreads
+     }
+   }
+
+ /** State of an actor.
+   *
+   *  - '''New''' -
+   *      Not yet started
+   *  - '''Runnable''' -
+   *      Executing
+   *  - '''Suspended''' -
+   *      Suspended, waiting in a `react`
+   *  - '''TimedSuspended''' -
+   *      Suspended, waiting in a `reactWithin`
+   *  - '''Blocked''' -
+   *      Blocked waiting in a `receive`
+   *  - '''TimedBlocked''' -
+   *      Blocked waiting in a `receiveWithin`
+   *  - '''Terminated''' -
+   *      Actor has terminated
+   */
+
+ Questions:?
+  1) map receive function?
+           if(mailbox has msg matching the partial function){
+                apply partial function on message and send result back
+           } else {
+            synch{
+            waitingFor = f
+            isSuspended = true
+            scheduler.managedBlock(blocker)
+            drainSendBuffer(mailbox)
+           }
+
+
+  2) map react function?
+
+
+
+  3) Explain loop first with fork-join?
+
+
+  4) why react with no loop wont work?
+
+
+
+
+  5) how one actor can block other actors
 
 
 
