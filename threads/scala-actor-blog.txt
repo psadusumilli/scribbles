@@ -1,0 +1,33 @@
+
+An actor can suspend with a full stack frame (receive) or it can suspend with just a continuation closure (react). 
+The first form of suspension corresponds to thread-based, the second form to event-based programming. 
+Threads support blocking operations such as system I/O, and can be executed on multiple processor cores in parallel. 
+Event-based computation, on the other hand, is more lightweight and scales to large numbers of actors
+
+while-receive-actor
+	(ForkJoinPool-1-worker-13,19999)
+loop-receive-actor
+	(ForkJoinPool-1-worker-1,3137)
+	(ForkJoinPool-1-worker-5,2497)
+	(ForkJoinPool-1-worker-15,2159)
+	(ForkJoinPool-1-worker-9,1468)
+	(ForkJoinPool-1-worker-11,1956)
+	(ForkJoinPool-1-worker-7,2735)
+	(ForkJoinPool-1-worker-13,2001)
+	(ForkJoinPool-1-worker-3,4046) // is this better than loop-react because it returns also
+while-react-actor
+	ForkJoinPool-1-worker-11,1) // exception thrown 
+loop-react-actor
+	(ForkJoinPool-1-worker-1,2370)
+	(ForkJoinPool-1-worker-5,2261)
+	(ForkJoinPool-1-worker-15,2117)
+	(ForkJoinPool-1-worker-9,2947)
+	(ForkJoinPool-1-worker-11,2523)
+	(ForkJoinPool-1-worker-7,2381)
+	(ForkJoinPool-1-worker-13,3315)
+	(ForkJoinPool-1-worker-3,2085) // exception thrown to release thread, continuation closure used.
+
+
+
+
+
