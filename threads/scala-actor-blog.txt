@@ -93,12 +93,80 @@ ThreadPoolConfig
            if(mailbox has msg matching the partial function){
                 apply partial function on message and send result back
            } else {
-            synch{
-            waitingFor = f
-            isSuspended = true
-            scheduler.managedBlock(blocker)
-            drainSendBuffer(mailbox)
+                synch {//for a empty mailbox, the current running thread takes a lock on actor object
+                    waitingFor = f
+                    isSuspended = true
+                    scheduler.managedBlock(blocker)
+                    drainSendBuffer(mailbox)
+                }
            }
+
+  1.1) ForkJoinScheduler.managedBlock(blocker)
+        /* Used for notifying scheduler when blocking inside receive/receiveWithin. */
+         private object blocker extends scala.concurrent.ManagedBlocker {
+           def block() = {
+             InternalActor.this.suspendActor()
+             true
+           }
+           def isReleasable =
+             !InternalActor.this.isSuspended
+         }
+
+  1.2) private def suspendActor() = synchronized {
+           while (isSuspended) {
+             try {
+               wait()  // the current thread now waits on the actor object
+             } catch {
+               case _: InterruptedException =>
+             }
+           }
+           // links: check if we should exit
+           if (shouldExit) exit()
+         }
+
+         private def resumeActor() {
+           isSuspended = false
+           notify()
+         }
+  1.3) Who resumes up the thread again? must be the send()
+       def send(msg: Msg, replyTo: OutputChannel[Any]) {
+        val todo = synchronized {
+          if (waitingFor ne Reactor.waitingForNone) { // if blocked execute the last blocked operation
+            val savedWaitingFor = waitingFor
+            waitingFor = Reactor.waitingForNone
+            startSearch(msg, replyTo, savedWaitingFor)  // the one that finally calls searchMailbox which calls notify()
+          } else {
+            sendBuffer.append(msg, replyTo)
+            () => { /* do nothing */ }
+          }
+        }
+        todo()
+      }
+
+  1.4) private[actors] def searchMailbox(startMbox: MQueue[Msg],
+                                           handler: PartialFunction[Msg, Any],
+                                           resumeOnSameThread: Boolean) {
+
+       private[actors] override def startSearch(msg: Any, replyTo: OutputChannel[Any], handler: PartialFunction[Any, Any]) =
+            if (isSuspended) {
+              () =>
+                synchronized {
+                  mailbox.append(msg, replyTo)
+                  resumeActor()
+                }
+       } else super.startSearch(msg, replyTo, handler)
+
+  1.4) the start() calling act()
+    // guarded by this
+     private[actors] def dostart() {
+       _state = Actor.State.Runnable
+       scheduler newActor this
+       scheduler execute makeReaction(() => {
+         preAct()
+         act()
+       }, null, null)
+     }
+
 
 
   2) map react function?
