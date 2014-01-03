@@ -1,0 +1,8 @@
+
+NodeJs runs on a thread to serve all client requests unlike Apache which maps each request to a separate thread
+Your code is never run parallel but when a IO operation is detected, nodejs makes use of asych IO and offloads the execution to a different thread
+This simplicity in architecture is the key
+when scaling is required, create MORE nodejs PROCESSES
+when CPU intensive operations that will take time, use WebWorkers to fork off
+No overhead of thread context switching with nodejs, as no connection pooling on request serving side.
+

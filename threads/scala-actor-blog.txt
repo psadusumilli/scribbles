@@ -93,13 +93,13 @@ ThreadPoolConfig
            if(mailbox has msg matching the partial function){
                 apply partial function on message and send result back
            } else {
-            synch{
-            waitingFor = f
-            isSuspended = true
-            scheduler.managedBlock(blocker)
-            drainSendBuffer(mailbox)
+                synch{
+                    waitingFor = f
+                    isSuspended = true
+                    scheduler.managedBlock(blocker)
+                    drainSendBuffer(mailbox)
+                }
            }
-
 
   2) map react function?
 
