@@ -15,6 +15,11 @@ trait MyActor extends Actor{
     threadLoads += (name -> (threadLoads(name) + 1))
     mailboxSizes += mailboxSize
   }
+
+  protected def block(){
+    Thread.sleep(1)
+  }
+
   def print(){
     mailboxSizes.foreach(println)
     threadLoads.foreach(println)
@@ -42,6 +47,27 @@ class WhileReceiveActor extends MyActor{
     }
   }
 }
+class LoopBlockReceiveActor extends MyActor{
+  def act() {
+    loop{
+      receive{
+        case msg => {track(msg);block()}
+      }
+      increment()
+    }
+  }
+}
+class WhileBlockReceiveActor extends MyActor{
+  def act() {
+    while(true){
+      receive{
+        case msg => {track(msg);block()}
+      }
+      increment()
+    }
+  }
+}
+
 class LoopReactActor extends MyActor{
   def act() {
     loop{
@@ -62,12 +88,36 @@ class WhileReactActor extends MyActor{
     }
   }
 }
+class LoopBlockReactActor extends MyActor{
+  def act() {
+    loop{
+      react{
+        case msg => {track(msg);block()}
+      }
+      increment()
+    }
+  }
+}
+class WhileBlockReactActor extends MyActor{
+  def act() {
+    while(true){
+      react{
+        case msg => {track(msg);block()}
+      }
+      increment()
+    }
+  }
+}
 
 class StageTest extends FunSuite{
   test("see what happens for a while-receive-actor"){testRun(new WhileReceiveActor)} // 1 thread, 20000 msgs
   test("see what happens for a loop-receive-actor"){testRun(new LoopReceiveActor)} // many threads, 20000 msgs
+  test("see what happens for a while-block-receive-actor"){testRun(new WhileBlockReceiveActor)}//1 thread, some msgs
+  test("see what happens for a loop-block-receive-actor"){testRun(new LoopBlockReceiveActor)}//some threads, some msgs
   test("see what happens for a while-react-actor"){testRun(new WhileReactActor)} //1 thread, 1 msg
   test("see what happens for a loop-react-actor"){testRun(new LoopReactActor)}//many threads, 20000 msgs
+  test("see what happens for a while-block-react-actor"){testRun(new WhileBlockReactActor)}//many threads, 20000 msgs
+  test("see what happens for a loop-block-react-actor"){testRun(new LoopBlockReactActor)}//many threads, 20000 msgs
 
   def testRun(actor: MyActor) {
     actor.start()
