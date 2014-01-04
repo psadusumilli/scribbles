@@ -178,10 +178,15 @@ Reactor.scala
     }, null, null)
   }
 
+
+
+
+
   4) why react with no loop wont work?
 with no loop, after the first execution the act() method is exited owing to the exception
 
-  5) PITFALL1: how one actor can block other actors
+
+  5) how one actor can block other actors
 
 
 

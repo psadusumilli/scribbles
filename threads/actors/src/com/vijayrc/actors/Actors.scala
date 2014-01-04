@@ -16,7 +16,7 @@ trait MyActor extends Actor{
     mailboxSizes += mailboxSize
   }
   def print(){
-    //mailboxSizes.foreach(println)
+    mailboxSizes.foreach(println)
     threadLoads.foreach(println)
     println("mailbox-size="+mailboxSize+"|execCount="+execCount+"|actor state="+getState+"|active count="+Thread.activeCount())
   }
