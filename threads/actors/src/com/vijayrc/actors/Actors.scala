@@ -116,8 +116,8 @@ class StageTest extends FunSuite{
   test("see what happens for a loop-block-receive-actor"){testRun(new LoopBlockReceiveActor)}//some threads, some msgs
   test("see what happens for a while-react-actor"){testRun(new WhileReactActor)} //1 thread, 1 msg
   test("see what happens for a loop-react-actor"){testRun(new LoopReactActor)}//many threads, 20000 msgs
-  test("see what happens for a while-block-react-actor"){testRun(new WhileBlockReactActor)}//many threads, 20000 msgs
-  test("see what happens for a loop-block-react-actor"){testRun(new LoopBlockReactActor)}//many threads, 20000 msgs
+  test("see what happens for a while-block-react-actor"){testRun(new WhileBlockReactActor)}//1 thread 1 msg
+  test("see what happens for a loop-block-react-actor"){testRun(new LoopBlockReactActor)}//some threads, some msgs
 
   def testRun(actor: MyActor) {
     actor.start()

@@ -111,8 +111,18 @@ In JVM, a approximation of monitoring time-stamp of the last “library activity
 	(ForkJoinPool-1-worker-13,1)
 	mailbox-size=19995|execCount=0|actor state=Runnable|active count=7
 
-	run3- with sleep 1 ms
+	run3- with sleep 100 ms
+	(ForkJoinPool-1-worker-11,18)
+	(ForkJoinPool-1-worker-13,14)
+	mailbox-size=19967|execCount=0|actor state=Runnable|active count=8
 	
+	run4- with sleep 1 ms
+	(ForkJoinPool-1-worker-11,881)
+	(ForkJoinPool-1-worker-13,32)
+	(ForkJoinPool-1-worker-9,916)
+	(ForkJoinPool-1-worker-1,495)
+	mailbox-size=17674|execCount=0|actor state=Runnable|active count=10
+
 
 
 

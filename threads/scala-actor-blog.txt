@@ -31,7 +31,6 @@ In JVM, a approximation of monitoring time-stamp of the last “library activity
 #1 while-receive-actor
 	(ForkJoinPool-1-worker-13,19999)
 	mailbox-size=0|execCount=19999|actor state=Blocked|active count=6
-
 #2 loop-receive-actor
 	(ForkJoinPool-1-worker-1,3137)
 	(ForkJoinPool-1-worker-5,2497)
@@ -42,41 +41,36 @@ In JVM, a approximation of monitoring time-stamp of the last “library activity
 	(ForkJoinPool-1-worker-13,2001)
 	(ForkJoinPool-1-worker-3,4046)
 	mailbox-size=0|execCount=19999|actor state=Blocked|active count=11
-
 #3 loop-block-receive-actor
-	run1 - with sleep 1000 ms
+	run1 - with blocking-sleep 1000 ms
 	(ForkJoinPool-1-worker-13,1)
 	mailbox-size=105|execCount=0|actor state=Runnable|active count=6 // starved of threads
-
-	run2 - with sleep 100 ms
+	run2 - with blocking-sleep 100 ms
 	(ForkJoinPool-1-worker-13,18)
 	(ForkJoinPool-1-worker-11,13)
 	mailbox-size=19968|execCount=30|actor state=Runnable|active count=7
-
-	run3- with sleep 1 ms
+	run3- with blocking-sleep 1 ms
 	(ForkJoinPool-1-worker-13,1264)
 	(ForkJoinPool-1-worker-11,1164)
 	(ForkJoinPool-1-worker-5,14)
 	mailbox-size=17556|execCount=2442|actor state=Runnable|active count=8
-
 #4 while-block-receive-actor
-	run1 -with sleep 10000 ms
+	run1 -with blocking-sleep 10000 ms
 	(ForkJoinPool-1-worker-13,1)
 	mailbox-size=0|execCount=0|actor state=Runnable|active count=6
 	
-	run2 -with sleep 1000 ms
+	run2 -with blocking-sleep 1000 ms
 	(ForkJoinPool-1-worker-13,4)
 	mailbox-size=19995|execCount=3|actor state=Runnable|active count=6
 	
-	run3 -with sleep 100 ms
+	run3 -with blocking-sleep 100 ms
 	(ForkJoinPool-1-worker-13,31)
 	mailbox-size=19968|execCount=30|actor state=Runnable|active count=6
 	
-	run4 -with sleep 1 ms
+	run4 -with blocking-sleep1 ms
 	(ForkJoinPool-1-worker-13,2665)
 	mailbox-size=17333|execCount=2665|actor state=Runnable|active count=6
 
---------------------------------------------------------------------------------
 #5 while-react-actor
 	ForkJoinPool-1-worker-11,1)
 	mailbox-size=1|execCount=0|actor state=Terminated|active count=3 // with no loop, after the execution the act() method is exited. 
@@ -93,30 +87,30 @@ In JVM, a approximation of monitoring time-stamp of the last “library activity
 	mailbox-size=0|execCount=0|actor state=Suspended|active count=11
 
 #7 while-block-react-actor
-	run1- with sleep 10000 ms
+	run1- with blocking-sleep 10000 ms
 	(ForkJoinPool-1-worker-11,1)
 	mailbox-size=2|execCount=0|actor state=Runnable|active count=7
 
-	run2- with sleep 1 ms
+	run2- with blocking-sleep 1 ms
 	(ForkJoinPool-1-worker-11,1)
 	mailbox-size=1|execCount=0|actor state=Terminated|active count=4
 
 #8 loop-block-react-actor
-	run1- with sleep 10000 ms
+	run1- with blocking-sleep 10000 ms
 	(ForkJoinPool-1-worker-11,1)
 	mailbox-size=121|execCount=0|actor state=Runnable|active count=7
 
-	run2- with sleep 1000 ms
+	run2- with blocking-sleep 1000 ms
 	(ForkJoinPool-1-worker-11,3)
 	(ForkJoinPool-1-worker-13,1)
 	mailbox-size=19995|execCount=0|actor state=Runnable|active count=7
 
-	run3- with sleep 100 ms
+	run3- with blocking-sleep 100 ms
 	(ForkJoinPool-1-worker-11,18)
 	(ForkJoinPool-1-worker-13,14)
 	mailbox-size=19967|execCount=0|actor state=Runnable|active count=8
 	
-	run4- with sleep 1 ms
+	run4- with blocking-sleep 1 ms
 	(ForkJoinPool-1-worker-11,881)
 	(ForkJoinPool-1-worker-13,32)
 	(ForkJoinPool-1-worker-9,916)
