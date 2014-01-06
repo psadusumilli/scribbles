@@ -2,7 +2,7 @@ package com.vijayrc.disruptors;
 
 import com.lmax.disruptor.EventHandler;
 
-import static com.vijayrc.disruptors.Printer.log;
+import static com.vijayrc.threads.util.Printer.log;
 
 public class Handler<Event> implements EventHandler<Event> {
     private String name;
@@ -10,6 +10,6 @@ public class Handler<Event> implements EventHandler<Event> {
 
     @Override
     public void onEvent(Event event, long sequence, boolean batchEnd) throws Exception {
-        log("name="+name+"seq="+sequence+"|event="+event);
+        log("H|"+name+"|seq="+sequence+"|=>"+event);
     }
 }
