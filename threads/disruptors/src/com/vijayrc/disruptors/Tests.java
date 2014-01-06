@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class DisruptorTest {
+public class Tests {
     private ExecutorService executor;
     private Disruptor<Event> disruptor;
 
@@ -21,7 +21,7 @@ public class DisruptorTest {
     }
     @Test
     public void shouldRunUnicast(){
-        Handler<Event> handler = new Handler<>("h1");
+        Handler handler = new Handler("h1");
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(handler);
         RingBuffer<Event> ringBuffer = disruptor.start();
@@ -29,14 +29,14 @@ public class DisruptorTest {
         for (int i = 0; i < 2000; i++) {
             long seq = ringBuffer.next();
             Event event = ringBuffer.get(seq);
-            event.setValue("m-" + i);
+            event.setValue("p-" + i);
             ringBuffer.publish(seq);
         }
         disruptor.shutdown();
     }
     @Test
     public void shouldRunUnicastWithCustomPublisher() throws Exception {
-        Handler<Event> handler = new Handler<>("h1");
+        Handler handler = new Handler("h1");
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(handler);
 
@@ -52,7 +52,7 @@ public class DisruptorTest {
     @Test
     public void shouldRunBroadcastWithSinglePublisherAndMultipleHandlers() throws Exception {
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
-        disruptor.handleEventsWith(new Handler<Event>("h1"),new Handler<Event>("h2"),new Handler<Event>("h3"));
+        disruptor.handleEventsWith(new Handler("h1"),new Handler("h2"),new Handler("h3"));
 
         Publisher publisher = new Publisher("p1", disruptor);
         disruptor.publishEvent(publisher);
@@ -67,6 +67,6 @@ public class DisruptorTest {
     public void shutDown(){
         disruptor.shutdown();
         executor.shutdown();
-    }
+}
     private void sleep() throws InterruptedException {Thread.sleep(3000);}
 }

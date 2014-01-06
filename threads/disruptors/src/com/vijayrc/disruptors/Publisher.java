@@ -7,7 +7,6 @@ import static com.vijayrc.threads.util.Printer.log;
 
 public class Publisher implements EventTranslator<Event>, Runnable {
     private Disruptor disruptor;
-    private String value;
     private String name;
     private boolean stop;
 
@@ -17,14 +16,12 @@ public class Publisher implements EventTranslator<Event>, Runnable {
     }
     @Override
     public void translateTo(Event event, long sequence) {
-        event.setValue(value);
-        log("P|"+name+"|seq="+sequence+"|=>"+value);
+        event.setValue(name+"-"+sequence+"|");
+        log(event);
     }
     @Override
     public void run() {
-        long i = 1;
         while (!stop)  {
-            value = "m-"+i++;
             disruptor.publishEvent(this);
         }
     }

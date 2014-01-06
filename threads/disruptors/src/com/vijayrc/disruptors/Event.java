@@ -10,4 +10,5 @@ public class Event {
     public final static EventFactory<Event> factory = new EventFactory<Event>() {
         public Event newInstance() { return new Event(); }
     };
+    public void add(String suffix){value = value+suffix;}
 }
