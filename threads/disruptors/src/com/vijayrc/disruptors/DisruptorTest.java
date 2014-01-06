@@ -12,7 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class DisruptorTest {
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    private ExecutorService executor;
+    private Disruptor<Event> disruptor;
 
     @Before
     public void setup(){
@@ -21,7 +22,7 @@ public class DisruptorTest {
     @Test
     public void shouldRunUnicast(){
         Handler<Event> handler = new Handler<>("h1");
-        Disruptor<Event> disruptor = new Disruptor<>(Event.factory, 1024, executor);
+        disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(handler);
         RingBuffer<Event> ringBuffer = disruptor.start();
 
@@ -33,21 +34,39 @@ public class DisruptorTest {
         }
         disruptor.shutdown();
     }
-
     @Test
-    public void shouldRunWithCustomPublisher() throws Exception {
+    public void shouldRunUnicastWithCustomPublisher() throws Exception {
         Handler<Event> handler = new Handler<>("h1");
-        Disruptor<Event> disruptor = new Disruptor<>(Event.factory, 1024, executor);
+        disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(handler);
+
         Publisher publisher = new Publisher("p1", disruptor);
         disruptor.publishEvent(publisher);
         disruptor.start();
         executor.submit(publisher);
-        Thread.sleep(3000);
+
+        sleep();
         publisher.stop();
         disruptor.shutdown();
     }
+    @Test
+    public void shouldRunBroadcastWithSinglePublisherAndMultipleHandlers() throws Exception {
+        disruptor = new Disruptor<>(Event.factory, 1024, executor);
+        disruptor.handleEventsWith(new Handler<Event>("h1"),new Handler<Event>("h2"),new Handler<Event>("h3"));
 
+        Publisher publisher = new Publisher("p1", disruptor);
+        disruptor.publishEvent(publisher);
+        disruptor.start();
+        executor.submit(publisher);
+
+        sleep();
+        publisher.stop();
+        disruptor.shutdown();
+    }
     @After
-    public void shutDown(){executor.shutdown();}
+    public void shutDown(){
+        disruptor.shutdown();
+        executor.shutdown();
+    }
+    private void sleep() throws InterruptedException {Thread.sleep(3000);}
 }
