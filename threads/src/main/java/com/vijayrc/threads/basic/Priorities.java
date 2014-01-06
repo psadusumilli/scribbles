@@ -1,7 +1,6 @@
 package com.vijayrc.threads.basic;
 
 import static com.vijayrc.threads.util.Printer.log;
-import static com.vijayrc.threads.util.Printer.log2;
 
 public class Priorities {
     public static class Pi extends Thread{
@@ -17,7 +16,7 @@ public class Priorities {
                 if (negative) value -= (1.0 / i);
                 else value += (1.0 / i);
                 negative = !negative;
-                log2(getName() + "|");
+                log(getName() + "|");
                 if(shouldYield) Thread.yield();
             }
             value += 1.0;

@@ -1,4 +1,4 @@
-package com.vijayrc.threads.util;
+package com.vijayrc.disruptors;
 
 public class Printer {
     public static void log(Object msg){
