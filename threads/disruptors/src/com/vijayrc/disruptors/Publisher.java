@@ -8,10 +8,12 @@ import static com.vijayrc.threads.util.Printer.log;
 public class Publisher implements EventTranslator<Event>, Runnable {
     private Disruptor disruptor;
     private String name;
+    private long count;
     private boolean stop;
 
-    public Publisher(String name, Disruptor disruptor){
+    public Publisher(String name, long count, Disruptor disruptor){
         this.name = name;
+        this.count = count;
         this.disruptor = disruptor;
     }
     @Override
@@ -21,8 +23,10 @@ public class Publisher implements EventTranslator<Event>, Runnable {
     }
     @Override
     public void run() {
-        while (!stop)  {
+        int i=0;
+        while (count >= i && !stop )  {
             disruptor.publishEvent(this);
+            ++i;
         }
     }
     public void stop(){stop = true;}

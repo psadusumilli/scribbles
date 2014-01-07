@@ -1,7 +1,6 @@
 package com.vijayrc.disruptors;
 
 import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.TimeoutException;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.junit.After;
 import org.junit.Before;
@@ -9,7 +8,6 @@ import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Tests {
     private ExecutorService executor;
@@ -40,7 +38,7 @@ public class Tests {
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(handler);
 
-        Publisher publisher = new Publisher("p1", disruptor);
+        Publisher publisher = new Publisher("p1", 600, disruptor);
         disruptor.publishEvent(publisher);
         disruptor.start();
         executor.submit(publisher);
@@ -53,7 +51,7 @@ public class Tests {
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(new Handler("h1"),new Handler("h2"),new Handler("h3"));
 
-        Publisher publisher = new Publisher("p1", disruptor);
+        Publisher publisher = new Publisher("p1", 600, disruptor);
         disruptor.publishEvent(publisher);
         disruptor.start();
         executor.submit(publisher);
@@ -66,7 +64,7 @@ public class Tests {
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(new Handler("h1")).then(new Handler("h2")).then(new Handler("h3"));
 
-        Publisher publisher = new Publisher("p1", disruptor);
+        Publisher publisher = new Publisher("p1", 600, disruptor);
         disruptor.publishEvent(publisher);
         disruptor.start();
         executor.submit(publisher);
