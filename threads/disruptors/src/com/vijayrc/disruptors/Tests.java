@@ -60,7 +60,7 @@ public class Tests {
         publisher.stop();
     }
     @Test
-    public void shouldRunBroadcastWithSinglePublisherAndLinkedMultipleHandlers() throws Exception {
+    public void shouldRunWithSinglePublisherAndLinkedMultipleHandlers() throws Exception {
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(new Handler("h1")).then(new Handler("h2")).then(new Handler("h3"));
 
@@ -71,6 +71,24 @@ public class Tests {
 
         sleep();
         publisher.stop();
+    }
+
+    @Test
+    public void shouldRunBroadcastWithMultiplePublishersAndLinkedMultipleHandlers() throws Exception {
+        disruptor = new Disruptor<>(Event.factory, 1024, executor);
+        disruptor.handleEventsWith(new Handler("h1")).then(new Handler("h2")).then(new Handler("h3"));
+
+        Publisher publisher1 = new Publisher("p1", 600, disruptor);
+        Publisher publisher2 = new Publisher("p2", 600, disruptor);
+        disruptor.publishEvent(publisher1);
+        disruptor.publishEvent(publisher2);
+        disruptor.start();
+        executor.submit(publisher1);
+        executor.submit(publisher2);
+
+        sleep();
+        publisher1.stop();
+        publisher2.stop();
     }
 
     @After
