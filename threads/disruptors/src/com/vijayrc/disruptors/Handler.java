@@ -1,8 +1,7 @@
 package com.vijayrc.disruptors;
 
 import com.lmax.disruptor.EventHandler;
-
-import static com.vijayrc.threads.util.Printer.log;
+import static com.vijayrc.disruptors.Printer.log;
 
 public class Handler implements EventHandler<Event> {
     private String name;

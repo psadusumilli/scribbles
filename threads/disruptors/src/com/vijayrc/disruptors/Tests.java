@@ -78,7 +78,7 @@ public class Tests {
         disruptor = new Disruptor<>(Event.factory, 1024, executor);
         disruptor.handleEventsWith(new Handler("h1")).then(new Handler("h2")).then(new Handler("h3"));
 
-        Publisher publisher1 = new Publisher("p1", 600, disruptor);
+        Publisher publisher1 = new Publisher("p1", 600, disruptor).goSlow();
         Publisher publisher2 = new Publisher("p2", 600, disruptor);
         disruptor.publishEvent(publisher1);
         disruptor.publishEvent(publisher2);
