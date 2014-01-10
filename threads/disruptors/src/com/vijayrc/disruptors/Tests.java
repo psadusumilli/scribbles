@@ -95,6 +95,6 @@ public class Tests {
     public void shutDown(){
         disruptor.shutdown();
         executor.shutdown();
-}
+    }
     private void sleep() throws InterruptedException {Thread.sleep(3000);}
 }
