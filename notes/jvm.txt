@@ -67,6 +67,16 @@ J2ME, J2SE, J2EE
 #--------------------------------------------------------------------------------------------------------------------------------------------	
 CHAPTER3: SECURITY
 *******************
+Javas security model is focused on protecting end-users from hostile programs downloaded across a network from untrusted sources. 
+To accomplish this goal, Java provides a customizable "sandbox" in which Java programs run. A Java program must play only inside its sandbox. 
+It can do anything within the boundaries of its sandbox, but can't take any action outside those boundaries. 
+The sandbox for untrusted Java applets, for example, prohibits many activities, including:
+
+    reading or writing to the local disk,
+    making a network connection to any but the host from which the applet came,
+    creating a new process, and
+    loading a new dynamic library and directly calling a native method.
+    
 The fundamental components responsible for Java's sandbox are:
 	the class loader architecture
 	the class file verifier
@@ -74,6 +84,9 @@ The fundamental components responsible for Java's sandbox are:
 	the security manager and the Java API
 
 3.1| 'CLASS LOADER'
+-------------------
+Each call to load a class, is made first to the primordial class loader(Boot), if it does not find in its trusted store, then trickle down to custom loaders.
+
 Rules to write a custom class loader
 	0	Make sure your class loader prevents loading any class that impersonates like 'java.lang' apis
 	1	If packages exist that this class loader is not allowed to load from, the class loader checks whether the requested class is in one of those 
@@ -85,7 +98,45 @@ Rules to write a custom class loader
 		If so, it throws a security exception. Else, it continues on to step four. 
 	4	Finally, the class loader attempts to load the class in the custom way, such as by downloading it across a network. 
 		If successful, it returns the class. Else, it throws a "no class definition found" error.
+		
 3.2| 'CLASS FILE VERIFIER'
+-------------------------
+Working in conjunction with the class loader, the class file verifier ensures that loaded class files have a proper internal structure. 
+If the class file verifier discovers a problem with a class file, it throws an exception
+Two steps:
+	After classloading, verifies the integrity of the bytecodes it import
+	During execution, confirms the existence of symbolically referenced classes, fields, and methods. 
+	
+3.2.1| Step1: Internal Checks:
+-------------------------------
+	Phase one of the class file verifier makes sure the imported class file is properly formed, internally consistent, adheres to the constraints of the Java programming language, and contains bytecodes that will be safe for the Java Virtual Machine to execute. 
+	If the class file verifier finds that any of these are not true, it throws an error, and the class file is never used by the program.
+	Checks if bytecodes neither truncated nor enhanced with extra trailing bytes. 
+	Checks if method descriptor have a context free grammar
+	
+	The bytecode streams that represent Java methods are a series of one-byte instructions, called opcodes, each of which may be followed by one or more operands. 
+	The operands supply extra data needed by the Java Virtual Machine to execute the opcode instruction. 
+	The activity of executing bytecodes, one opcode after another, constitutes a thread of execution inside the Java Virtual Machine. 
+	Each thread is awarded its own Java Stack, which is made up of discrete frames. 
+	Each method invocation gets its own frame, a section of memory where it stores, among other things, local variables and intermediate results of computation. 
+	The part of the frame in which a method stores intermediate results is called the methodís operand stack. 
+	An opcode and its (optional) operands may refer to the data stored on the operand stack or in the local variables of the methodís frame. 
+	Thus, the virtual machine may use data on the operand stack, in the local variables, or both, in addition to any data stored as operands following an opcode when it executes the opcode.
+	
+3.2.2| STEP2: Verfication of symbolif references	
+------------------------------------------------
+Dynamic linking is the process of resolving symbolic references into direct references.
+As the JVM executes bytecodes and encounters an opcode that, for the first time, uses a symbolic reference to another class, the virtual machine must resolve the symbolic reference. 
+The virtual machine performs two basic tasks during resolution:
+    a) find the class being referenced (loading it if necessary)
+    b) replace the symbolic reference with a direct reference, such as a pointer or offset, to the class, field, or method
+Throws ClassNotFoundException, MethodNotFoundException for cases when they could not have been detected during compile time.
+Also does the following, though the language compiler has already done it
+    a) type-safe reference casting
+    b) structured memory access (no pointer arithmetic)
+    c) automatic garbage collection (canít explicitly free allocated memory)
+    d) array bounds checking
+    e) checking references for null
 
 #--------------------------------------------------------------------------------------------------------------------------------------------	
 
