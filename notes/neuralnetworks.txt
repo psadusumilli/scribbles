@@ -60,3 +60,16 @@ You can get the inverse of a bit pattern by flipping all 0’s to 1’s and 1’
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+

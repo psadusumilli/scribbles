@@ -1,5 +1,5 @@
 JVM Notes
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CHAPTER1: INTRODUCTION
 **********************
 1.1| 	Java architecture arises out of four distinct but interrelated technologies:
@@ -20,7 +20,7 @@ CHAPTER1: INTRODUCTION
 	'Native methods' are stored in a dynamically linked library whose exact form is platform specific. While 'Java methods' are platform independent, native methods are not. 
 	When a running Java program calls a native method, the virtual machine loads the dynamic library that contains the native method and invokes it.
 	Use of 'Native methods' can make your program platform-specific, can be alleviated using 'JNI', but vendors are mandated to implement it.
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CLASS LOADER
 *************
 2 types are 
@@ -58,15 +58,15 @@ Dynamic linking of classes is all symbolic links, thereby making it easier to de
 	'Dynamic linking' is accomplished by placing the name of a sharable library in the executable image. 
 	Actual linking with the library routines does not occur until the image is run, when both the executable and the library are placed in memory. 
 	An advantage of dynamic linking is that multiple programs can share a single copy of the library.	
-#--------------------------------------------------------------------------------------------------------------------------------------------	
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 CHAPTER2: PLATFORM INDEPEDENCE:
-********************************
+****************************************
 Consistent primitives across platforms -> Int is always 4byte 
 Sun initially started Java for embedded systems only has desktops were dominated by MS and Apple
 J2ME, J2SE, J2EE
-#--------------------------------------------------------------------------------------------------------------------------------------------	
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 CHAPTER3: SECURITY
-*******************
+***************************
 Javas security model is focused on protecting end-users from hostile programs downloaded across a network from untrusted sources. 
 To accomplish this goal, Java provides a customizable "sandbox" in which Java programs run. A Java program must play only inside its sandbox. 
 It can do anything within the boundaries of its sandbox, but can't take any action outside those boundaries. 
@@ -84,7 +84,7 @@ The fundamental components responsible for Java's sandbox are:
 	the security manager and the Java API
 
 3.1| 'CLASS LOADER'
--------------------
+--------------------------------------------
 Each call to load a class, is made first to the primordial class loader(Boot), if it does not find in its trusted store, then trickle down to custom loaders.
 
 Rules to write a custom class loader
@@ -100,7 +100,7 @@ Rules to write a custom class loader
 		If successful, it returns the class. Else, it throws a "no class definition found" error.
 		
 3.2| 'CLASS FILE VERIFIER'
--------------------------
+--------------------------------------------------
 Working in conjunction with the class loader, the class file verifier ensures that loaded class files have a proper internal structure. 
 If the class file verifier discovers a problem with a class file, it throws an exception
 Two steps:
@@ -108,7 +108,7 @@ Two steps:
 	During execution, confirms the existence of symbolically referenced classes, fields, and methods. 
 	
 3.2.1| Step1: Internal Checks:
--------------------------------
+--------------------------------------------------------
 	Phase one of the class file verifier makes sure the imported class file is properly formed, internally consistent, adheres to the constraints of the Java programming language, and contains bytecodes that will be safe for the Java Virtual Machine to execute. 
 	If the class file verifier finds that any of these are not true, it throws an error, and the class file is never used by the program.
 	Checks if bytecodes neither truncated nor enhanced with extra trailing bytes. 
@@ -119,12 +119,12 @@ Two steps:
 	The activity of executing bytecodes, one opcode after another, constitutes a thread of execution inside the Java Virtual Machine. 
 	Each thread is awarded its own Java Stack, which is made up of discrete frames. 
 	Each method invocation gets its own frame, a section of memory where it stores, among other things, local variables and intermediate results of computation. 
-	The part of the frame in which a method stores intermediate results is called the methodís operand stack. 
-	An opcode and its (optional) operands may refer to the data stored on the operand stack or in the local variables of the methodís frame. 
+	The part of the frame in which a method stores intermediate results is called the method's  operand stack. 
+	An opcode and its (optional) operands may refer to the data stored on the operand stack or in the local variables of the method's frame. 
 	Thus, the virtual machine may use data on the operand stack, in the local variables, or both, in addition to any data stored as operands following an opcode when it executes the opcode.
 	
-3.2.2| STEP2: Verfication of symbolif references	
-------------------------------------------------
+3.2.2| STEP2: Verfication of symbolic references	
+------------------------------------------------------------------------------------------------
 Dynamic linking is the process of resolving symbolic references into direct references.
 As the JVM executes bytecodes and encounters an opcode that, for the first time, uses a symbolic reference to another class, the virtual machine must resolve the symbolic reference. 
 The virtual machine performs two basic tasks during resolution:
@@ -134,9 +134,30 @@ Throws ClassNotFoundException, MethodNotFoundException for cases when they could
 Also does the following, though the language compiler has already done it
     a) type-safe reference casting
     b) structured memory access (no pointer arithmetic)
-    c) automatic garbage collection (canít explicitly free allocated memory)
+    c) automatic garbage collection (can't explicitly free allocated memory)
     d) array bounds checking
     e) checking references for null
+
+3.3| Memory access
+--------------------------------
+The runtime data areas are the memory areas in which the Java Virtual Machine stores the data it needs to execute a Java application: 
+	Java stacks (one for each thread), 
+	a method area, where bytecodes are stored, and 
+	a garbage-collected heap, where the objects created by the running program are stored. 
+If you peer into a class file, you wonÃ­t find any memory addresses, every address is decided at runtime by JVM.
+The prohibition on unstructured memory access is a solid barrier against the malicious manipulation of memory. 
+Native methods are still points of weakness as they dont fall under Java Security Sandbox
+
+3.4| Exceptions 
+--------------------------------
+One final mechanism that is built into the Java Virtual Machine that contributes to security is structured error handling with exceptions. Because of its support for exceptions,  JVM has something structured to do when a security violation occurs. Instead of crashing, the Java Virtual Machine can throw an exception or an error, which may result in the death of the offending thread, but shouldn't crash the system. Throwing an error (as opposed to throwing an exception) almost always results in the death of the thread in which the error was thrown.
+
+
+
+ 
+
+
+
 
 #--------------------------------------------------------------------------------------------------------------------------------------------	
 
