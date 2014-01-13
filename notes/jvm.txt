@@ -269,11 +269,24 @@ Arrays, like classes, are stored in the heap.
  the class name for a two-dimensional array of Objects is "[[Ljava.lang.Object". 
 
 -------------------------------------------------------------------------------------------------------------------
-5.4|The Program Counter
+5.4|Program Counter
 Each thread of a running program has its own pc register, or program counter, which is created when the thread is started. 
 The pc register is one word in size, so it can hold both a native pointer and a returnValue. 
 As a thread executes a Java method, the pc register contains the address of the current instruction being executed by the thread. 
 An "address" can be a native pointer or an offset from the beginning of a methodís bytecodes. If a thread is executing a native method, the value of the pc register is undefined.
 -------------------------------------------------------------------------------------------------------------------
-5.5|The Java Stack
-
+5.5|Java Stack
+One/thread, made of frames
+all local variables are exclusive for each thread.
+The method that is currently being executed by a thread is the threadís current method. The stack frame for the current method is the current frame. 
+The class in which the current method is defined is called the current class, and the current classís constant pool is the current constant pool.
+Like the method area and heap, the Java stack and stack frames need not be contiguous in memory.
+Frames could be allocated on a contiguous stack, or they could be allocated on a heap, or some combination of both. 
+The actual data structures used to represent the Java stack and stack frames is a decision of implementation designers
+-------------------------------------------------------------------------------------------------------------------
+5.6|Stack Frame
+The stack frame has three parts: local variables, operand stack, and frame data. 
+The sizes of the local variables and operand stack, which are measured in words, depend upon the needs of each individual method. 
+These sizes are determined at compile time and included in the class file data for each method. The size of the frame data is implementation dependent.
+When the Java Virtual Machine invokes a Java method, it checks the class data to determine the number of words required by the method in the local variables and operand stack. 
+It creates a stack frame of the proper size for the method and pushes it onto the Java stack.
