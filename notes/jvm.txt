@@ -268,6 +268,12 @@ Arrays, like classes, are stored in the heap.
  The class name for a three-dimensional array of bytes is "[[[B",
  the class name for a two-dimensional array of Objects is "[[Ljava.lang.Object". 
 
-
-
+-------------------------------------------------------------------------------------------------------------------
+5.4|The Program Counter
+Each thread of a running program has its own pc register, or program counter, which is created when the thread is started. 
+The pc register is one word in size, so it can hold both a native pointer and a returnValue. 
+As a thread executes a Java method, the pc register contains the address of the current instruction being executed by the thread. 
+An "address" can be a native pointer or an offset from the beginning of a methodís bytecodes. If a thread is executing a native method, the value of the pc register is undefined.
+-------------------------------------------------------------------------------------------------------------------
+5.5|The Java Stack
 
