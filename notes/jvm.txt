@@ -259,10 +259,14 @@ Additional data can also be stored for garbage collection mechanisms. A mark and
 
 #finaliser
 Garbage collectors must run the finalizer of any object whose class declares one before it reclaims the memory occupied by that object. 
-The specification states that a garbage collector will only execute an objectís finalizer once, but allows that finalizer to "resurrect" the object: to make the object referenced again. 
+The specification states that a garbage collector will only execute an object's finalizer once, but allows that finalizer to "resurrect" the object: to make the object referenced again. 
 When the object becomes unreferenced for a second time, the garbage collector must not finalize it again
 
-
+Arrays, like classes, are stored in the heap.
+ For example, 
+ the class name for an array of ints is "[I". 
+ The class name for a three-dimensional array of bytes is "[[[B",
+ the class name for a two-dimensional array of Objects is "[[Ljava.lang.Object". 
 
 
 
