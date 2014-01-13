@@ -152,13 +152,118 @@ Native methods are still points of weakness as they dont fall under Java Securit
 --------------------------------
 One final mechanism that is built into the Java Virtual Machine that contributes to security is structured error handling with exceptions. Because of its support for exceptions,  JVM has something structured to do when a security violation occurs. Instead of crashing, the Java Virtual Machine can throw an exception or an error, which may result in the death of the offending thread, but shouldn't crash the system. Throwing an error (as opposed to throwing an exception) almost always results in the death of the thread in which the error was thrown.
 
+3.5|
+Security Manager
+----------------------
+By using class loaders, you can prevent code loaded by different class loaders from interfering with one another inside the JVM, but to protect assets external to JVM, you must use a security manager customisable via security.policy.
+
+The classes of the Java API check with the security manager before they:
+
+    accept a socket connection from a specified host and port number
+    modify a thread (change its priority, stop it, etcÖ)
+    open a socket connection to a specified host and port number
+    create a new class loader
+    delete a specified file
+    create a new process
+    cause the application to exit
+    load a dynamic library that contains native methods
+    wait for a connection on a specified local port number
+    load a class from a specified package (used by class loaders)
+    add a new class to a specified package (used by class loaders)
+    access or modify system properties
+    access a specified system property
+    read from a specified file
+    write to a specified file
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
+CHAPTER4: NETWORK MOBILITY:
+**********************************
+Dynamic linking - all symbolic references only, no inlining of called code.
+Dynamic extensions - URLCLassloaders 
+Compaction - jar files.
+
+The main way Java's architecture facilitates network-mobility directly is by breaking up the monolithic binary executable into compact class files, which can be loaded as needed.
+Bytecode streams they contain are designed to be compact. They are called "bytecodes" because each instruction occupies only one byte
+The JAR file is to group classes to consolidate TCP handshake times of mutiple classes.
+
+Applets made JAVA future, as Sun released it along with Netscape.
+Java applets can run on any platform so long as there is a Java-capable browser for that platform. Java applets also demonstrated Javaís security capabilities, because they run inside a strict sandbox. But most significantly, Java applets demonstrated the promise of network-mobility.
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
+CHAPTER 5: JVM:
+*******************
+when you say "Java Virtual Machine." You may be speaking of:
+    the abstract specification,
+    a concrete implementation, or
+    a runtime instance.
+The base architecture of JVM comprises of 
+	Class loader system
+	Execution Engine
+	Runtime data areas
+		Stack - local variables,method args, method returns of thread, made up of Frames (1 frame/1 method call)
+		Heap - objects reside here
+		Method Area - class structure data
+		PC registers - Program Counter Registers 1/thread, hold the next instruction to execute
+		Native method stacks
+Data Types		
+	Value Types  -  primitives (byte, char, short, int, long, float, double). boolean is implemented by a int (0,1).
+	Reference types - objects (class, interface, collections)
+
+JVM specifies only primitive ranges (for efg, int(8bits) -2^7 to +2^7-1) and not their actual sizes, its upto the implementers.
+
+5.1| Class Loader: 
+	Loading: finding and importing the binary data for a type
+    Linking: performing verification, preparation, and (optionally) resolution
+        a. Verification: ensuring the correctness of the imported type
+        b. Preparation: allocating memory for class variables and initializing the memory to default values
+        c. Resolution: transforming symbolic references from the type into direct references.
+	Initialization: invoking Java code that initializes class variables to their proper starting values.
+-------------------------------------------------------------------------------------------------------------------
+5.2| Method Area
+When JVM loads a type, it uses a class loader to locate the appropriate class file. The class loader reads in the class file--a linear stream of binary data--and passes it to the virtual machine. The virtual machine extracts information about the type from the binary data and stores the information in the method area. Memory for class (static) variables declared in the class is also taken from the method area.
+Designers can choose whatever data structures and organization they feel optimize their implementations performance, in the context of its requirements.
+All threads share the same method area, so access to the method areaís data structures must be designed to be thread-safe. If two threads are attempting to find a class named Lava, for example, and Lava has not yet been loaded, only one thread should be allowed to load it while the other one waits.
+Expands and contracts, can also be garbage collected.
+In addition to the basic type information listed above, the virtual machine must also store for each loaded type:
+
+    a. The constant pool for the type
+    b. Field information  (name, type, order inside type)
+    c. Method information (name, params,return, order inside type)
+    d. All class (static) variables declared in the type, except constants(final) which go to pool
+    e. A reference to class ClassLoader
+    f. A reference to class Class
+    g. A method table is an array of direct references to all the instance methods that may be invoked on a class instance, including instance methods inherited from superclasses. 
+-------------------------------------------------------------------------------------------------------------------
+5.3| Heap
+Objects and collections go here
+Collected by Garbage Collector, design left to implementers
+Need not be contiguous, expands and contracts as per need
+Object representation--an integral aspect of the overall design of the heap and garbage collector--is a decision of implementation designers
+
+#design possiblility #1
+Divides the heap into two parts: A handle pool and an object pool. An object reference is a native pointer to a handle pool entry. 
+A handle pool entry has two components: a pointer to instance data in the object pool and a pointer to class data in the method area
+Disadvantage of using 2 pointers for an obj reference.
+
+#design possiblility #2
+Object reference points to a data aggregate in heap, which is a collection of pointers to instance data and one pointer to class data in method area.
+
+#design possiblility #3
+one pointer to instance data in heap and another to a method table in methods area. Methods table is not mandated by JVM Spec.
+
+#design possiblility #4
+each instance in heap can hold an copy of class image to boost performance, but it drains heaps space.
+
+#lock
+Each object has a lock for threads and a wait-set for storing threads waiting on it
+Additional data can also be stored for garbage collection mechanisms. A mark and sweep algorithm, for instance, could potentially use a separate bitmap for marking referenced and unreferenced objects
+
+#finaliser
+Garbage collectors must run the finalizer of any object whose class declares one before it reclaims the memory occupied by that object. 
+The specification states that a garbage collector will only execute an objectís finalizer once, but allows that finalizer to "resurrect" the object: to make the object referenced again. 
+When the object becomes unreferenced for a second time, the garbage collector must not finalize it again
 
 
- 
 
 
-
-
-#--------------------------------------------------------------------------------------------------------------------------------------------	
 
 
