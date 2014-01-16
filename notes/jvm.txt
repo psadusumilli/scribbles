@@ -288,5 +288,159 @@ The actual data structures used to represent the Java stack and stack frames is 
 The stack frame has three parts: local variables, operand stack, and frame data. 
 The sizes of the local variables and operand stack, which are measured in words, depend upon the needs of each individual method. 
 These sizes are determined at compile time and included in the class file data for each method. The size of the frame data is implementation dependent.
-When the Java Virtual Machine invokes a Java method, it checks the class data to determine the number of words required by the method in the local variables and operand stack. 
+When the jvm invokes a Java method, it checks the class data to determine the number of words required by the method in the local variables and operand stack. 
 It creates a stack frame of the proper size for the method and pushes it onto the Java stack.
+
+5.6.1|Local variable array
+The local variables section of the Java stack frame is organized as a zero-based array of words. 
+Instructions that use a value from the local variables section provide an index into the zero-based array. 
+	Values of type int, float, reference, and returnValue occupy one entry in the local variables array. 
+	Values of type byte, short, and char are converted to int before being stored into the local variables. 
+	Values of type long and double occupy two consecutive entries in the array.
+
+'this' - object reference is always sent as hidden param into the local variables array, apart from the regular arguments when a instance method is called.
+the array positions can be reused for multiple local variables based on their scope.
+
+
+5.6.2|Operand Stack
+Like the local variables, the operand stack is organized as an array of words. But unlike the local variables, which are accessed via array indices, the operand stack is accessed by pushing and popping values. If an instruction pushes a value onto the operand stack, a later instruction can pop and use that value
+	iload_0 // push the int in local variable 0 onto the stack
+	iload_1 // push the int in local variable 1 onto the stack
+	iadd // pop two ints, add them, push result
+	istore_2 // pop int, store into local variable 2
+
+5.6.3|Frame Data
+In addition to the local variables and operand stack, the Java stack frame includes data to support constant pool resolution, normal method return, and exception dispatch. This data is stored in the frame data portion of the Java stack frame.
+The frame data must also contain some kind of reference to the method's exception table. When a method throws an exception, the Java Virtual Machine uses the exception table referred to by the frame data to determine how to handle the exception. If the virtual machine finds a matching catch clause in the methodís exception table, it transfers control to the beginning of that catch clause. If the virtual machine doesnít find a matching catch clause, the method completes abnormally. The virtual machine uses the information in the frame data to restore the invoking methodís frame. It then rethrows the same exception in the context of the invoking method.
+-------------------------------------------------------------------------------------------------------------------
+5.7| Native Stack
+For native method execution
+thread leaves java stack and enters native stack and can return back to java stacks
+-------------------------------------------------------------------------------------------------------------------
+5.8| Execution Engine
+The spec indicates what should be done but not how
+The implementors can decide to interpret, just-in-time compile, adaptive optimisation, direct machine code.
+Each thread of a running Java application is a distinct instance of the virtual machineís execution engine. 
+
+5.8.1|Instruction Set
+A method's bytecode stream is a sequence of instructions for the Java Virtual Machine. Each instruction consists of a one-byte opcode followed by zero or more operands. The opcode indicates the operation to be performed. Operands supply extra information needed by the Java Virtual Machine to perform the operation specified by the opcode. The opcode itself indicates whether or not it is followed by operands, and the form the operands (if any) take. Many Java Virtual Machine instructions take no operands, and therefore consist only of an opcode. Depending upon the opcode, the virtual machine may refer to data stored in other areas in addition to (or instead of) operands that trail the opcode. When it executes an instruction, the virtual machine may use entries in the current constant pool, entries in the current frameís local variables, or values sitting on the top of the current frameís operand stack.
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
+CHAPTER 6: THE CLASS FILE
+****************************
+1 class file/1 class - no multiple classes/interfaces in a class file.
+not tied to java alone, any language can compile to bytecode like clojure.
+
+The Java class file contains everything a Java Virtual Machine needs to know about one Java class or interface. The remainder of this chapter describes the class file format using tables. Each table has a name and shows an ordered list of items that can appear in a class file. Items appear in the table in the order in which they appear in the class file. Each item has a type, a name, and a count. The type is either a table name or one of the "primitive types" shown in Table 6-1. All values stored in items of type u2, u4, and u8 appear in the class file in big-endian order.
+
+Table 6.1|"primitive types"
+-------------------------
+u1	a single unsigned byte
+u2	two unsigned bytes
+u4	four unsigned bytes
+u8	eight unsigned bytes
+
+The major components of the class file, in their order of appearance in the class file, are shown in Table 6-2. Each of these components is described in more detail below.
+
+Table 6-2|Format of a ClassFile Table
+----------------------------------------
+Type&			#9;Name					Count
+u4				magic					1
+u2				minor_version			1
+u2				major_version			1
+u2				constant_pool_count		1
+cp_info			constant_pool			constant_pool_count	- 1	
+u2				access_flags			1
+u2				this_class				1
+u2				super_class				1
+u2				interfaces_count		1
+u2				interfaces				interfaces_count	
+u2				fields_count			1
+field_info		fields					fields_count	
+u2				methods_count			1
+method_info		methods					methods_count	
+u2				attributes_count		1
+attribute_info	attributes	attributes_count	
+
+#1 magic: - oxCAFEBABE => magic number to indicate that the file is a class file.
+#2 minor_version/major_version => class file versions
+#3 constant_pool => final variables, string literals, class/method/field names and descriptors. Many entries in the constant pool refer to other entries in the constant pool, and many items that follow the constant pool in the class file refer back to entries in the constant pool. Throughout the class file, constant pool entries are referred to by the integer index that indicates their position in the constant_pool list. Plays a important role in dynamic linking.
+Each constant pool entry starts with a one-byte tag that indicates the type of constant making its home at that position in the list
+Table 6-3|Constant pool tags
+------------------------------
+Entry Type	Tag Value	Description
+CONSTANT_Utf8	1	A UTF-8 encoded Unicode string
+CONSTANT_Integer	3	An int literal value
+CONSTANT_Float	4	A float literal value
+CONSTANT_Long	5	A long literal value
+CONSTANT_Double	6	A double literal value
+CONSTANT_Class	7	A symbolic reference to a class or interface
+CONSTANT_String	8	A String literal value
+CONSTANT_Fieldref	9	A symbolic reference to a field
+CONSTANT_Methodref	10	A symbolic reference to a method declared in a class
+CONSTANT_InterfaceMethodref	11	A symbolic reference to a method declared in an interface
+CONSTANT_NameAndType	12	Part of a symbolic reference to a field or method
+
+#4 Access flags
+Flag Name		Value	Meaning if Set						Set By
+ACC_PUBLIC		0x0001	Type is public						Classes and interfaces
+ACC_FINAL		0x0010	Class is final						Classes only
+ACC_SUPER		0x0020	Use new 							invokespecial semanticsClasses and interfaces(obsolete)
+ACC_INTERFACE	0x0200	Type is an interface, not a class	All interfaces, no classes
+ACC_ABSTRACT	0x0400	Type is abstract					All interfaces, some classes
+
+6.1|Constant Pool
+----------------------------
+The constant pool is an ordered list of cp_info tables, each of which follows the general form shown in Table 6-8. The tag item of a cp_info table, an unsigned byte, indicates the tableís variety and format. cp_info tables come in eleven varieties, each of which is described in detail in the following sections.
+
+General form of a cp_info table
+---------------------
+Type	Name 	Count
+u1		tag		1
+u1		info 	depends on tag value
+
+6.1.1|CONSTANT_Utf8_info Table=>Stores string literals, class|method|fields' simple|fully qualified names
+6.1.2|CONSTANT_Integer_info Table=>store integers| (tag u1 |bytes u4)
+6.1.3|CONSTANT_Float_info Tables=>stores floats| (tag u1 |bytes u4)
+6.1.4|CONSTANT_long_info Tables=>stores long | (tag u1 |bytes u8)
+6.1.5|CONSTANT_Double_info Tables=>stores double | (tag u1 |bytes u8)
+
+6.1.6|CONSTANT_Class_info Table=>stores class names | (tag u1| name_index u2) 
+6.1.7|CONSTANT_String_info Table=>stored string literals | (tag u1|string_index u2)
+6.1.8|CONSTANT_Fieldref_info Table=>stored fields| (tag u1|class_index u2|name_and_type_index u2)
+6.1.9|CONSTANT_Methodref_info Table=>stores methods | (tag u1|class_index u2|name_and_type_index u2)
+6.1.10|CONSTANT_InterfaceMethodref_info=>stores interface methods | (tag u1|class_index u2|name_and_type_index u2)
+6.1.11|CONSTANT_NameAndType_info=>part of a symbolic reference to a field or method| (tag u1|name_index u2|desc_index u2)
+
+
+6.1.12| Attributes
+Name				Used By			Description
+-------------------------------------------------------------------------------------
+Code				method_info		The bytecodes and other data for one method
+ConstantValue		field_info		The value of a final variable
+Exceptions			method_info		The checked exceptions that a method may throw
+InnerClasses		ClassFile		A description of the inner classes defined inside a class
+LineNumberTable		Code_attribute	A mapping of line numbers to bytecodes for one method
+LocalVariableTable	Code_attribute	A description of the local variables for one method
+SourceFile			ClassFile		The name of the source file
+Synthetic			field_info 		method_info	An indicator that a field or method was generated by the compiler
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
