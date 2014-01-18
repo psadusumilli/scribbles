@@ -15,4 +15,4 @@ notes/samples while trying out, contains simple code samples on
 * play
 
 
-![--](http://static7.depositphotos.com/1008054/791/v/450/dep_7911528-Inky-Scribble-Marker-Superstar-Doodles-Vector.jpg)
+![--](http://www.my-walls.net/wallpapers/2012/12/Programmer-Coder-Admin-1200x3200.jpg)
