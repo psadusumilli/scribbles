@@ -1,0 +1,8 @@
+yum install R
+sudo rpm -i  <downloaded-rpm-rstudio>
+edit the preferences in rstudio like appearance, pane layout and default workspace
+From terminal $ R => will run the R console
+Or open rstudio to work with a nice IDE.
+setwd('/somepath') => will set workspace, reverse getwd()
+you can save .R files from IDE and run them
+$Rscript tryout.R => will run the script
