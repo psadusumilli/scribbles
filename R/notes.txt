@@ -6,3 +6,57 @@ Or open rstudio to work with a nice IDE.
 setwd('/somepath') => will set workspace, reverse getwd()
 you can save .R files from IDE and run them
 $Rscript tryout.R => will run the script
+
+---------------------------------------------------------
+a <- 1
+b <- 2
+c <- a+b
+types: integer, double, logical, character
+default numeric is double 
+
+---------------------------------------------------------
+vector| is ordered set of elements of same type
+a <- (11,22,33,44)
+a[1] gives 11
+a[1:3] gives 11,22,33
+a[-1] gives 22,33,44
+a*2 gives 22,44,66,88
+a + c(1,2) gives 12,24,33,44
+
+---------------------------------------------------------
+matrix| is multidimensional 
+m <- matrix(data=c(1,2,1,2,1,2),nrow=2, ncol=3) 
+m
+    1    1    1
+    2    2    2
+colnames(m) <- c("c1","c2","c3")
+m[,"c2"] gives 1,2
+---------------------------------------------------------
+list| collection of elements of different types
+s <- c("rick","dick","lick")
+t <- c(11,22,33)
+l <- list(studs=s,times=t)
+l
+$studs
+[1] "rick" "dick" "lick"
+$times
+[1] 11 22 33
+
+l$times
+[1] 11 22 33
+
+---------------------------------------------------------
+data frame| tabular data much like excel sheet
+tests <- data.frame(studs <-c("stan","kyle","kenny","cartman"), test1 <- c(67,90,45,50), test2 <- c(90,88,64,43))
+tests[1] gives ("stan","kyle","kenny","cartman")
+tests[1,1] gives stan
+tests[1,2] gives 67
+
+adding a column
+tests <- cbind(tests,test3 = c('A','A','C','D'))
+stud4 <- data.frame(studs = "token", test1 = 90, test2 = 99, test3 = 'B')
+tests <- rbind(tests,stud4)
+
+
+
+
