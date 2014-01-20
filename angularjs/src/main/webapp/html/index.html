@@ -6,12 +6,13 @@
     <link rel="stylesheet" href="../css/bootstrap-theme.min.css">
     <script src="../js/bootstrap.min.js"></script>
 </head>
-<body data-ng-init="boys=[{name:'stan',id:1},{name:'cartman',id:2},{name:'kenny',id:3},{name:'kyle',id:4}]">
+<body>
 <div class="container">
     <div class="page-header">
         <h1>AngularJS<small>workouts</small></h1>
     </div>
     <div class="row">
+
         <div class="col-md-8">
             <form class="form-inline" role="form">
                 <div class="form-group">
@@ -21,12 +22,22 @@
                 </div>
             </form>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-8" data-ng-controller="SimpleController">
             <p>Filtering by <span style="color:red">{{ name }}</span></p>
             <ul>
-                <li data-ng-repeat="boy in boys|filter:name">{{boy.id}}|{{boy.name}}</li>
+                <li data-ng-repeat="boy in boys|filter:name|orderBy:'id'">{{boy.id}}|{{boy.name|uppercase}}</li>
             </ul>
         </div>
+        <script>
+    function SimpleController($scope){
+        $scope.boys=[{name:'stan',id:1},{name:'cartman',id:2},{name:'kenny',id:3},{name:'kyle',id:4}]
+    };
+</script>
+
+
+
+
+
     </div>
  </div>
    <script src="../js/angular.min.js"></script>

@@ -1,0 +1,20 @@
+<div class="col-md-8">
+    <form class="form-inline" role="form">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" data-ng-model="name" class="form-control" id="name" placeholder="Enter name"/>
+
+        </div>
+    </form>
+</div>
+<div class="col-md-8" data-ng-controller="SimpleController">
+    <p>Filtering by <span style="color:red">{{ name }}</span></p>
+    <ul>
+        <li data-ng-repeat="boy in boys|filter:name|orderBy:'id'">{{boy.id}}|{{boy.name|uppercase}}</li>
+    </ul>
+</div>
+<script>
+    function SimpleController($scope){
+        $scope.boys=[{name:'stan',id:1},{name:'cartman',id:2},{name:'kenny',id:3},{name:'kyle',id:4}]
+    };
+</script>
