@@ -1,34 +1,21 @@
 <!DOCTYPE html PUBLIC>
 <html data-ng-app="m1">
 <head>
-    <title>Try-1</title>
+    <title>SouthPark</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/bootstrap-theme.min.css">
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/angular.min.js"></script>
+    <script src="../js/angular-route.min.js"></script>
     <script src="../js/try.js"></script>
 </head>
 <body>
 <div class="container">
     <div class="page-header">
-        <h1>AngularJS<small>workouts</small></h1>
+        <h1>SouthPark<small>characters</small></h1>
     </div>
-    <div class="row" data-ng-controller="controller1">
-        <div class="col-md-8">
-            <form class="form-inline" role="form">
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" data-ng-model="name"
-                           class="form-control" id="name" placeholder="Enter name"/>
-                </div>
-            </form>
-            <p>Filtering by <span style="color:red">{{ name }}</span></p>
-            <ul>
-                <li data-ng-repeat="boy in boys|filter:name|orderBy:'id'">
-                    {{boy.id}}|{{boy.name|uppercase}}
-                </li>
-            </ul>
-        </div>
+    <div class="row">
+       <div data-ng-view=""></div>
     </div>
  </div>
 </body>

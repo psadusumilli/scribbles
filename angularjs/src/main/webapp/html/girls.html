@@ -1,0 +1,13 @@
+<h2>Girls</h2>
+<form class="form-inline" role="form">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" data-ng-model="name" class="form-control" id="name" placeholder="Enter name"/>
+    </div>
+</form>
+<p>Filtering by <span style="color:red">{{ name }}</span></p>
+<ul>
+    <li data-ng-repeat="girl in girls|filter:name|orderBy:'id'">
+        {{girl.id}}|{{girl.name|uppercase}}
+    </li>
+</ul>
