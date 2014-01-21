@@ -495,12 +495,49 @@ Resolution of the symbolic links from internal pools to global pool is called re
 Resolution can be early(even before main() is called) or late, but all jvm implementations give the impression of being late, they throw any linking errors only after active usage.
 One can write custom ClassLoaders which does loading, linking and resolution of new types.
 loadClass() with resolve flag=true will link/resolve immediately.
+Each classloader has its own namespace
+
+Cat -> Mouse (Cat has symbolic ref to Mouse)
+So jvm will search for Mouse in the same namespace as Cat
+if not found, use the same classloader of Cat to load Mouse, this will happen even if Mouse is already loaded by another Classloader
+
+Following sections will describe resolution of each entitity type.
 
 
+7.1|Resolution of CONSTANT_Class_info Entries
+-------------------------------------------------
+Step 1:Loading the class: the Java Virtual Machine makes sure a type is loaded, and if the type is a class, that all its superclasses are loaded. During this step, these types are not linked and initialized--just loaded.
+Step 2. Link and Initialize the Type and any Superclasses
 
+7.2|Resolution of CONSTANT_Fieldref_info Entries
+---------------------------------------------------
+If resolution of the CONSTANT_Class_info entry succeeds, the virtual machine checks to make sure the field exists and that the current class has permission to access it.
+If the virtual machine discovers there is no field with the proper name and type in the referenced class, the virtual machine throws NoSuchFieldError. Otherwise, if the field exists, but the current class doesnít have permission to access the field, the virtual machine throws IllegalAccessError.
 
+7.3|Resolution of CONSTANT_Methodref_info Entries
+---------------------------------------------------
+If the virtual machine discovers there is no method with the proper name, return type, and number and types of parameters in the referenced class, the virtual machine throws NoSuchMethodError. Otherwise, if the method exists, but the current class doesnít have permission to access the method, the virtual machine throws IllegalAccessError.
 
+7.4|Resolution of CONSTANT_InterfaceMethodref_info Entries
+-----------------------------------------------------------
+ If the resolution of the CONSTANT_Class_info entry succeeds, the virtual machine checks to make sure the method exists. (The virtual machine need not check to make sure the current class has permission to access the method, because all methods declared in interfaces are implicitly public.).
+ If the virtual machine discovers there is no method with the proper name, return type, and number and types of parameters in the referenced interface, the virtual machine throw
 
+7.5|Resolution of CONSTANT_String_info Entries
+----------------------------------------------
+Putting the string encountered into one big string pool and reusing it.
+
+7.6|Resolution of Other Types of Entries
+-------------------------------------------
+The CONSTANT_Integer_info, CONSTANT_Long_info, CONSTANT_Float_info, CONSTANT_Double_info entries contain the constant values they represent within the entry itself. These are straightforward to resolve. To resolve this kind of entry, many virtual machine implementations may not have to do anything but use the value as is. Other implementations, however, may choose to do some processing on it. For example, a virtual machine on a little-endian machine could choose to swap the byte order of the value at resolve time.
+
+7.8|Direct references:
+------------------------
+Direct references to types, class variables, and class methods are likely native pointers into the method area. A direct reference to a type can simply point to the implementation-specific data structure in the method area that holds the type data. A direct reference to a class variable can point to the class variableís value stored in the method area. A direct reference to a class method can point to a data structure in the method area that contains the data needed to invoke the method. For example, the data structure for a class method could include information such as whether or not the method is native. If the method is native, the data structure could include a function pointer to the dynamically linked native method implementation. If the method is not native, the data structure could include the methodís bytecodes, max_stack, max_locals, and so on. If there is a just-in-time-compiled version of the method, the data structure could include a pointer to that just-in-time-compiled native code.
+
+Direct references to instance variables and instance methods are offsets. A direct reference to an instance variable is likely the offset from the start of the objectís image to the location of the instance variable. A direct reference to an instance method is likely an offset into a method table.
+
+Using offset to represent direct references to instance variables and instance methods depends on a predictable ordering of the fields in a classís object image and the methods in a classís method table. Although implementation designers may choose any way of placing instance variables into an object image or methods into a method table, they will almost certainly use the same way for all types. Therefore, in any one implementation, the ordering of fields in an object and methods in a method table is defined and predictable.
 
 
 
