@@ -19,6 +19,10 @@ controllers.controller2 = function($scope){
        {name:'shelly',id:3},
        {name:'red',id:4}]
 };
+controllers.controller3 = function($scope){
+  $scope.s0="s0-data";
+};
+
 module1.controller(controllers);
 
 module1.config(function($routeProvider){
@@ -26,5 +30,6 @@ module1.config(function($routeProvider){
         .when('/all',{controller:'controller1',templateUrl:'all.html'})
         .when('/boys',{controller:'controller1',templateUrl:'boys.html'})
         .when('/girls',{controller:'controller2',templateUrl:'girls.html'})
+        .when('/scope',{controller:'controller3',templateUrl:'scope.html'})
         .otherwise({redirectTo:'/all'});
 });
