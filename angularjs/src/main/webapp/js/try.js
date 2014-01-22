@@ -6,7 +6,11 @@ controllers.controller1 = function($scope){
        {name:'stan',id:1},
        {name:'cartman',id:2},
        {name:'kenny',id:3},
-       {name:'kyle',id:4}]
+       {name:'kyle',id:4}];
+
+  $scope.add = function(){
+     $scope.boys.push({name:$scope.newboy.name,id:$scope.newboy.id});
+  };
 };
 controllers.controller2 = function($scope){
   $scope.girls=[
