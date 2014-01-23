@@ -1,9 +1,10 @@
 <!--Check if data in parent is modified -->
 <div ng-init="s1 = 's1-data'">
+    <!--s0 from controller-->
     <h3>s0= {{s0}}</h3>
     <h3>s1= {{s1}}</h3>
+    <!--s1 overridden-->
     <div ng-init="s2 = {data : 's2-data'}; s1='s1-1-data'">
-        <h3>s2.data= {{s2.data}}</h3>
         <div>
             Change s0 to: <input type="text" ng-model="s0"/>
             Change s1 to: <input type="text" ng-model="s1"/>
@@ -12,4 +13,4 @@
             <h3>s2.data = {{s2.data}}</h3>
         </div>
     </div>
-</div>    
+</div>
