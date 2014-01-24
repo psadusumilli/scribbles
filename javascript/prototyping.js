@@ -1,10 +1,12 @@
 /*Define a functional object to hold persons in javascript. Add dynamically to the already defined object a new method print()*/
-console.log("<h3 style='color:cornflowerblue'>Function  Prototyping</h3>")
+console.log("<h4 style='color:cornflowerblue;margin-bottom:-1%'>Function  Prototyping</h4>")
 var Person1 = function(name) {this.name = name;this.age=23};
 Person1.prototype.print = function() {console.log('name=' + this.name+'|age='+this.age);};
 
 var myPerson1 = new Person1("John");
 myPerson1.print(); //works
+console.log("John's obj proto=");
+console.log(myPerson1.__proto__);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Linking objects:
 Now I link the objects and to do so, we link the prototype of Person2 to a new instance of Person. 
