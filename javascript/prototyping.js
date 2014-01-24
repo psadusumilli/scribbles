@@ -1,4 +1,5 @@
 /*Define a functional object to hold persons in javascript. Add dynamically to the already defined object a new method print()*/
+console.log("<h3 style='color:cornflowerblue'>Function  Prototyping</h3>")
 var Person1 = function(name) {this.name = name;this.age=23};
 Person1.prototype.print = function() {console.log('name=' + this.name+'|age='+this.age);};
 
