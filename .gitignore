@@ -22,4 +22,4 @@ test-output/
 *.pyc
 .gradle/
 ./notes/network.txt~
-*.txt~
+*.*~
