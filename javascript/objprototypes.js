@@ -1,4 +1,4 @@
-console.log("<h4 style='color:cornflowerblue;margin-bottom:-1%'>Object  Prototyping</h4>")
+title("object prototyping")
 var alien = {  kind: 'alien'}
 var person = {  kind: 'person'}
 var zack = {};

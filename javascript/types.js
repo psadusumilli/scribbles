@@ -1,4 +1,7 @@
-console.log("<h4 style='color:cornflowerblue;margin-bottom:-1%'>Types</h4>")
+title("types")
+/* JS has primitives[number,string,boolean] and objects
+   objects has subtypes like array, function, date, regex and error.
+*/
 var x; 
 x = 0; 
 x 

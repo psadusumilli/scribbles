@@ -12,3 +12,6 @@
         }
     }
 })();
+var title = function(msg){
+   console.log("<h4 style='color:cornflowerblue;margin-bottom:-1%'>"+msg+"</h4>")    
+}

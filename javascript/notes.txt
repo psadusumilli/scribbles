@@ -1,0 +1,49 @@
+Language characterset is UTF-16
+JS has primitives[number,string,boolean] and objects
+objects has subtypes like array, function, date, regex and error.
+The JavaScript interpreter performs automatic garbage collection for memory management.
+They can also be categorized as mutable(objects|arrays) and immutable types(String, Numbers, booleans, null, and undefined)
+Math.sin(0) gives math functions
+JavaScript predefnes global variables Infinity and NaN to hold the positive infinity and not-a-number value
+JavaScript adopts
+Perl’s syntax for regular expressions.
+
+Global Objects:
+**************** 
+When the JavaScript interpreter starts (or whenever a web browser loads a new page),
+it creates a new global object and gives it an initial set of properties that define:
+	• global properties like undefined, Infinity, and NaN
+	• global functions like isNaN(), parseInt() and eval() 
+	• constructor functions like Date(), RegExp(), String(), Object(), and Array()
+	• global objects like Math and JSON
+var global = this; // Define a global variable to refer to the global object
+In client-side JavaScript, the Window object serves as the global object for all JavaScript
+code contained in the browser window it represents. This global Window object has a
+self-referential window property that can be used instead of this to refer to the global
+object.
+
+Wrapper Objects:
+****************
+String create temp objects
+We’ve also seen that strings have properties and methods:
+	var s = "hello world!"; // A string
+	var word = s.substring(s.indexOf(" ")+1, s.length); // Use string properties
+Strings are not objects, though, so why do they have properties? Whenever you try to
+refer to a property of a string s, JavaScript converts the string value to an object as if by
+calling new String(s).
+useless pattern
+var S = new String(s); // A String object
+var N = new Number(n); // A Number object
+var B = new Boolean(b); // A Boolean object
+
+Equality:
+**********
+Primitives are always compared by value, objects by reference
+
+== is equality operator, === is strict equality operator
+var o = {x:1}, p = {x:1}; // Two objects with the same properties
+o === p // => false: distinct objects are never equal
+var a = [], b = []; // Two distinct, empty arrays
+a === b // => false: distinct arrays are never equal
+
+Type conversions are done implicitly by JS
