@@ -78,13 +78,6 @@ function g() {
 console.log(f()+"|"+x); // Local variable changed: prints "local-changed global":
 console.log(g()+"|"+y); // Global variable changed: prints "local global-changed":
 
-
-//delete
-console.log("delete")
-var o = { x: 1, y: 2}; 
-delete o.x; 
-console.log("x" in o); // => false
-
 var a = [1,2,3]; 
 delete a[2]; 
 console.log(a.length+"|"+a[2]) // => 3|undefined: 
