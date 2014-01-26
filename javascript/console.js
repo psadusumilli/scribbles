@@ -13,5 +13,5 @@
     }
 })();
 var title = function(msg){
-   console.log("<h4 style='color:cornflowerblue;margin-bottom:-1%'>"+msg+"</h4>")    
+   console.log("<h4 style='color:cornflowerblue;margin-bottom:-1%;border-bottom:1px dashed;'>"+msg+"</h4>")    
 }

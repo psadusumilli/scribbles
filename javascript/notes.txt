@@ -50,6 +50,11 @@ Type conversions are done implicitly by JS
 
 Scope
 ********
+JavaScript’s function scope means that all variables declared within a function are visible throughout the body of the function. 
+Curiously, this means that variables are even visible before they are declared. 
+This feature of JavaScript is informally known as hoisting:
+JavaScript code behaves as if all variable declarations in a function (but not any associated assignments) are “hoisted” to the top of the function.*
+
 Does not have block scope like C, but only function scope for the variables
 Every chunk of JavaScript code (global code or functions) has a scope chain associated with it. 
 This scopechain is a list or chain of objects that defines the variables that are “in scope” for that code. 
@@ -67,6 +72,9 @@ Similarly,
 	new Array() uses Array.prototype as its prototype, 
 	new Date() uses Date.prototype as its prototype,
 	new AnyFunction uses AnyFunction.prototype as its prototype.
+The four attributes of a data property are value, writable, enumerable, and configurable.
+The four attributes of an accessor property are get, set, enumerable, and configurable.
+
 
 
 
