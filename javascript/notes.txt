@@ -47,3 +47,17 @@ var a = [], b = []; // Two distinct, empty arrays
 a === b // => false: distinct arrays are never equal
 
 Type conversions are done implicitly by JS
+
+Scope
+******
+DOes not have block scope like C, but only function scope for the variables
+
+Every chunk of JavaScript code (global code or functions) has a scope chain associated with it. 
+This scopechain is a list or chain of objects that defines the variables that are “in scope” for that code. 
+When JavaScript needs to look up the value of a variable x (a process called variable resolution), it starts by looking at the first object in the chain. 
+If that object has a property named x, the value of that property is used. 
+If the first object does not have a property named x, JavaScript continues the search with the next object in the chain.
+
+Must be like this funtion __proto__ linking
+
+
