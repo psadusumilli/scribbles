@@ -13,7 +13,8 @@ console.log('zack1 kind='+zack1.kind+" & its prototype 'person1'=") // => ‘per
 console.log(Object.getPrototypeOf(zack1))
 
 /*__proto_____________________________________________________________________________*/
-/*updating obj property will not affect its proto, but proto will affect obj property*/
+/*updating obj property will not affect its proto, but proto will affect obj property.
+ __proto__ is not supported in certain browsers, then use Object.create()*/
 var alien = {  kind: 'alien'}
 var person = {  kind: 'person'}
 var zack = {}
@@ -89,6 +90,47 @@ console.log("attr: o.x="+o.x)// => 2
 
 Object.defineProperty(o, "x", { get: function() { return 0; } });// Now change x from a data property to an accessor property
 console.log("attr: o.x="+o.x)// => 0
+
+var p = Object.defineProperties({}, {
+	x: { value: 1, writable: true, enumerable:true, configurable:true },
+	y: { value: 1, writable: true, enumerable:true, configurable:true },
+	r: {get: function() { return Math.sqrt(this.x*this.x + this.y*this.y) },enumerable:true,configurable:true}
+});
+console.log("attr:p=")
+console.log(p)
+console.log("attr:p.x property desc=")
+console.log(Object.getOwnPropertyDescriptor(p,"x"))
+
+/* class attribute_______________________________________________________________________________________
+no direct way to access the attribute, only through the .toString method*/
+function classof(o) {
+	if (o === null) return "Null";
+	if (o === undefined) return "Undefined";
+	return Object.prototype.toString.call(o).slice(8,-1);
+}
+function f(){}
+console.log("class of :"+classof(3)+"|"+classof("3")+"|"+classof(new f()))
+
+/* extensible attribute__________________________________________________________________________________
+specifies whether new properties can be added to the object or not.*/
+var o = {x:1}
+Object.preventExtensions(o)//can be called only once on a obj and cannot be undone
+o.y = 2 
+console.log("ext: x="+o.x+"|o.y="+o.y+"|"+Object.isExtensible(o))//=>ext: x=1|o.y=undefined|false
+Object.seal(o) //makes o non-extensible, also makes its properties non-configurable and non-deletable
+delete o.x
+console.log("ext: x="+o.x+"|"+Object.isSealed(o))
+Object.freeze(o)//tighter than seal, now properties are made readable only
+o.x = 3
+console.log("ext: x="+o.x+"|"+Object.isFrozen(o))
+
+/*serialisation _________________________________________________________________________________________*/
+o = {x:1, y:{z:[false,null,""]}}; 
+s = JSON.stringify(o); //parses only enumerable properties
+console.log("serial:"+s)// s is '{"x":1,"y":{"z":[false,null,""]}}'
+p = JSON.parse(s);// p is a deep copy of o
+console.log(p)
+ 
 
 
 
