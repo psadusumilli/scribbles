@@ -75,6 +75,21 @@ point.r = 4
 point.print()
 console.log("point.theta="+point.theta)
 
+/*object attributes___________________________________________________________________________*/
+var o = {};
+Object.defineProperty(o, "x", { value : 1,writable: true,enumerable: false,configurable: true});
+console.log("attr: o.x="+o.x+"|"+Object.keys(o))// check that the property is there but is nonenumerable => 1| [] 
+
+Object.defineProperty(o, "x", { writable: false });// modify the property x so that it is read-only
+o.x = 2;// fails silently or throws TypeError in strict mode
+console.log("attr: o.x="+o.x)//=>1
+
+Object.defineProperty(o, "x", { value: 2 });// the property is still configurable, so we can change its value like this:
+console.log("attr: o.x="+o.x)// => 2
+
+Object.defineProperty(o, "x", { get: function() { return 0; } });// Now change x from a data property to an accessor property
+console.log("attr: o.x="+o.x)// => 0
+
 
 
 
