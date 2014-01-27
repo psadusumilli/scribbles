@@ -83,6 +83,44 @@ a.splice(4); // Returns [5,6,7,8]; a is [1,2,3,4]
 a.splice(1,2); // Returns [2,3]; a is [1,4]
 a.splice(1,1); // Returns [4]; a is [1]
 
+/*ecma5 methods______________________________________________________________________________________________*/
+//forEach
+var data = [1,2,3,4,5];
+var sum = 0;
+data.forEach(function(value) { sum += value; });
+console.log("foreach: sum="+sum)
+data.forEach(function(v, i, a) { a[i] = v + 1; });
+console.log("foreach: data="+data)
+
+//map
+a = [1, 2, 3];
+b = a.map(function(x) { return x*x; });// b is [1, 4, 9]
+
+//filter
+a = [5, 4, 3, 2, 1];
+smallvalues = a.filter(function(x) { return x < 3 });// [2, 1]
+everyother = a.filter(function(x,i) { return i%2==0 }); // [5, 3, 1]
+var dense = a.filter(function() { return true; });//skips null/undefined, so easy way to dense
+
+//every
+a = [1,2,3,4,5];
+a.every(function(x) { return x < 10; })// => true: all values < 10.
+a.every(function(x) { return x % 2 === 0; }) // => false: not all values even.
+
+//some
+a = [1,2,3,4,5];
+a.some(function(x) { return x%2===0; })// => true a has some even numbers.
+a.some(isNaN)// => false: a has no non-numbers
+
+//reduce/reduceRight (works from right to left)
+a = [1,2,3,4,5]
+var sum = a.reduce(function(x,y) { return x+y }, 0);// Sum of values
+var product = a.reduce(function(x,y) { return x*y }, 1); // Product of values
+var max1 = a.reduce(function(x,y) { return (x>y)?x:y; }); // Largest value
+console.log("reduce:"+sum+"|"+product+"|"+max1)
+
+Array.prototype.x = "x is x"
+console.log("a.x|"+a.x)
 
 
 
