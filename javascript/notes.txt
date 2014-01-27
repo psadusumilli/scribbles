@@ -76,7 +76,15 @@ The four attributes of a data property are value, writable, enumerable, and conf
 The four attributes of an accessor property are get, set, enumerable, and configurable.
 
 
+Arrays:
+********
+Just a special type of object.
+A sparse array is one in which the elements do not have contiguous indexes starting at 0. 
+a = new Array(5); // No elements, but a.length is 5.
+a = []; // Create an array with no elements and length = 0.
+a[1000] = 0; // Assignment adds one element but sets length to 1001.
 
+an array (sparse or not) will never have an element whose index is greater than or equal to its length.
 
 
 
