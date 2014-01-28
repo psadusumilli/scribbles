@@ -12,6 +12,7 @@ var obj={name:'o1'}
 obj.say = function(){return this.name} //=>this refers to scope of obj
 console.log("obj method:"+obj.say())
 
+
 /*scope of variables  -------------------------------------------------------------------------------------------------------------------------------*/
 var g1 = "g1"
 var g2 = "g2"
@@ -67,9 +68,38 @@ Person2.prototype.getGender = function() {return this.gender;}
 
 myPerson2.setGender('male')
 console.log('name='+myPerson2.name+'|gender='+myPerson2.getGender()) //work
-myPerson1.setGender('female')//error thrown
+//myPerson1.setGender('female')//error thrown
 
+/*weird prototyping _________________________________________________________________________________________*/
+var f = function(x){
+	console.log("f=>"+x); 
+	this.a= 1
+}
+f("called as a simple variable")
+//2| adding another property to function object 
+f.y = function(x){console.log("f.y=>"+x)}
+f.y("called as a property of a function object")
 
+//3|using Object to get real prototype
+var p = Object.getPrototypeOf(f)
+console.log("prototype of f=>")
+console.log(p)//=>function Empty() {}
+p.z = function(x){console.log("f.z=>"+x)}
+p.z("called from parent")
+f.z("called from child")
+
+//4| prototype keyword is useless without new
+console.log("using protoype keyword is useless")
+console.log(f.prototype)//=>{}
+f.prototype.z1 = function(x){console.log("f.z1=>"+x)} //fails silently
+console.log(f.prototype)//=>{}
+//f.z1("called as inherited function")//does not work! 
+
+//5| using 'new' keyword
+var x = new f("called from a new object from f") //=>13
+console.log(x)//=>{a:1}
+f.prototype.z2 = function(x){console.log("f.z2=>"+x)} //fails silently
+x.z2("called as a inherited function")// works!
 
 
 
