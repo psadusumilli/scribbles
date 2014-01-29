@@ -86,6 +86,11 @@ a[1000] = 0; // Assignment adds one element but sets length to 1001.
 
 an array (sparse or not) will never have an element whose index is greater than or equal to its length.
 
+Functions:
+***********
+Can be called as function, mehod, contructor and apply/call
+Nested functions can be written anywhere except inside conditional statements and try/catch/finally
+
 
 
 

@@ -70,36 +70,68 @@ myPerson2.setGender('male')
 console.log('name='+myPerson2.name+'|gender='+myPerson2.getGender()) //work
 //myPerson1.setGender('female')//error thrown
 
-/*weird prototyping _________________________________________________________________________________________*/
+/*weird prototyping-----------------------------------------------------------------------------------------------------------------*/
 var f = function(x){
-	console.log("f=>"+x); 
-	this.a= 1
+	this.a1 = 1
+	var ax2 =2
+	console.log("f=>"+x+"|this.a1="+this.a1+"|ax2="+ax2); 
 }
-f("called as a simple variable")
+f("called as a simple variable")//=>called as a simple variable|f.a=1 (a belongs to global)
+
 //2| adding another property to function object 
-f.y = function(x){console.log("f.y=>"+x)}
-f.y("called as a property of a function object")
+f.y = function(x){console.log("f.y=>"+x+"|this.a1="+this.a1)}//ax2 not in scope
+f.y("called as a property of a function object")//=>called as a property of a function object|f.a=undefined
 
 //3|using Object to get real prototype
 var p = Object.getPrototypeOf(f)
 console.log("prototype of f=>")
 console.log(p)//=>function Empty() {}
-p.z = function(x){console.log("f.z=>"+x)}
-p.z("called from parent")
-f.z("called from child")
+p.z = function(x){console.log("f.z=>"+x+"|this.a1="+this.a1)}//ax2 not in scope
+p.z("called from parent")//f.z=>called from parent|f.a=undefined
+f.z("called from child")//f.z=>called from child|f.a=undefined
 
 //4| prototype keyword is useless without new
-console.log("using protoype keyword is useless")
+f.prototype.z1 = function(x){console.log("f.z1=>"+x+"|this.a1="+this.a1)}//fails silently,ax2 not in scope
 console.log(f.prototype)//=>{}
-f.prototype.z1 = function(x){console.log("f.z1=>"+x)} //fails silently
-console.log(f.prototype)//=>{}
-//f.z1("called as inherited function")//does not work! 
+try{
+	f.z1("called as inherited function")//does not work! 
+}catch(e){console.log("using protoype keyword is useless without 'new' keyword")}
+
 
 //5| using 'new' keyword
 var x = new f("called from a new object from f") //=>13
 console.log(x)//=>{a:1}
-f.prototype.z2 = function(x){console.log("f.z2=>"+x)} //fails silently
-x.z2("called as a inherited function")// works!
+f.prototype.z2 = function(x){console.log("f.z2=>"+x+"|this.a1="+this.a1)}//ax2 not in scope 
+x.z2("called as a inherited function")// =>called as a inherited function|f.a=1
+
+/*scopes-----------------------------------------------------------------------------------------------------------------*/
+var o = { 
+	m: function() { 
+			var self = this; 
+			console.log("scope-this:"+(this === o)); //=>"true": this is the object o.
+			f(); 
+			function f() { 
+				console.log("scope-this:"+(this === o)); //=> "false": this is global or undefined
+				console.log("scope-this:"+(self === o)); //=> "true": self is the outer this value.
+			}
+		}
+};
+o.m()
+
+/*params------------------------------------------------------------------------------------------------------*/
+/* funtion param types and presence not checked */
+function s(x1,x2){console.log("params:x1="+x1+"|x2="+x2)}
+s(); s(1);s(1,2)
+
+//arguments keyword - its similar to an array with params but does not support many methods
+function sum(){
+	if(arguments.length == 0) return;
+	var sum = 0
+	for(i in arguments) sum += arguments[i]
+	return sum;	
+}
+console.log("arguments-sum="+sum(12,2,3,44))
+
 
 
 
