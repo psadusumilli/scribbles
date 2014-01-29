@@ -76,10 +76,11 @@ var f = function(x){
 	var ax2 =2
 	console.log("f=>"+x+"|this.a1="+this.a1+"|ax2="+ax2); 
 }
-f("called as a simple variable")//=>called as a simple variable|f.a=1 (a belongs to global)
+f("called as a simple variable")//=>called as a simple variable|f.a1=1 (a1 belongs to f object)
 
 //2| adding another property to function object 
-f.y = function(x){console.log("f.y=>"+x+"|this.a1="+this.a1)}//ax2 not in scope
+f.x3 = 2
+f.y = function(x){console.log("f.y=>"+x+"|this.a1="+this.a1+"|this.x3 ="+this.x3)}//ax2 not in scope
 f.y("called as a property of a function object")//=>called as a property of a function object|f.a=undefined
 
 //3|using Object to get real prototype
@@ -96,7 +97,6 @@ console.log(f.prototype)//=>{}
 try{
 	f.z1("called as inherited function")//does not work! 
 }catch(e){console.log("using protoype keyword is useless without 'new' keyword")}
-
 
 //5| using 'new' keyword
 var x = new f("called from a new object from f") //=>13
