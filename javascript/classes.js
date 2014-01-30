@@ -26,13 +26,16 @@ console.log("f2|bind call="+f2b(3))//=>6
 M = function(x,y){
 	var v1 = 5
 	this.v2 = 10
+	Object.defineProperty(this, "v2", { writable: false });
+
 	this.m0 =  function(){return x+y}
 	this.m1 = function(){return v1*(x+y)}
 	this.m2 = function(){return this.v2*(x+y)} //this.v2 ('this' reqd)
+	
 	console.log("M called: v1="+v1+"|v2="+this.v2)
 }
 M.v3 = 9
-M.m3 = function(){return this.v3}//x, y, v2 cannot come here (m and M are not related)
+M.m3 = function(){return this.v3}//x, y, v2 cannot come here (m and M are not related), more like static variables of class M
 
 var n = M.prototype
 n.v4= 15
@@ -41,10 +44,14 @@ n.m4 = function() {return this.v4*this.v2; } //local x, y, v1 cannot be reached,
 
 var m = new M(1,2) //=>M called: v1=5|v2=10
 
+console.log("m instanceof M="+(m instanceof M)+"|m.constructor==M|"+(m.constructor==M))//true
 console.log("v1|local variable="+m.v1) //=>undefined
 console.log("v2|obj property="+m.v2) //=>10
+m.v2 = 32;
+console.log("v2|readonly obj property="+m.v2) //=>10
+
 console.log("m0|simple method call with constructor params="+m.m0())//=>3
-console.log("m1|method call with constructor params and local variable="+m.m1())//=>15 v1 available via scope chain
+console.log("m1|method call with constructor params and local variable="+m.m1())//=>15 v1 available via scope chain closure
 console.log("m2|method call with constructor params and object property="+m.m2())//=>20 v2 is bound to the new object 
 console.log("m|function object=")
 console.log(m)//=>prints function definition
@@ -59,14 +66,6 @@ console.log("m|Object.getPrototypeOf(m)=");console.log(p2)//=>{"v4":15}
 console.log("M|M.prototype=");console.log(p3)//=>{"v4":15}
 console.log((p1==p2) && (p2==p3))//=>true
 console.log("m4|inherited method call with owned and inherited object properties="+m.m4())//=>150
-
-
-
-
-
-
-
-
 //-----------------------------------------------------------------------
 
 //-----------------------------------------------------------------------
