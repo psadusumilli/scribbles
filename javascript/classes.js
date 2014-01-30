@@ -37,30 +37,29 @@ M.m3 = function(){return this.v3}//x, y, v2 cannot come here (m and M are not re
 var n = M.prototype
 n.v4= 15
 n.m4 = function() {return this.v4*this.v2; } //local x, y, v1 cannot be reached, v3=undefined, belongs to M object
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 
 var m = new M(1,2) //=>M called: v1=5|v2=10
-//-----------------------------------------------------------------------
+
 console.log("v1|local variable="+m.v1) //=>undefined
-//-----------------------------------------------------------------------
 console.log("v2|obj property="+m.v2) //=>10
-//-----------------------------------------------------------------------
 console.log("m0|simple method call with constructor params="+m.m0())//=>3
-//-----------------------------------------------------------------------
 console.log("m1|method call with constructor params and local variable="+m.m1())//=>15 v1 available via scope chain
-//-----------------------------------------------------------------------
 console.log("m2|method call with constructor params and object property="+m.m2())//=>20 v2 is bound to the new object 
-//-----------------------------------------------------------------------
 console.log("m|function object=")
-console.log(m)
-//-----------------------------------------------------------------------
-console.log("m|Object.getPrototypeOf(m)=")
-console.log(Object.getPrototypeOf(m))
-console.log("M|M.prototype=")
-console.log(M.prototype)
-console.log("m4|inherited method call with owned and inherited object properties="+m.m4())//=>150
+console.log(m)//=>prints function definition
 //-----------------------------------------------------------------------
 console.log("M.m3|method call on M object="+M.m3())//=>9
+//-----------------------------------------------------------------------
+p1 = m.__proto__
+p2 = Object.getPrototypeOf(m)
+p3 = M.prototype
+console.log("m|m.__proto__=");console.log(p1)//=>{"v4":15}
+console.log("m|Object.getPrototypeOf(m)=");console.log(p2)//=>{"v4":15}
+console.log("M|M.prototype=");console.log(p3)//=>{"v4":15}
+console.log((p1==p2) && (p2==p3))//=>true
+console.log("m4|inherited method call with owned and inherited object properties="+m.m4())//=>150
+
 
 
 
