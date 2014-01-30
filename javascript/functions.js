@@ -81,7 +81,7 @@ f("called as a simple variable")//=>called as a simple variable|f.a1=1 (a1 belon
 //2| adding another property to function object 
 f.x3 = 2
 f.y = function(x){console.log("f.y=>"+x+"|this.a1="+this.a1+"|this.x3 ="+this.x3)}//ax2 not in scope
-f.y("called as a property of a function object")//=>called as a property of a function object|f.a=undefined
+f.y("called as a property of a function object")//=>called as a property of a function object
 
 //3|using Object to get real prototype
 var p = Object.getPrototypeOf(f)

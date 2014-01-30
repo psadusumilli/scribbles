@@ -1,5 +1,28 @@
 title("classes")
 
+//#1 simple function call
+function f1(){
+	return this.v0
+}
+f1.v0 = 1;
+console.log("f1|simple function call="+f1()) //=>undefined
+this.v0 = 2 //=> global scope
+console.log("f1|simple function call="+f1()) //=>2
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//#2 method call on objects 
+function f2(z){
+	return this.x+this.y+z
+}
+var obj={x:1,y:2}
+obj.m = f2; //obj becomes invocation context
+console.log("f2|simple method call="+obj.m(3))//=>6
+console.log("f2|call()="+f2.call(obj,3))//=>6
+console.log("f2|apply()="+f2.apply(obj,[3]))//=>6
+var f2b = f2.bind(obj)
+console.log("f2|bind call="+f2b(3))//=>6
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//#3 - function constructors and prototypes
 M = function(x,y){
 	var v1 = 5
 	this.v2 = 10
@@ -14,9 +37,6 @@ M.m3 = function(){return this.v3}//x, y, v2 cannot come here (m and M are not re
 var n = M.prototype
 n.v4= 15
 n.m4 = function() {return this.v4*this.v2; } //local x, y, v1 cannot be reached, v3=undefined, belongs to M object
-
-
-
 /*--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 var m = new M(1,2) //=>M called: v1=5|v2=10
@@ -40,7 +60,7 @@ console.log("M|M.prototype=")
 console.log(M.prototype)
 console.log("m4|inherited method call with owned and inherited object properties="+m.m4())//=>150
 //-----------------------------------------------------------------------
-console.log("M.m3|method call on M object="+M.m3())
+console.log("M.m3|method call on M object="+M.m3())//=>9
 
 
 
