@@ -20,7 +20,7 @@ controllers.controller2 = function($scope){
        {name:'red',id:4}]
 };
 controllers.controller3 = function($scope){
-  $scope.s0="s0-data";
+  $scope.s0="D";
 };
 
 module1.controller(controllers);
