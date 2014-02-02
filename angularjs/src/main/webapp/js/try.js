@@ -5,39 +5,54 @@ var module1 = angular.module('m1',['ngRoute']);
 /*constant injection*/
 module1.constant("title","SouthPark Elementary")
 
-/*value injection*/
+/*value injection - no dependency on anything else*/
 var GirlsRepo = function(title){
     this.title = title;
     this.all = function(){return [{name:'bebe',id:1},{name:'wendy',id:2},{name:'shelly',id:3},{name:'red',id:4}]};
 }
-module1.value("girlsRepo", new GirlsRepo());//no dependency on anything else
+module1.value("girlsRepo", new GirlsRepo());//
 
-/*service injection*/
+/*service injection - rarely used*/
 var GirlsService = function(girlsRepo){
   this.title = girlsRepo.title
   this.all = girlsRepo.all()
 }
-module1.service("girlsService", GirlsService)//now new keyword required
+module1.service("girlsService", GirlsService)//now new keyword required, singletons
 
 /*controllers*/
 var controllers = {};
-controllers.controller2 = function($scope,girlsService){
+controllers.girlsController = function($scope,girlsService){
   $scope.girls = girlsService.all;
   $scope.title = girlsService.title;
 };
 
 /*boys ----------------------------------------------------------------------*/
 
-
-controllers.controller1 = function($scope){
-  $scope.boys=[{name:'stan',id:1},{name:'cartman',id:2}, {name:'kenny',id:3}, {name:'kyle',id:4}];
+/*factory injection*/
+module1.factory("boysRepo", function(){
+   var boys=[{name:'stan',id:1},{name:'cartman',id:2}, {name:'kenny',id:3}, {name:'kyle',id:4}]
+   return{
+     all:boys,
+     add:function(boy){boys.push(boy)}
+   }
+})
+/*provider injection*/
+//module1.provider("boysService", function(boysRepo){
+//    var config = {max:10}
+//    return{
+//        setMax:function(max){config.max = max?max:config.max},
+//        $get:function(boysRepo){return {all:boysRepo.all,add:boysRepo.add}}
+//    }
+//})
+/*controllers*/
+controllers.boysController = function($scope,boysRepo){
+  $scope.boys = boysRepo.all
   $scope.add = function(){
-     $scope.boys.push({name:$scope.newboy.name,id:$scope.newboy.id});
+     boysRepo.add({id:$scope.newboy.id, name:$scope.newboy.name});
   };
 };
 
-
-controllers.controller3 = function($scope){
+controllers.scopeController = function($scope){
   $scope.s0="D";
 };
 
@@ -46,10 +61,10 @@ module1.controller(controllers);
 /*routers*/
 module1.config(function($routeProvider){
     $routeProvider
-                        .when('/all',{controller:'controller1',templateUrl:'all.html'})
-        .when('/boys',{controller:'controller1',templateUrl:'boys.html'})
-        .when('/girls',{controller:'controller2',templateUrl:'girls.html'})
-        .when('/scope',{controller:'controller3',templateUrl:'scope.html'})
+        .when('/all',{controller:'scopeController',templateUrl:'all.html'})
+        .when('/boys',{controller:'boysController',templateUrl:'boys.html'})
+        .when('/girls',{controller:'girlsController',templateUrl:'girls.html'})
+        .when('/scope',{controller:'scopeController',templateUrl:'scope.html'})
         .otherwise({redirectTo:'/all'});
 });
 
