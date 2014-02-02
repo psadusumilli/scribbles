@@ -37,13 +37,13 @@ module1.factory("boysRepo", function(){
    }
 })
 /*provider injection*/
-//module1.provider("boysService", function(boysRepo){
-//    var config = {max:10}
-//    return{
-//        setMax:function(max){config.max = max?max:config.max},
-//        $get:function(boysRepo){return {all:boysRepo.all,add:boysRepo.add}}
-//    }
-//})
+module1.provider("boysService", function(){
+    var config = {max:10}
+    return{
+        //setMax:function(max){config.max = max?max:config.max},
+        $get:function(){return {}}
+    }
+});
 /*controllers*/
 controllers.boysController = function($scope,boysRepo){
   $scope.boys = boysRepo.all
@@ -51,7 +51,7 @@ controllers.boysController = function($scope,boysRepo){
      boysRepo.add({id:$scope.newboy.id, name:$scope.newboy.name});
   };
 };
-
+/*misc ----------------------------------------------------------------------*/
 controllers.scopeController = function($scope){
   $scope.s0="D";
 };
