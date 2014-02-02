@@ -45,8 +45,9 @@ module1.provider("boysService", function(){
             return {//this obj is boysService during run phase
                 all:boysRepo.all,
                 add:function(boy){
-                    if(this.all.length >= config.max) {return "maxed-out"}
-                    else boysRepo.add(boy)
+                    if(this.all.length >= config.max) {return false}
+                    boysRepo.add(boy)
+                    return true
                 }
             }
         }
@@ -56,7 +57,9 @@ module1.provider("boysService", function(){
 controllers.boysController = function($scope,boysService){
   $scope.boys = boysService.all
   $scope.add = function(){
-     boysService.add({id:$scope.newboy.id, name:$scope.newboy.name});
+     var result = boysService.add({id:$scope.newboy.id, name:$scope.newboy.name});
+     if(result){$scope.boys_msg="Added a boy"; $scope.boys_class="alert-success"}
+     else{$scope.boys_msg="Too many boys"; $scope.boys_class="alert-warning"}
   };
 };
 /*misc ----------------------------------------------------------------------*/
