@@ -38,17 +38,25 @@ module1.factory("boysRepo", function(){
 })
 /*provider injection*/
 module1.provider("boysService", function(){
-    var config = {max:10}
+    var config = {max:6}
     return{
-        //setMax:function(max){config.max = max?max:config.max},
-        $get:function(){return {}}
+        setMax:function(max){config.max = max?max:config.max},
+        $get:function(boysRepo){
+            return {//this obj is boysService during run phase
+                all:boysRepo.all,
+                add:function(boy){
+                    if(this.all.length >= config.max) {return "maxed-out"}
+                    else boysRepo.add(boy)
+                }
+            }
+        }
     }
 });
 /*controllers*/
-controllers.boysController = function($scope,boysRepo){
-  $scope.boys = boysRepo.all
+controllers.boysController = function($scope,boysService){
+  $scope.boys = boysService.all
   $scope.add = function(){
-     boysRepo.add({id:$scope.newboy.id, name:$scope.newboy.name});
+     boysService.add({id:$scope.newboy.id, name:$scope.newboy.name});
   };
 };
 /*misc ----------------------------------------------------------------------*/
