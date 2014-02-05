@@ -1,11 +1,25 @@
-
+@import  (reference) 'sample2.less';
 /*variables -----------------------------------------------------*/
 @base: #f938ab;
 @blue: #00c;
 @light_blue: @blue + #333;
 @dark_blue: @blue - #333;
 
+/*operations-----------------------------------------------------*/
+@base_margin: 10px;
+@double_margin: @base_margin * 2;
 
+@full_page: 960px;
+@half_page: @full_page / 2;
+@quarter_page: (@full_page / 2) / 2;
+
+#full_page{
+	width: @full_page;
+	padding:@double_margin;
+}
+#half_page{
+	width: @half_page;
+}
 
 /*mixins --------------------------------------------------------*/
 .border {
@@ -28,7 +42,7 @@ ul.menu {
 }
 
 
-/*sample_1 ------------------------------------------------------*/
+/*conditionals and funcs ---------------------------------------------*/
 .box-shadow(@style, @c) when (iscolor(@c)) {
   	-webkit-box-shadow: @style @c;
   	-moz-box-shadow:    @style @c;
@@ -42,3 +56,26 @@ ul.menu {
   	border-color: lighten(@base, 30%);
   	div { .box-shadow(0 0 5px, 30%) }
 }
+
+/*nesting ------------------------------------------------------*/
+#site-body { 
+	background:black;
+    .post { 
+    	background:white;
+        .post-header {
+        	background:red;
+            h2 { background:blue;}
+            a {
+            	&:visited { background:green; }
+            	&:hover { background:yellow; }
+            }
+        }
+    }
+}
+/*import ------------------------------------------------------*/
+p{
+	color:@remote_color;
+	.remote_mixin;
+}
+
+

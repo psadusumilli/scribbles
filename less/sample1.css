@@ -1,3 +1,23 @@
+/*variables -----------------------------------------------------*/
+/*mixins --------------------------------------------------------*/
+.border {
+  border-top: 1px dotted #333;
+}
+article.post {
+  background: #eee;
+  border-top: 1px dotted #333;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+ul.menu {
+  background: #ccc;
+  border-top: 1px dotted #333;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+/*conditionals and funcs ---------------------------------------------*/
 .box {
   color: #fe33ac;
   border-color: #fdcdea;
@@ -6,4 +26,23 @@
   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+/*nesting ------------------------------------------------------*/
+#site-body {
+  background: black;
+}
+#site-body .post {
+  background: white;
+}
+#site-body .post .post-header {
+  background: red;
+}
+#site-body .post .post-header h2 {
+  background: blue;
+}
+#site-body .post .post-header a:visited {
+  background: green;
+}
+#site-body .post .post-header a:hover {
+  background: yellow;
 }
