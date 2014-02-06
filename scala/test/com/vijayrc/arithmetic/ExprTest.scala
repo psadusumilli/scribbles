@@ -20,15 +20,20 @@ class ExprTest extends FunSuite{
   test("do pattern matching"){
     def simplify(expr:Expr):Expr = {
       expr match {
-        case BiOp("+",e,Number(0))=> e //e+0
-        case BiOp("*",e,Number(1))=> e //e*1
-        case UnOp("-",UnOp("-",e))=> e //-(-e)
-        case BiOp("^",e,Number(1)) => e //e to the power 1
+        case BiOp("+", e, Number(0)) => simplify(e) //e+0
+        case BiOp("*", e, Number(1)) => simplify(e) //e*1
+        case UnOp("-", UnOp("-", e)) => simplify(e) //-(-e)
+        case BiOp("^", e, Number(1)) => simplify(e) //e to the power 1
+        case Number(x) => expr
+        case Variable(x) => expr
         case _ => expr
       }
     }
     val expr = BiOp("^",Variable("x"),Number(1))
-    val simplified: Expr = simplify(expr)
+    var simplified: Expr = simplify(expr)
+    assert(simplified == Variable("x"))
+    val expr1 = BiOp("+",expr,Number(0))
+    simplified = simplify(expr1)
     assert(simplified == Variable("x"))
   }
 
