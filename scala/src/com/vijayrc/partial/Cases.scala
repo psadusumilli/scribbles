@@ -1,6 +1,15 @@
 package com.vijayrc.partial
 
 object Cases extends App{
+  def append(first:List[Int], second:List[Int]):List[Int] = {
+    first match{
+      case List() => second
+      case head::tail => head::append(tail,second)
+    }
+  }
+  val result = 1 :: 2 :: 3 :: 4 :: 5 :: 6 :: Nil
+  assert(result == append(List(1,2,3),4::5::6::Nil))
+
   /*0 - simple anonymous function without case*/
   List(1, 2, 3).map(x=>x+1).foreach(print)//234
   println()
