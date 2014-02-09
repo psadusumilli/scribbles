@@ -45,8 +45,8 @@ object Cases extends App{
   println()
 
   /*4 - explicit trait*/
-  val f1 = new PartialFunction[Int, Int] {//will take only Int, and apply on only Int
-    def apply(d: Int) = 42 / d
+  val f1 = new PartialFunction[Int, String] {//will take only Int, and returns String
+    def apply(d: Int) = 42 / d  +""
     def isDefinedAt(d: Int) = d != 0
   }
   def f2: PartialFunction[Int, Int] = { case d: Int if d != 0 ⇒ 42 / d }
@@ -61,9 +61,13 @@ object Cases extends App{
 
   /*5*/
   //general anonymous function notation
-  val family = (x:String) =>  x match  { case "rekha" => "wife" case "shravan" => "son" case _ => ""}
-  //partial function
+  val family = (x:String) =>  x match { case "rekha" => "wife" case "shravan" => "son" case _ => ""}
+  //partial function in long form
+  val family1:PartialFunction[String, String] =  { case "rekha" => "wife" case "shravan" => "son" case _ => ""}
+  //partial function in short form
   val family2:String  => Int =  { case "rekha" => 1 case "shravan" => 2 case _ => -1}
+
   assert("wife" == family("rekha"))
+  assert("wife" == family1("rekha"))
   assert(1 == family2("rekha"))
 }
