@@ -58,4 +58,12 @@ object Cases extends App{
 
   val f = (x:PartialFunction[Any,Int]) => x.isDefinedAt(0) + "|" + x.isDefinedAt(3) + "|" + x(3)
   println(f(f3)) //using 'f' to avoid the repetition above
+
+  /*5*/
+  //general anonymous function notation
+  val family = (x:String) =>  x match  { case "rekha" => "wife" case "shravan" => "son" case _ => ""}
+  //partial function
+  val family2:String  => Int =  { case "rekha" => 1 case "shravan" => 2 case _ => -1}
+  assert("wife" == family("rekha"))
+  assert(1 == family2("rekha"))
 }

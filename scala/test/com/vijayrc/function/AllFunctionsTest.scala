@@ -29,6 +29,12 @@ class AllFunctionsTest extends FunSuite{
       allFunctions.closureScopes()
   }
 
+  test("should run parameterised methods"){
+    println(allFunctions.parameterized[Int](3, 4))
+    println(allFunctions.parameterized("three", 3))
+
+  }
+
 
 
 

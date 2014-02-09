@@ -78,4 +78,10 @@ class AllFunctions {
     }
   }
 
+  def parameterized[T](x: T, n: Int): List[T] = {
+    if (n == 0)
+      Nil
+    else
+      x :: parameterized(x, n - 1)
+  }
 }
