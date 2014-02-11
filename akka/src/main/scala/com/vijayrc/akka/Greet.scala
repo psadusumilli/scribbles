@@ -1,26 +1,31 @@
 package com.vijayrc.akka
 import akka.actor.Actor
 import akka.actor.Props
+import akka.Main
 
-object Greeter {
+/*
+* creates an actor2, tells it to print "hello" via Message case objects (immutable)
+* actor2 replies to actor1 which on receiving actor1 stops
+*/
+object Message {
   case object Greet
   case object Done
 }
-class Greeter extends Actor {
+class Actor2 extends Actor {
   def receive = {
-    case Greeter.Greet ⇒
-      println("Hello World!")
-      sender ! Greeter.Done
+    case Message.Greet ⇒ println("actor2: hey to actor1"); sender ! Message.Done
   }
 }
-class HelloWorld extends Actor {
+class Actor1 extends Actor {
   override def preStart(): Unit = {
-    // create the greeter actor, tell it to perform the greeting
-    val greeter = context.actorOf(Props[Greeter], "greeter")
-    greeter ! Greeter.Greet
+    val greeter = context.actorOf(Props[Actor2], "actor2")
+    greeter ! Message.Greet
   }
   def receive = {
-    // when the greeter is done, stop this actor and with it the application
-    case Greeter.Done ⇒ context.stop(self)
+    case Message.Done ⇒ println("actor1: thanks actor2");context.stop(self)
   }
+}
+
+object Test extends App{
+  Main.main(Array("com.vijayrc.akka.Actor1"))
 }

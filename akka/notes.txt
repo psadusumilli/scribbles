@@ -6,7 +6,7 @@ An actor is a container for State, Behavior, a Mailbox, Children and a Superviso
 All of this is encapsulated behind an Actor Reference.
 
 #1 Supervision:
-------------------------
+****************
 #1.1
  An actor system will during its creation start at least three actors
 	/user: - parent of all user created actors. Can be configured via SystemConfigurator.
@@ -43,9 +43,12 @@ Lifecycle Monitoring:
 Supervision strategies:
 	OneForOneStrategy => only to the failed child
 	AllForOneStrategy => only to the failed child plus siblings
-#1.6
-Actor reference:
-An actor reference is a subtype of ActorRef, whose foremost purpose is to support sending messages to the actor it represents. Each actor has access to its canonical (local) reference through the 'self' field; this reference is also included as 'sender' reference by default for all messages sent to other actor.
+
+#2 Actor References:
+***********************
+An actor reference is a subtype of ActorRef, whose foremost purpose is to support sending messages to the actor it represents. 
+Each actor has access to its canonical (local) reference through the 'self' field; this reference is also included as 'sender' reference by default for all messages sent to other actor.
+#2.1 
 Types of actors:
 	Purely local actor references without remoting, used for talking in the same jvm
 	Local actor references with remoting, used as gateways into their jvm, local mirror to remote on the opposite side 
@@ -55,17 +58,84 @@ Types of actors:
 		PromiseActorRef is the special representation of a Promise for the purpose of being completed by the response from an actor. akka.pattern.ask creates this actor reference.
 		DeadLetterActorRef is the default implementation of the dead letters service to which Akka routes all messages whose destinations are shut down or non-existent.
 		EmptyLocalActorRef is what Akka returns when looking up a non-existent local actor path:
-#1.7
-Actor Path: consists of an anchor, which identifies the actor system, followed by the concatenation of the path elements, from root guardian to the designated actor; the path elements are the names of the traversed actors and are separated by slashes.
+#2.2
+Actor Path: 
+consists of an anchor, which identifies the actor system, followed by the concatenation of the path elements, from root guardian to the designated actor; the path elements are the names of the traversed actors and are separated by slashes.
 	"akka://my-sys/user/service-a/worker1" // purely local
 	"akka.tcp://my-sys@host.example.com:5678/user/service-b" // remote
 	"cluster://my-cluster/service-c" // clustered (Future Extension)
 akka.tcp is the default remote transport for the 2.2 release; other transports are pluggable
-	Logical path: From each parent to child, a complete ancestry path
-	Physical path: Parent and child can exist in different jvms, so the path is actually wiring up network jumping info. 
+types:	
+	"Logical path": From each parent to child, a complete ancestry path
+	"Physical path": Parent and child can exist in different jvms, so the path is actually wiring up network jumping info. 
 				  However, a child can be directly accessed instead of going via parent to avoid needless routing
-	Virtual path: WIP, moving clusters as a whole from system to another since everything is virtual.
+	"Virtual path": WIP, moving clusters as a whole from system to another since everything is virtual.
 
+top level paths:
+	• "/user" is the guardian actor for all user-created top-level actors;  actors created using ActorSystem.actorOf are found below this one.
+	• "/system" is the guardian actor for all system-created top-level actors, e.g. logging listeners or actors automatically deployed by configuration at the start of the actor system.
+	• "/deadLetters" is the dead letter actor, which is where all messages sent to stopped or non-existing actors are re-routed
+	• "/temp" is the guardian for all short-lived system-created actors, e.g. those which are used in the implementation of ActorRef.ask.
+	• "/remote" is an artificial path below which all actors reside whose supervisors are remote actor references
+
+#2.3
+Actor creation:
+	1 "ActorSystem.actorOf" =>  actorOf only ever creates a new actor, and it creates it as a direct child of the actor context on which this method is invoked.
+	2 "ActorContext.actorOf" => get existing actor and with that actor context, access its children, parent.
+	3 "ActorSystem.actorSelection" =>  only ever looks up existing actors with path startinng from root, when messages are delivered.Does not create/verify
+	4 "ActorContext.actorSelection" => similar to 3, but path starts from current actor instead of root. 
+								For eg: 
+								context.actorSelection("../brother") ! msg => send to sibling
+								context.actorSelection("../*") ! msg => send to all children including himself
+	5 "actorFor" => (deprecated in favor of actorSelection) only ever looks up an existing actor, i.e. does not create one.
+#2.4
+Actor equality:
+	Two actor references are compared equal when they have the same path and point to the same actor incarnation.
+	Restart of an actor caused by a failure still means that it is the same actor, while terminated actor is not.
+
+#3 Location Transparency:
+****************************** 	
+Distributed by default: design from keeping everything remote, then move to local by optimising. The reverse way is bad.
+Its asynchronous messaging with serialised messages over the wire, including closures.
+scaling up with routers and uses parallel cores
+
+#4 Akka and Java Memory Model
+***********************************
+#4.1 Actors & JMM:
+To prevent visibility and reordering problems on actors, Akka guarantees the following two "happens before" rules:
+	• The "actor send rule": the send of the message to an actor happens before the receive of that message by the same actor.
+	• The "actor subsequent processing rule": processing of one message happens before processing of the next message by the same actor. 
+	   So actor state need not be declared volatile.
+#4.2 Futures & JMM:
+	The completion of a Future “happens before” the invocation of any callbacks registered to it are executed.
+#4.3 STM & JMM:
+	• The "transactional reference rule": a successful write during commit, on an transactional reference, happens before every subsequent read of the same transactional reference.
+	all writes are buffered until a commit happens, so a dirty read is possible.
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+	
 
 
 
