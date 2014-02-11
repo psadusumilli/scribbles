@@ -112,6 +112,69 @@ To prevent visibility and reordering problems on actors, Akka guarantees the fol
 	• The "transactional reference rule": a successful write during commit, on an transactional reference, happens before every subsequent read of the same transactional reference.
 	all writes are buffered until a commit happens, so a dirty read is possible.
 
+#5 Message Delivery
+***********************
+• "at-most-once" delivery means that for each message handed to the mechanism, that message is delivered zero or one times
+	messages may be lost.
+	good performance and cheap
+• "at-least-once" 
+	delivery means that for each message handed to the mechanism potentially multiple attempts are made at delivering it, such that at least one succeeds; 
+ 	messages may be duplicated but not lost.
+• "exactly-once" delivery means that for each message handed to the mechanism exactly one delivery is made to the recipient; 
+	the message can neither be lost nor duplicated.
+	very expensive,state to be kept at the receiving end in order to filter out duplicate deliveries.
+
+#5.1 Message ordering:
+Actor 'A1' sends messages 'M1, M2, M3' to 'A2'
+Actor 'A3' sends messages 'M4, M5, M6' to 'A2'
+This means that:
+	1. If M1 is delivered it must be delivered before M2 and M3
+	2. If M2 is delivered it must be delivered before M3
+	3. If M4 is delivered it must be delivered before M5 and M6
+	4. If M5 is delivered it must be delivered before M6
+	5. A2 can see messages from A1 interleaved with messages from A3
+	6. Since there is no guaranteed delivery, any of the messages may be dropped, i.e. not arrive at A2.
+
+#5.2 Failure(system) messages and Normal messages have different mailboxes
+	Child actor C sends message M to its parent P
+	Child actor fails with failure F
+	Parent actor P might receive the two events either in order M, F or F, M
+
+#5.3 Local (within single JVM) messaging
+	Local sends can fail in Akka-specific ways:
+	• if the mailbox does not accept the message (e.g. full BoundedMailbox)
+	• if the receiving actor fails while processing the message or is already terminated. 
+	  The sender of a message does not get feedback if there was an exception while processing, that notification goes to the supervisor instead.
+
+#5.4 Dead Letters
+	Messages which cannot be delivered will land here, helpful for debugging.
+	Actor subscribed to 'akka.actor.DeadLetter' event will receive dead messages
+	Not probagated over network so one dead letter collector per jvm.
+	"akka.dispatch.Terminate" and "akka.dispatch.Terminated" are harmless residual messages flying around when a complex actor system is shutdown
+
+#6 Configuration
+*******************
+Things that can be configured
+	• log level and logger backend
+	• enable remoting
+	• message serializers
+	• definition of routers
+	• tuning of dispatchers
+All configuration for Akka is held within instances of ActorSystem
+the default is to parse all "application.conf, application.json and application.properties" in root classpath
+The philosophy is that code never contains default values, but instead relies upon their presence in the "reference.conf" supplied with the library in question.
+If you are writing an Akka application, keep you configuration in "application.conf" at the root of the classpath. 
+If you are writing an Akka-based library, keep its configuration in "reference.conf" at the root of the JAR file.
+
+good practice: have a file "dev.conf" which imports "application.conf" with defaults and overrides selectively.
+
+
+
+
+
+
+
+
 
 	
 
