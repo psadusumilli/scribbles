@@ -13,12 +13,10 @@ class Greeter extends Actor {
       sender ! Greeter.Done
   }
 }
-
 class HelloWorld extends Actor {
   override def preStart(): Unit = {
-    // create the greeter actor
+    // create the greeter actor, tell it to perform the greeting
     val greeter = context.actorOf(Props[Greeter], "greeter")
-    // tell it to perform the greeting
     greeter ! Greeter.Greet
   }
   def receive = {
