@@ -180,6 +180,7 @@ CHAPTER2: Actors
 *******************
 Props is a configuration class to specify options for the creation of actors
 Using Companion objects is good practice.
+ActorSystem is a heavy object: create only one per application
 
 
 
