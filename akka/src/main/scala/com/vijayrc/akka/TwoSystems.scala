@@ -30,13 +30,17 @@ class TwoSystems {
 
   def work(){
     val system1 = ActorSystem.create("system1")
+    val system2 = ActorSystem.create("system2")
     try {
       val actor1 = system1.actorOf(Props[A1])
-      val actor2 = system1.actorOf(Props[A2])
+      val actor2 = system2.actorOf(Props[A2])
       actor1 ! "msg1"
       actor2 ! "msg2"
     }
-    finally system1.shutdown()
+    finally {
+      system1.shutdown()
+      system2.shutdown()
+    }
   }
 
 }
