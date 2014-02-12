@@ -167,7 +167,11 @@ If you are writing an Akka application, keep you configuration in "application.c
 If you are writing an Akka-based library, keep its configuration in "reference.conf" at the root of the JAR file.
 
 good practice: have a file "dev.conf" which imports "application.conf" with defaults and overrides selectively.
-
+include "application"
+	akka {
+		loglevel = "DEBUG"
+	}
+...}
 
 
 
