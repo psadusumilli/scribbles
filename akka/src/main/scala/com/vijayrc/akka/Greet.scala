@@ -24,12 +24,14 @@ class Actor1 extends Actor {
     val greeter = context.actorOf(Props[Actor2], "actor2")
     greeter ! Message.Greet
   }
+
   def settings() {
     val f = new File("config.json")
     if(f.exists()) return
     val fw = new FileWriter(f)
     try fw.write(context.system.settings.toString()) finally {fw.flush(); fw.close()}
   }
+
   def receive = {
     case Message.Done ⇒ println("actor1: thanks actor2");context.stop(self)
   }

@@ -175,7 +175,11 @@ include "application"
 #6.2
 "ConfigFactory.load()" is the API to load via code.
 If using API you can replace "application.conf" by defining "-Dconfig.resource=whatever, -Dconfig.file=whatever, -Dconfig.url=whatever"
-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAPTER2: Actors
+*******************
+Props is a configuration class to specify options for the creation of actors
+Using Companion objects is good practice.
 
 
 
