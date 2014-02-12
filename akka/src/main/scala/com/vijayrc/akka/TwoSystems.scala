@@ -40,7 +40,7 @@ class A2(val peer:ActorRef) extends Actor{
     super.postStop()
   }
 }
-
+/*run the two systems and its actors*/
 object TwoSystems {
   def work(){
     val system1 = ActorSystem.create("system1")
