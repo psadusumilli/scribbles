@@ -188,6 +188,12 @@ If the current actor behavior does not match a received message, unhandled is ca
 An 'ActorRef' always represents an incarnation (path and UID) not just a given path. Therefore if an actor is stopped and a new one with the same name is created an ActorRef of the old incarnation will not point to the new one. But restarts on failure, point to the same old one. 
 'ActorSelection' on the other hand points to the path. Send an 'Identity' to the 'ActorSelection', it will reply back with an 'ActorIdentity'
 
+Actors may be 'restarted' in case an exception is thrown while processing a message. Involves hooks 'preRestart,preStart,actorOf,postRestart'
+In restarts, the mailbox is intact, so processing of remaining messages starts except for that poison message.
+
+'postStop' is called after a actor is stopped with dequeuing of mailbox being stopped. All further messages will be redirected to 'deadLetters' of System.
+
+
 
 
 

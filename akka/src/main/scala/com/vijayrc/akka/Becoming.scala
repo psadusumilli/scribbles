@@ -13,7 +13,6 @@ object Becoming {
 
   val actor1 = actor("a1")(new Act{
     private val log: LoggingAdapter = Logging(context.system, this)
-
     become{
       case "info" => sender ! "I am good"
       case "switch" => becomeStacked{ //stack this behaviour over existing
@@ -31,7 +30,6 @@ object Becoming {
 
   val actor2 = actor("a2")(new Act{
     private val log: LoggingAdapter = Logging(context.system, this)
-
     whenStarting({
       actor1 ! "info"
       actor1 ! "switch"

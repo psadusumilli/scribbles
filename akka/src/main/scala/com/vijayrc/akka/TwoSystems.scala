@@ -15,7 +15,6 @@ class Injector(applicationContext: AnyRef, beanName: String) extends IndirectAct
     new A2(peer)
   }
 }
-
 /*actor1*/
 class A1 extends Actor{
   val log = Logging(context.system, this)
@@ -29,7 +28,6 @@ class A1 extends Actor{
     super.postStop()
   }
 }
-
 /*actor2 will send integer message to actor1 in another actorsystem*/
 class A2(val peer:ActorRef) extends Actor{
   val log = Logging(context.system, this)
@@ -43,7 +41,6 @@ class A2(val peer:ActorRef) extends Actor{
     super.postStop()
   }
 }
-
 /*run the two systems and its actors*/
 object TwoSystems {
   def work(){
