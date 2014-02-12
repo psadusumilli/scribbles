@@ -11,7 +11,7 @@ import akka.event.{LoggingAdapter, Logging}
 object Becoming {
   implicit val system = ActorSystem("system1")
 
-  val actor1 = actor(new Act{
+  val actor1 = actor("a1")(new Act{
     private val log: LoggingAdapter = Logging(context.system, this)
 
     become{
@@ -29,7 +29,7 @@ object Becoming {
     whenRestarted { cause ⇒ log.error("restarting") }
   })
 
-  val actor2 = actor(new Act{
+  val actor2 = actor("a2")(new Act{
     private val log: LoggingAdapter = Logging(context.system, this)
 
     whenStarting({
@@ -48,6 +48,14 @@ object Becoming {
       Thread.sleep(1000)
     }
     finally system.shutdown()
+  }
+
+  //TODO - check how it works
+  def inboxer (){
+    val i = inbox()
+    i watch actor1
+    var mail = i.receive()
+    while (mail != null) { println("mail|" + mail); mail = i.receive() }
   }
 }
 
