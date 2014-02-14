@@ -1,4 +1,22 @@
 JVM Notes
+
+Structure
+	Heap
+		Objects data stored, GC done here.
+	Method Area
+		Class Grammar -methods/fields
+		type constant pool
+		Method Table
+		Big pool of all classes 
+		Small pool per class
+	Stack
+		Stack frames
+			Local Variable array
+			operand stack
+			Frame Data
+		Native frames
+
+
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CHAPTER1: INTRODUCTION
 **********************

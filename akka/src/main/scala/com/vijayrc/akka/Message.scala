@@ -14,7 +14,11 @@ object Message {
 /*receives/replies to actor1*/
 class Actor2 extends Actor {
   def receive = {
-    case Message.Greet ⇒ println("actor2: hey to actor1"); sender ! Message.Done
+    case Message.Greet ⇒ {
+      Thread.sleep(2000) //big computation
+      println("actor2: hey to actor1")
+      sender ! Message.Done
+    }
   }
 }
 
@@ -24,6 +28,7 @@ class Actor1 extends Actor {
     settings()
     val greeter = context.actorOf(Props[Actor2], "actor2")
     greeter ! Message.Greet
+    println("actor1: sent a message to actor2") //executed immediately, no need to wait for reply from actor2
   }
   def settings() {
     val f = new File("config.json")
