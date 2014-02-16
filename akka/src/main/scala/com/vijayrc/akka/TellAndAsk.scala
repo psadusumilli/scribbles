@@ -3,6 +3,9 @@ package com.vijayrc.akka
 import akka.actor._
 import org.joda.time.DateTime
 import akka.actor.Identify
+import akka.util.Timeout
+import akka.pattern.ask
+
 
 object TellAndAsk {
 
@@ -17,17 +20,15 @@ object TellAndAsk {
   }
 
   class Actor2 extends Actor{
-    var actor1:ActorRef = null
+    var actor1:ActorSelection = null
     val id = 1
-    override def preStart() { context.actorSelection("/user/a1") ! Identify(id) }
 
     def receive = {
       case "send-short-tell" => actor1 ! "short-tell"
       case "send-long-tell" => actor1 ! "long-tell"
       case "send-short-ask" => {
-        val future = actor1 ? "short-ask"
+        val future = context.actorSelection("/user/a1")? ("")
       }
-      case ActorIdentity(identifyId, Some(ref)) => actor1 = ref
       case x:String => println("actor2|"+now+"|"+x)
     }
 

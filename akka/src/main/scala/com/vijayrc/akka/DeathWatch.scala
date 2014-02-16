@@ -4,6 +4,7 @@ import akka.actor._
 import akka.actor.Terminated
 import akka.event.Logging
 
+
 /*WatchActor creates a child, kills, watches it die*/
 object DeathWatch {
   class WatchActor extends Actor {
@@ -16,13 +17,13 @@ object DeathWatch {
     }
     def receive = {
       case "kill" => {log.info("killing child"); context.stop(child) }
-      case Terminated(child) => {log.info("child is dead")}
+      case Terminated(`child`) => {log.info("child is dead")}
     }
   }
   def work(){
     val system =  ActorSystem.create("system1")
     try {
-      val watcher: ActorRef = system.actorOf(Props[WatchActor], "watcher")
+      val watcher = system.actorOf(Props[WatchActor], "watcher")
       watcher ! "kill"
       Thread.sleep(1000)
     }
