@@ -17,7 +17,7 @@ object DeathWatch {
     }
     def receive = {
       case "kill" => {log.info("killing child"); context.stop(child) }
-      case Terminated(`child`) => {log.info("child is dead")}
+      case Terminated(child) => {log.info("child is dead")}
     }
   }
   def work(){
