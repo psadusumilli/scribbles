@@ -11,7 +11,7 @@ import ExecutionContext.Implicits.global
 object TellAndAsk {
   /*will reply to actor2*/
   class Actor1 extends Actor{
-    def sleep() = Thread.sleep(3000)
+    def sleep() = Thread.sleep(2000)
     def receive = {
       case "short-tell" => println("actor1|short-tell"); sender ! "reply from short-tell"
       case "long-tell" => println("actor1|long-tell"); sleep(); sender ! "reply from long-tell"
@@ -26,17 +26,17 @@ object TellAndAsk {
     implicit val timeout = Timeout(5 seconds)
 
     override def preStart(){
-      actor1 = context.actorSelection("/usr/a1")
+      actor1 = context.actorSelection("/user/a1")
     }
     def receive = {
       case "send-short-tell" => actor1 ! "short-tell"
       case "send-long-tell" => actor1 ! "long-tell"
       case "send-short-ask" =>
         val future = actor1 ? "short-ask"
-        future.onSuccess{case x:String => "future:"+x}
+        future.onSuccess{case x:String => println("future:"+x)}
       case "send-long-ask" =>
         val future = actor1.ask("long-ask")
-        future.onSuccess{case x:String => "future:"+x}
+        future.onSuccess{case x:String => println("future:"+x)}
       case x:String => println("actor2|"+now+"|"+x)
     }
 
@@ -44,6 +44,7 @@ object TellAndAsk {
   def work(){
     val system = ActorSystem.create("system1")
     try {
+      val a1 = system.actorOf(Props[Actor1], "a1")
       val a2 = system.actorOf(Props[Actor2], "a2")
       a2 ! "send-short-tell"
       a2 ! "send-long-tell"
@@ -51,7 +52,7 @@ object TellAndAsk {
       a2 ! "send-long-ask"
     }
     finally {
-      Thread.sleep(6000)
+      Thread.sleep(8000)
       system.shutdown()
     }
   }
