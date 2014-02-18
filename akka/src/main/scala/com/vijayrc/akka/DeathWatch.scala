@@ -20,8 +20,9 @@ object DeathWatch {
       context.watch(child)
     }
     def receive = {
-      case "kill" => log.info("killing child"); context.stop(child)
+      case "stop" => log.info("stopping child"); context.stop(child)
       case "poison" => log.info("poisoning child"); child ! PoisonPill
+      case "kill" => log.info("killing child"); child ! Kill
       case "graceful" => {
         log.info("graceful kill child")
         val stop: Future[Boolean] = gracefulStop(child, 5 seconds)
@@ -36,7 +37,8 @@ object DeathWatch {
       val watcher = system.actorOf(Props[WatchActor], "watcher")
       //watcher ! "kill"
       //watcher ! "poison"
-      watcher ! "graceful"
+      watcher ! "kill"
+      //watcher ! "graceful"
       Thread.sleep(1000)
     }
     finally system.shutdown()
