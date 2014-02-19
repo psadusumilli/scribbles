@@ -23,7 +23,7 @@ class Parent extends Actor{
 class Child(val title:String) extends Actor{
   def receive={
     case "error" => throw new Exception(title+" failed")
-    case x => print(x)
+    case x:String => println(x)
   }
 }
 object OnError {
@@ -32,9 +32,14 @@ object OnError {
     try {
       val parent = system.actorOf(Props[Parent], "parent")
       parent ! "c1-error"
+      Thread.sleep(2000)
       parent ! "c1-message" //TODO not delivered
+      //parent ! "c2-error"
     }
-    finally system.shutdown()
+    finally {
+      Thread.sleep(9000)
+      system.shutdown()
+    }
   }
 }
 object OnErrorTest extends App{
