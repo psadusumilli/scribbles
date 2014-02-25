@@ -3,6 +3,7 @@ package com.vijayrc.java8;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -30,8 +31,18 @@ public class AllFunctions {
             return value;
         }
     }
+    public class Identifiers {
+        public int nullCount = 0;
+        public void isNull(String s) {
+            if (s != null) return;
+            nullCount++;
+        }
+    }
 
     /**takes string argument and returns integer*/
+    Runnable r1 = () -> print("r1");
+    Runnable r2 = () -> print("r2");
+
     Function<String, Integer> f1 = s -> {return s.length();};
     Function<String, Integer> f2 = s -> s.length();
     Function<String, Integer> f3 = String::length;
@@ -42,16 +53,12 @@ public class AllFunctions {
 
     Supplier<Integer> c42 = () -> 42;
 
-    Runnable r1 = () -> print("r1");
-    Runnable r2 = () -> print("r2");
-
     Consumer<Value> con1 = z -> z.append("c1");
     Consumer<Value> con2 = z -> z.append("c2|");
     Consumer<Value> con3 = System.out::print;
 
-
     @Test
-    public void shouldTestFunctions(){
+    public void shouldTestFunctionInterfaces(){
         assertThat(f1.apply("vijay"), is(5));
         assertThat(f2.apply("vijay"), is(5));
         assertThat(f3.apply("vijay"), is(5));
@@ -64,9 +71,17 @@ public class AllFunctions {
         r1.run();
         r2.run();
 
-        List<Value> list = new ArrayList<>();
-        for(int i=1;i<6;i++) list.add(new Value(i+""));
-        list.forEach(con1.andThen(con2));
-        list.forEach(con3);
+        List<Value> l1 = new ArrayList<>();
+        for(int i=1;i<6;i++) l1.add(new Value(i+""));
+        l1.forEach(con1.andThen(con2));
+        l1.forEach(con3);
+    }
+
+    @Test
+    public void shouldTestMethodReferences(){
+        Identifiers identifiers = new Identifiers();
+        List<String> l2 = Arrays.asList("", null, "rekha", "shravan", "rekha");
+        l2.forEach(identifiers::isNull);
+        assertThat(identifiers.nullCount, is(1));
     }
 }
