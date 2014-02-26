@@ -15,5 +15,6 @@ public class JsTest {
        engine.eval("function p(s) { print(s) }");
        engine.eval("p('Hello Nashorn');");
        engine.eval(new FileReader("/home/vijayrc/projs/VRC5/scribbles/java8/js/sample.js"));
+       engine.eval(new FileReader("/home/vijayrc/projs/VRC5/scribbles/java8/js/sample2.js"));
    }
 }
