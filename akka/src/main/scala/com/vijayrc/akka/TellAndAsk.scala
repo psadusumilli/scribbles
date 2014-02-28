@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import akka.util.Timeout
 import akka.pattern.ask
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Future, ExecutionContext}
 import ExecutionContext.Implicits.global
 
 object TellAndAsk {
@@ -49,7 +49,7 @@ object TellAndAsk {
       case "send-short-tell" => actor1 ! "short-tell"
       case "send-long-tell" => actor1 ! "long-tell"
       case "send-short-ask" =>
-        val future = actor1 ? "short-ask"
+        val future:Future[Any] = actor1 ? "short-ask"
         future.onSuccess{case x:String => println("future:"+x)}
       case "send-long-ask" =>
         val future = actor1.ask("long-ask")
