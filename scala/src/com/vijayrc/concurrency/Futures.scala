@@ -56,6 +56,20 @@ object Futures {
     f1.flatMap{i => f2.withFilter(j => j < i).map(j => j+10)}.foreach(x => println("f3="+x))
   }
 
+  def fallBack(){
+    val f1 = future{throw new Exception}
+    val f2 = future{"m good"}
+    val f3 = future{throw new Exception} recover{ case e:Exception => "m ok"}
+
+    val f4 = f1 fallbackTo f2
+    f4 foreach println
+    Await.result(f4,10 seconds)
+
+    val f5 = f3 fallbackTo f2
+    f5 foreach println
+    Await.result(f5,10 seconds)
+  }
+
 
 }
 
@@ -63,5 +77,6 @@ object FuturesTest extends App{
   import Futures._
   //chaining()
   //callback()
-  chainFor()
+  //chainFor()
+  fallBack()
 }
