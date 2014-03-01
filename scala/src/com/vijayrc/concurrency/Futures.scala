@@ -68,6 +68,30 @@ object Futures {
     val f5 = f3 fallbackTo f2
     f5 foreach println
     Await.result(f5,10 seconds)
+
+    val f6 = future{1/0}
+    for(e <- f6.failed) println(e.getMessage)
+  }
+
+  def andThen(){
+    val f1 = future{current("f1"); "f1-return"} andThen{case x => current(x.get)}
+    val f2 = f1.andThen {case x => current(x.get + "-andThen"); "f2-returns"}
+    val result = Await.result(f2, 10 seconds)
+    println(result)
+  }
+
+  def promises(){
+    val p = promise[String]()//a promise of data backed by future
+    val f = p.future
+    f.onSuccess{case x => current("f|"+x)}
+    p.success("p-returns")
+    try {
+      p.success("p-returns-again")
+    }
+    catch {
+      case e:IllegalStateException => println("promises can be fulfilled only once")
+    }
+    Await.result(f, 10 seconds)
   }
 
 
@@ -78,5 +102,7 @@ object FuturesTest extends App{
   //chaining()
   //callback()
   //chainFor()
-  fallBack()
+  //fallBack()
+  //andThen()
+  promises()
 }
