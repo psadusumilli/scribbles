@@ -92,6 +92,6 @@ object AgentsTest extends App{
   import Agents._
   //updateWithValue()
 //  updateWithFunction()
-//  transaction()
-  monads()
+  transaction()
+ // monads()
 }
