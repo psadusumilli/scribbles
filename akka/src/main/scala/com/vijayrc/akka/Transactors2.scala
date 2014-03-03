@@ -21,7 +21,7 @@ class Peer1(peer2a:ActorRef,peer2b:ActorRef) extends Transactor with ActorLoggin
   }
   override def coordinate = {
     case Msg1 ⇒ {log.info("coordinate-msg1");include(peer2a,peer2b)}
-    case Msg2 ⇒ {log.info("coordinate-msg2");sendTo(peer2a -> "peer2a",peer2b -> "peer2b")}
+    case Msg2 ⇒ {log.info("coordinate-msg2");sendTo(peer2a -> "msg2",peer2b -> "msg2")}
   }
 }
 /** */
@@ -34,7 +34,7 @@ class Peer2 extends Transactor with ActorLogging{
   }
 }
 /** */
-object Transactors2 {
+object Transactors2 extends App{
    def work(){
      val system  = ActorSystem.create("system")
      try {
@@ -46,7 +46,7 @@ object Transactors2 {
        implicit val t = Timeout(5 seconds)
        val r1 = Await.result(p1 ? Say,5 seconds)
        val r2 = Await.result(p2a ? Say,5 seconds)
-       println(r1+"|"+r2)
+       println("r1="+r1+"|r2="+r2)
 
        p1 ! Msg2
      }
