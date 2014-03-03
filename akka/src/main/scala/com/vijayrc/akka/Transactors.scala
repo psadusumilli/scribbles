@@ -35,15 +35,15 @@ object Transactors {
   def work(){
     val system = ActorSystem("app")
     try {
-      val counter1 = system.actorOf(Props[Counter], name = "counter1")
-      val counter2 = system.actorOf(Props[Counter], name = "counter2")
+      val c1 = system.actorOf(Props[Counter], name = "c1")
+      val c2 = system.actorOf(Props[Counter], name = "c2")
 
       implicit val t = Timeout(5 seconds)
-      counter1 ! Coordinated(Increment(Some(counter2)))
+      c1 ! Coordinated(Increment(Some(c2)))
 
-      val c1 = Await.result(counter1 ? GetCount, 5 seconds)
-      val c2 = Await.result(counter2 ? GetCount, 5 seconds)
-      println("c1=" + c1 + "|c2=" + c2)
+      val r1 = Await.result(c1 ? GetCount, 5 seconds)
+      val r2 = Await.result(c2 ? GetCount, 5 seconds)
+      println("r1=" + r1 + "|r2=" + r2)
     }
     finally system.shutdown()
   }
