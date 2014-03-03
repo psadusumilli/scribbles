@@ -13,21 +13,23 @@ case object Msg2
 case object Say
 
 /** */
-class Peer1(peer:ActorRef) extends Transactor with ActorLogging{
+class Peer1(peer2a:ActorRef,peer2b:ActorRef) extends Transactor with ActorLogging{
   val count = Ref(0)
   def atomically = implicit txn ⇒ {
     case Msg1 => {log.info("atomically"); count transform (_ + 1)}
     case Say => sender ! count.single.get
   }
   override def coordinate = {
-    case Msg1 ⇒ {log.info("coordinate");include(peer)}
+    case Msg1 ⇒ {log.info("coordinate-msg1");include(peer2a,peer2b)}
+    case Msg2 ⇒ {log.info("coordinate-msg2");sendTo(peer2a -> "peer2a",peer2b -> "peer2b")}
   }
 }
 /** */
 class Peer2 extends Transactor with ActorLogging{
   val count = Ref(1)
   def atomically = implicit txn ⇒ {
-    case Msg1 => {log.info("atomically"); count transform (_ + 1)}
+    case Msg1 => {log.info("atomically-msg1"); count transform (_ + 1)}
+    case x:String => log.info("atomically-"+x)
     case Say => sender ! count.single.get
   }
 }
@@ -36,14 +38,17 @@ object Transactors2 {
    def work(){
      val system  = ActorSystem.create("system")
      try {
-       val c2 = system.actorOf(Props[Peer2], "c2")
-       val c1 = system.actorOf(Props.create(classOf[Peer1], c2), "c1")
-       c1 ! Msg1
+       val p2b = system.actorOf(Props[Peer2], "p2b")
+       val p2a = system.actorOf(Props[Peer2], "p2a")
+       val p1 = system.actorOf(Props.create(classOf[Peer1], p2a, p2b), "p1")
+       p1 ! Msg1
 
        implicit val t = Timeout(5 seconds)
-       val r1 = Await.result(c1 ? Say,5 seconds)
-       val r2 = Await.result(c2 ? Say,5 seconds)
+       val r1 = Await.result(p1 ? Say,5 seconds)
+       val r2 = Await.result(p2a ? Say,5 seconds)
        println(r1+"|"+r2)
+
+       p1 ! Msg2
      }
      finally {
        system.shutdown()
