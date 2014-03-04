@@ -5,20 +5,18 @@ repositories {
         url "http://mvnrepository.com/"
     }
 }
-dependencies {
-    compile 'org.scala-lang:scala-library:2.10.2'
-}
+
 tasks.withType(ScalaCompile) {
     scalaCompileOptions.useAnt = false
 }
 dependencies {
     compile group: 'com.typesafe.akka', name: 'akka-actor_2.10', version: '2.2.3'
-    compile 'org.scala-lang:scala-library:2.11.0-M8'
+    compile 'org.scala-lang:scala-library:2.10.2'
     compile 'com.github.nscala-time:nscala-time_2.9.1:0.6.0'
     compile 'org.scalatest:scalatest_2.10:2.0'
     compile 'com.typesafe.akka:akka-testkit_2.10:2.2.3'
     compile 'com.typesafe.akka:akka-agent_2.10:2.2.3'
     compile 'com.typesafe.akka:akka-transactor_2.10:2.2.3'
-    compile 'com.typesafe.akka:akka-cluster_2.11.0-M3:2.2.0'
+//    compile 'com.typesafe.akka:akka-cluster_2.11.0-M3:2.2.0'
 
 }
