@@ -16,7 +16,7 @@ class Listener extends Actor with ActorLogging {
 
 object SimpleCluster extends App{
     System.setProperty("akka.remote.netty.tcp.port", "2551")
-    val system = ActorSystem.create("system")
+    val system = ActorSystem("system")
     val listener = system.actorOf(Props[Listener],name = "listener")
     Cluster(system).subscribe(listener, classOf[ClusterDomainEvent])
 }

@@ -17,7 +17,6 @@ dependencies {
     compile 'com.typesafe.akka:akka-testkit_2.10:2.2.3'
     compile 'com.typesafe.akka:akka-agent_2.10:2.2.3'
     compile 'com.typesafe.akka:akka-transactor_2.10:2.2.3'
-//    compile 'com.typesafe.akka:akka-cluster_2.11.0-M3:2.2.0'
     compile 'com.typesafe.akka:akka-cluster-experimental_2.10.0-RC3:2.1.0-RC3'
 
 }
