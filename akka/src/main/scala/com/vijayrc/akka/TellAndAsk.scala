@@ -1,12 +1,12 @@
 package com.vijayrc.akka
 
 import akka.actor._
-import org.joda.time.DateTime
 import akka.util.Timeout
 import akka.pattern.ask
 import scala.concurrent.duration._
 import scala.concurrent.{Future, ExecutionContext}
 import ExecutionContext.Implicits.global
+import java.util.Date
 
 object TellAndAsk {
 
@@ -55,7 +55,7 @@ object TellAndAsk {
         val future = actor1.ask("long-ask")
         future.onSuccess{case x:String => println("future:"+x)}
       case "forward" => actor1 ! "forward"
-      case x:String => println("actor2|"+now+"|"+x)
+      case x:String => println("actor2|"+new Date()+"|"+x)
     }
 
   }
@@ -76,7 +76,6 @@ object TellAndAsk {
       system.shutdown()
     }
   }
-  def now = DateTime.now
 }
 
 object TellAndAskTest extends App{
