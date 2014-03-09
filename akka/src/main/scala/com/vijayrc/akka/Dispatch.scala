@@ -1,6 +1,7 @@
 package com.vijayrc.akka
 
 import akka.actor.{Props, ActorLogging, Actor, ActorSystem}
+import Util._
 
 class DispatchActor extends Actor with ActorLogging{
   def receive = {
@@ -9,7 +10,7 @@ class DispatchActor extends Actor with ActorLogging{
 }
 object Dispatch {
   def work(){
-    val system = ActorSystem.create("system1")
+    val system = ActorSystem("system1", config("dispatcher-application.conf"))
     try {
       println("my-dispatcher exists?" + system.dispatchers.hasDispatcher("my-dispatcher"))
       val a1 = system.actorOf(Props[DispatchActor].withDispatcher("my-dispatcher"), "a1")

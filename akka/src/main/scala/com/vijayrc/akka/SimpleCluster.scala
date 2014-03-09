@@ -3,7 +3,7 @@ package com.vijayrc.akka
 import akka.actor.{Props, ActorSystem, Actor, ActorLogging}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent._
-
+import Util._
 
 class Listener extends Actor with ActorLogging {
   def receive = {
@@ -16,7 +16,8 @@ class Listener extends Actor with ActorLogging {
 
 object SimpleCluster extends App{
     System.setProperty("akka.remote.netty.tcp.port", "2551")
-    val system = ActorSystem("system")
+    val system = ActorSystem("system",config("cluster-application.conf"))
+    val cluster: Cluster = Cluster(system)
     val listener = system.actorOf(Props[Listener],name = "listener")
-    Cluster(system).subscribe(listener, classOf[ClusterDomainEvent])
+    cluster.subscribe(listener, classOf[ClusterDomainEvent])
 }
