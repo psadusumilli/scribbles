@@ -4,6 +4,7 @@ import javassist.*;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -28,16 +29,26 @@ public class AllTests {
         print(getName.invoke(c));
     }
     @Test
-    public void shouldCreateANewClass() throws NotFoundException, CannotCompileException {
+    public void shouldCreateANewClass() throws NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         ClassPool pool = ClassPool.getDefault();
         CtClass squareClass = pool.makeClass("com.vijayrc.Square");
         CtClass doubleClass = pool.get("java.lang.Double");
 
+        CtField sideField = new CtField(doubleClass,"side",squareClass);
+        squareClass.addField(sideField);
+
         CtConstructor constr = new CtConstructor(new CtClass[]{doubleClass},squareClass);
+        constr.setBody("this.side=$1;");
         squareClass.addConstructor(constr);
 
+        CtMethod areaMethod  = new CtMethod(doubleClass,"area",null,squareClass);
+        areaMethod.setBody("return new Double(Math.pow(this.side.doubleValue(),2d));");
+        squareClass.addMethod(areaMethod);
 
-
+        Constructor<?> constructor = squareClass.toClass().getConstructor(Double.class);
+        Object square = constructor.newInstance(2d);
+        Method area = square.getClass().getMethod("area");
+        print(area.invoke(square));
 
     }
 
