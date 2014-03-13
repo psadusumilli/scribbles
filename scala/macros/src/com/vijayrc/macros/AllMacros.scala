@@ -2,11 +2,12 @@ package com.vijayrc.macros
 
 import scala.language.experimental.macros
 import scala.reflect.macros.Context
+import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
 
 /**
- * reify - makes a Expr[T] from a code statement
+ * reify - makes a Expr[T] from a string code statement
  * splice - returns the T of an Expr[T]
- *
  */
 object AllMacros {
   def hello(): Unit = macro hello_impl
@@ -22,13 +23,40 @@ object AllMacros {
   }
 
   def debug(param: Any): Unit = macro debug_impl
-
   def debug_impl(c: Context)(param: c.Expr[Any]): c.Expr[Unit] = {
     import c.universe._
     val paramRep = show(param.tree)
     val paramRepTree = Literal(Constant(paramRep))
     val paramRepExpr = c.Expr[String](paramRepTree)
     reify { println(paramRepExpr.splice + " = " + param.splice) }
+  }
+
+
+  def printf(format: String, params: Any*): Unit = macro printf_impl
+
+  def printf_impl(c: Context)(format: c.Expr[String], params: c.Expr[Any]*): c.Expr[Unit] = {
+    import c.universe._
+
+    val Literal(Constant(s_format: String)) = format.tree
+    val evals = ListBuffer[ValDef]()
+
+    def precompute(value: Tree, tpe: Type): Ident = {
+      val freshName = newTermName(c.fresh("eval$"))
+      evals += ValDef(Modifiers(), freshName, TypeTree(tpe), value)
+      Ident(freshName)
+    }
+
+    val paramsStack = mutable.Stack[Tree]((params map (_.tree)): _*)
+
+    val refs = s_format.split("(?<=%[\\w%])|(?=%[\\w%])") map {
+      case "%d" => precompute(paramsStack.pop, typeOf[Int])
+      case "%s" => precompute(paramsStack.pop, typeOf[String])
+      case "%%" => Literal(Constant("%"))
+      case part => Literal(Constant(part))
+    }
+
+    val stats = evals ++ refs.map(ref => reify(print(c.Expr[Any](ref).splice)).tree)
+    c.Expr[Unit](Block(stats.toList, Literal(Constant(()))))
   }
 
 }

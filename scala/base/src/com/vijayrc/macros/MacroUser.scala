@@ -6,5 +6,6 @@ object MacroUser extends App{
   hello()
   printparam("one second")
   debug(x)
+  printf("hello %s!", "world")
 
 }
