@@ -87,8 +87,7 @@ object Futures {
     p.success("p-returns")
     try {
       p.success("p-returns-again")
-    }
-    catch {
+    } catch {
       case e:IllegalStateException => println("promises can be fulfilled only once")
     }
     Await.result(f, 10 seconds)
