@@ -1,18 +1,16 @@
 package com.vijayrc.jazz;
 
 import javassist.*;
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import static com.vijayrc.jazz.Log.print;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 public class AllTests {
+
     @Test
     public void shouldAddInheritanceAndInjectCodeIntoMethod() throws Exception{
         ClassPool pool = ClassPool.getDefault();
@@ -54,7 +52,18 @@ public class AllTests {
         Constructor<?> constructor = squareClass.toClass().getConstructor(Double.class);
         Object square = constructor.newInstance(2d);
         Method area = square.getClass().getMethod("area");
-        assertEquals(area.invoke(square),4d);
+        assertEquals(area.invoke(square), 4d);
+    }
+
+    @Test
+    public void shouldModifySystemClass() throws Exception {
+        ClassPool pool = ClassPool.getDefault();
+        CtClass cc = pool.get("java.lang.String");
+        CtField f = new CtField(CtClass.intType, "hiddenValue", cc);
+        f.setModifiers(Modifier.PUBLIC);
+        cc.addField(f);
+        cc.writeFile(".");
+        print(String.class.getField("hiddenValue").getName());
     }
 
 }
