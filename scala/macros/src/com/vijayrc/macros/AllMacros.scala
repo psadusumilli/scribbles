@@ -84,10 +84,10 @@ object AllMacros {
   def myif3_impl(c:Context)(cond:c.Expr[Boolean], partial:c.Expr[PartialFunction[String,Any]]): c.Expr[Unit] = {
     import c.universe._
     reify {
-      if (cond.splice)
-       partial.splice("then")
-      else
-       partial.splice("else")
+      try {
+        if (cond.splice) partial.splice("then")
+        else partial.splice("else")
+      } catch {case e:MatchError => {}}
     }
   }
 
