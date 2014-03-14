@@ -59,8 +59,8 @@ object AllMacros {
   }
 
   //sample-5
-  def myif(cond:Boolean, yes:Any = {}, no:Any = {}) = macro myif_impl
-  def myif_impl(c:Context)(cond:c.Expr[Boolean], yes:c.Expr[Any], no:c.Expr[Any]): c.Expr[Unit] = {
+  def myif0(cond:Boolean, yes:Any = {}, no:Any = {}) = macro myif0_impl
+  def myif0_impl(c:Context)(cond:c.Expr[Boolean], yes:c.Expr[Any], no:c.Expr[Any]): c.Expr[Unit] = {
     import c.universe._
     reify {
       if (cond.splice)
@@ -80,13 +80,18 @@ object AllMacros {
 
     }
   }
-  def myif3(cond:Boolean, partial:PartialFunction[String,Any]) = macro myif3_impl
-  def myif3_impl(c:Context)(cond:c.Expr[Boolean], partial:c.Expr[PartialFunction[String,Any]]): c.Expr[Unit] = {
+
+  sealed trait Flow
+  case object then extends Flow
+  case object otherwise extends Flow
+
+  def myif(cond:Boolean, partial:PartialFunction[Flow,Any]) = macro myif_impl
+  def myif_impl(c:Context)(cond:c.Expr[Boolean], partial:c.Expr[PartialFunction[Flow,Any]]): c.Expr[Unit] = {
     import c.universe._
     reify {
       try {
-        if (cond.splice) partial.splice("then")
-        else partial.splice("else")
+        if (cond.splice) partial.splice(then)
+        else partial.splice(otherwise)
       } catch {case e:MatchError => {}}
     }
   }
