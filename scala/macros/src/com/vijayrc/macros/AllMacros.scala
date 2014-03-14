@@ -10,18 +10,21 @@ import scala.collection.mutable
  * splice - returns the T of an Expr[T]
  */
 object AllMacros {
+  //sample-1
   def hello(): Unit = macro hello_impl
   def hello_impl(c: Context)(): c.Expr[Unit] = {
     import c.universe._
     reify{println("hello world")}
   }
 
+  //sample-2
   def printparam(param: Any): Unit = macro printparam_impl
   def printparam_impl(c: Context)(param: c.Expr[Any]): c.Expr[Unit] = {
     import c.universe._
     reify { println(param.splice) }
   }
 
+  //sample-3
   def debug(param: Any): Unit = macro debug_impl
   def debug_impl(c: Context)(param: c.Expr[Any]): c.Expr[Unit] = {
     import c.universe._
@@ -31,9 +34,8 @@ object AllMacros {
     reify { println(paramRepExpr.splice + " = " + param.splice) }
   }
 
-
+  //sample-4
   def printf(format: String, params: Any*): Unit = macro printf_impl
-
   def printf_impl(c: Context)(format: c.Expr[String], params: c.Expr[Any]*): c.Expr[Unit] = {
     import c.universe._
 
@@ -45,16 +47,13 @@ object AllMacros {
       evals += ValDef(Modifiers(), freshName, TypeTree(tpe), value)
       Ident(freshName)
     }
-
-    val paramsStack = mutable.Stack[Tree]((params map (_.tree)): _*)
-
+    val paramsStack = mutable.Stack[Tree](params map (_.tree): _*)
     val refs = s_format.split("(?<=%[\\w%])|(?=%[\\w%])") map {
-      case "%d" => precompute(paramsStack.pop, typeOf[Int])
-      case "%s" => precompute(paramsStack.pop, typeOf[String])
+      case "%d" => precompute(paramsStack.pop(), typeOf[Int])
+      case "%s" => precompute(paramsStack.pop(), typeOf[String])
       case "%%" => Literal(Constant("%"))
       case part => Literal(Constant(part))
     }
-
     val stats = evals ++ refs.map(ref => reify(print(c.Expr[Any](ref).splice)).tree)
     c.Expr[Unit](Block(stats.toList, Literal(Constant(()))))
   }

@@ -70,4 +70,15 @@ object Cases extends App{
   assert("wife" == family("rekha"))
   assert("wife" == family1("rekha"))
   assert(1 == family2("rekha"))
+
+  /* @ operator */
+  val o: Option[Int] = Some(2)
+  o match {
+    case Some(x) => println(x) //2
+    case None =>
+  }
+  o match {
+    case x @ Some(_) => println(x) //Some(2)
+    case None =>
+  }
 }
