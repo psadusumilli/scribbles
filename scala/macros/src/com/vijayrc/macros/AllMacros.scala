@@ -59,8 +59,7 @@ object AllMacros {
   }
 
   //sample-5
-  def myif(cond:Boolean, yes:Any, no:Any) = macro myif_impl
-
+  def myif(cond:Boolean, yes:Any = {}, no:Any = {}) = macro myif_impl
   def myif_impl(c:Context)(cond:c.Expr[Boolean], yes:c.Expr[Any], no:c.Expr[Any]): c.Expr[Unit] = {
     import c.universe._
     reify {
@@ -70,5 +69,22 @@ object AllMacros {
         no.splice
     }
   }
+  def myif2(cond:Boolean, map:Map[String,Any]) = macro myif2_impl
+  def myif2_impl(c:Context)(cond:c.Expr[Boolean], map:c.Expr[Map[String,Any]]): c.Expr[Unit] = {
+    import c.universe._
+    val paramRep = show(map.tree)
+    val paramRepTree = Literal(Constant(paramRep))
+
+    reify {
+      if (cond.splice)
+        print("yes")
+      else
+        print("no")
+
+    }
+  }
+
+
+
 
 }
