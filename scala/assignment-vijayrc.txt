@@ -1,0 +1,43 @@
+Scala Solution:
+
+module #1: [macros] - must be compiled before separately
+*************************************************************
+package com.vijayrc.macros
+import scala.reflect.macros.Context
+
+object Macros {
+  sealed trait Flow
+  case object then extends Flow
+  case object otherwise extends Flow
+
+  def myif(cond:Boolean, partial:PartialFunction[Flow,Any]) = macro myif_impl
+
+  def myif_impl(c:Context)(cond:c.Expr[Boolean], partial:c.Expr[PartialFunction[Flow,Any]]): c.Expr[Unit] = {
+    import c.universe._
+    reify {
+      try {
+        if (cond.splice) partial.splice(then)
+        else partial.splice(otherwise)
+      } catch {case e:MatchError => {}}
+    }
+  }
+}
+
+//module #2: base - dependent on [macros]
+**********************************************
+package com.vijayrc.macros
+
+import org.scalatest.FunSuite
+import com.vijayrc.macros.Macros._
+
+class MacrosTest extends FunSuite{
+  test("macro should work when both 'then & 'else are given"){
+    myif(3>1, {case then => print("ok") case otherwise => print("oops")}) //ok
+    myif(1>3, {case otherwise => print("oops") case then => print("ok")}) //oops
+  }
+  test("macro should work when either 'then or 'otherwise given"){
+    myif(3>1, {case then => print("ok")}) //ok
+    myif(3>1, {case otherwise => print("oops")})//oops
+  }
+}
+
