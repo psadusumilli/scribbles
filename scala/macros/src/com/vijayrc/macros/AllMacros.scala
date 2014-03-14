@@ -58,4 +58,14 @@ object AllMacros {
     c.Expr[Unit](Block(stats.toList, Literal(Constant(()))))
   }
 
+  //sample-5
+  def myif(cond:Boolean, yes:String, no:String) = macro myif_impl
+
+  def myif_impl(c:Context)(cond:c.Expr[Boolean], yes:c.Expr[String], no:c.Expr[String]): c.Expr[Unit] = {
+    import c.universe._
+    reify {
+      if (cond.splice) println("true")
+    }
+  }
+
 }
