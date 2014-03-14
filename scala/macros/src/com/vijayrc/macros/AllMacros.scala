@@ -59,12 +59,15 @@ object AllMacros {
   }
 
   //sample-5
-  def myif(cond:Boolean, yes:String, no:String) = macro myif_impl
+  def myif(cond:Boolean, yes:Any, no:Any) = macro myif_impl
 
-  def myif_impl(c:Context)(cond:c.Expr[Boolean], yes:c.Expr[String], no:c.Expr[String]): c.Expr[Unit] = {
+  def myif_impl(c:Context)(cond:c.Expr[Boolean], yes:c.Expr[Any], no:c.Expr[Any]): c.Expr[Unit] = {
     import c.universe._
     reify {
-      if (cond.splice) println("true")
+      if (cond.splice)
+        yes.splice
+      else
+        no.splice
     }
   }
 

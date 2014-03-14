@@ -7,6 +7,6 @@ object MacroUser extends App{
 //  printparam("one second")
 //  debug(x)
 //  printf("hello %s!", "world")
-  myif(4>3,"bigger","smaller")
+  myif(4>1, {println("yes");println("ok")},{println("no")})
 
 }
