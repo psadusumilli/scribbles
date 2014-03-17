@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<p>Count numbers: <output id="result"></output></p>
+		<button onclick="startWorker()">Start Worker</button> 
+		<button onclick="stopWorker()">Stop Worker</button>
+		<br><br>
+		<script>
+			var w;
+                        var r = document.getElementById("result") ;
+			function startWorker(){
+				if(typeof(Worker) !== "undefined"){
+				  if(typeof(w) == "undefined") {   w = new Worker("worker1.js");  }
+				  w.onmessage = function (event){   r.innerHTML = event.data; };
+				} else { r.innerHTML="Sorry, your browser does not support Web Workers...";}
+			}
+			function stopWorker(){ w.terminate();}
+		</script>
+	</body>
+</html>
