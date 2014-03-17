@@ -1,0 +1,29 @@
+
+grep - global regular expression print
+fgrep - fast grep - no regex => grep -F
+egrep - extended regex => grep -E
+
+#sample 1":
+grep MQRC_Q_MGR_NOT_AVAILABLE *.log | grep [0-9]/[0-9][0-9]/[0-9][0-9]\\s*[0-9][0-9]*:[0-9][0-9]:[0-9][0-9] -o | sort | uniq > time.txt
+5/14/13 11:46:37
+5/14/13 14:48:15
+
+#sample 2:
+After running the command, I see no duplicate messages being posted from postprocessor.
+
+grep  "Sent TXT message to" b2_postprocess.log*  -B 200 | grep "<messageId>" | sort | uniq -c > ids.txt
+<messageId>23124314xxxdwdqc</messageId>
+
+#sample 3
+echo "<messageId>91b7753f3c6b0ae0573dd2adf424cc95</messageId>" | sed s/\<[\/]messageId\>// | sed s/\<messageId\>//
+
+
+
+#sample 3:
+Pick table names of certain sqls
+grep -E "SELECT|INSERT" b2_planInt.log | grep -E "FROM\s+?[A-Z]+\.[A-Z_0-9]+" -o
+
+FROM PNASCMOD.B2_CONTACT_XREF
+FROM PNASCMOD.IPP_CLM_SEARCH
+
+
