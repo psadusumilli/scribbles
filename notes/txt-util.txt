@@ -3,24 +3,105 @@ grep - global regular expression print
 fgrep - fast grep - no regex => grep -F
 egrep - extended regex => grep -E
 
+echo grey | grep -E "[a]*"
+echo grey | grep -E "[a]{0}"
+echo grey | grep -E "(a){0}"
+echo grey | grep -E "[r-z]{1}"
+echo grey | grep -E "[^a]"
+echo "the greying grey monster"| grep '\bgrey\b' -o
+>grey
+
+echo grey | grep -E "[a]"
+>no result
+
+$ echo '<p>man</p>' | grep -E "(<[/]*p>)" -o
+<p>	
+</p>
+#using back references 1 points to previous match 'p'
+echo '<p>man</p>' | grep -E "<(p)>(.*)</\1>" -o
+<p>man</p>
+
+$ echo "He is a man" | grep -E "^He" -o 
+He
+echo "He is a man" | grep -E "man$" -o
+man
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------
-#sample 1:get time occurrences of key
+#1:get time occurrences of key
 grep MQRC_Q_MGR_NOT_AVAILABLE *.log | grep [0-9]/[0-9][0-9]/[0-9][0-9]\\s*[0-9][0-9]*:[0-9][0-9]:[0-9][0-9] -o | sort | uniq > time.txt
 5/14/13 11:46:37
 5/14/13 14:48:15
 #------------------------------------------------------------------------------------------------------------------------------------------------------
-#sample 2: get data within xml tags
+#2: get data within xml tags
 grep  "Sent TXT message to" b2_postprocess.log*  -B 200 | grep "<messageId>" | sort | uniq -c > ids.txt
 <messageId>23124314xxxdwdqc</messageId>
 
 echo "<messageId>91b7753f3c6b0ae0573dd2adf424cc95</messageId>" | sed s/\<[\/]messageId\>// | sed s/\<messageId\>//
+91b7753f3c6b0ae0573dd2adf424cc95
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
-#sample 4:Pick table names of certain sqls
-grep -E "SELECT|INSERT" b2_planInt.log | grep -E "FROM\s+?[A-Z]+\.[A-Z_0-9]+" -o
+#4: pick table names of certain sqls
+grep -E "SELECT|INSERT" SystemOut.log | grep -E "(FROM|INTO)\s+?[A-Z]+\.[A-Z_0-9]+" -o | sed s/FROM// | sed s/INTO//
 
-FROM PNASCMOD.B2_CONTACT_XREF
-FROM PNASCMOD.IPP_CLM_SEARCH
+PNASCMOD.B2_CONTACT_XREF
+PNASCMOD.IPP_CLM_SEARCH
+
+#pick predicates of SELECT sqls
+grep -E "SELECT" SystemOut.log | head -n 3 | grep -E "UR\[.*\]" 
+grep -E "INSERT" SystemOut.log | head -n 3 | grep -E "\)\[.*\]"
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------
+#5: pick between timelines
+grep "6/3/13" SystemOut.log| grep -E "16:0[0-1]"
+
+from 6/3/13 16:00 to 16:01
+[6/3/13 16:12:16:001 EDT] 00000795 SystemOut     O [2013-06-03 16:12:16,001] [MessageListenerThreadPool : 20] INFO  com.bcbsa.blue2.dao.Blue2Dao - INSERT INTO PNASCO.IPP_MSG_STATE(MSG_ID, MSG_ST_TS, MSG_ST_CD, BLUE2_USER_ID, PART_KEY_NUM) VALUES(?, ?, ?, ?, ?)[6ba545d1d88cfc186d01fc0847d047db, 2013-06-03 16:12:15.868, PRSD, NZQG6S, 76]
+[6/3/13 16:12:16:013 EDT] 00004106 SystemOut     O [2013-06-03 16:12:16,013] [WebContainer : 13381] INFO  com.bcbsa.csdp.util.Blue2Config - For boid: 8342 , returning Business Unit : WellPoint HOME
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+
+sed - stream editor
+#1: change data to DATA in analysis.log and make new file analysis1.log
+sed s/data/DATA/ analysis.log > analysis1.log
+#2: \ is the escape char but delimiter / can be changed to |,:
+sed 's|/usr/local/bin|/common/bin|' <old.txt >new.txt
+#3: using & as the matched string, -r flag is the extended regex
+echo "123 abc" | sed 's/[0-9]*/& &/'
+123 123 abc
+echo "abc 123" | sed -r 's/[0-9]+/& &/' 
+abc 123 123
+
+#4: back references
+echo abcd123 | sed 's/\([a-z]*\).*/\1/'
+abcd
+\([a-z]*\) captures abcd, .* captures rest 123
+
+#5: switch words
+$ echo 'dude gal' | sed 's/\([a-z]*\) \([a-z]*\)/\2 \1/'
+gal dude
+
+#6: global flag g and case flag I
+echo '<p>man</p>' | sed 's/<[\/]*p>/X/g'
+XmanX
+echo '<p>man</p>' | sed 's/<[\/]*P>/X/gI'
+XmanX
+
+#7: multiple expressions
+echo 'babe' | sed -e 's/a/A/g' -e 's/b/B/g'
+BABe
+
+#8 grep - finds lines with pattern 'Wellmark'. p is the print flag, -n is the quiet flag to prevent printing everything when no match is found
+sed -n '/Wellmark/p' SystemOut.log
+#9 - shell script
+sed -n 's/'"$1"'/&/p'
+#10 - LINE NO: delete first number occurence in 3rd line of file.txt
+sed '3 s/[0-9][0-9]*//' <file.txt >new.txt
+#11 - line range 101-532
+sed '101,532 s/A/a/' <file.txt >new.txt 
+
+#12 -betweemn pattern ranges
+$ echo 'begin I am bad end'  | sed '/begin/,/end/ s/bad/good/'
+begin I am good end
+$ echo 'begin I am bad end'  | sed '/b[a-z]*/,/e[a-z]*/ s/bad/good/'
+begin I am good end
 
 
