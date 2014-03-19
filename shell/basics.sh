@@ -3,7 +3,6 @@ echo "start dude on `date`"
 echo $?
 #----------------------------------------------------------------------------------------------------
 #arithmetic
-
 x=12
 y=13
 
@@ -19,7 +18,6 @@ echo pre=$z3, post=$z4
 echo '45/5'|bc
 #----------------------------------------------------------------------------------------------------
 #read input
-
 echo "give fname and lname:"
 read fname lname
 echo "hey! $fname $lname"
@@ -37,10 +35,8 @@ if test "vijay" = "vijay"
 elif ["rek"="rek"]
     then echo "same rek names"
 fi
-
 #----------------------------------------------------------------------------------------------------
 #loops
-
 echo "enter number for multiplication table"
 read number
 for i in 1 2 3 4 5 6 7 8 9
@@ -57,8 +53,6 @@ do
     echo "$number * $i = $[number*i]"
     i=$[i+1]
 done
-
-
 #----------------------------------------------------------------------------------------------------
 echo "files modified in the last one hour 1/24 = 0.041667"
 find . -mtime -0.041666667 -print
