@@ -1,8 +1,11 @@
 sed - stream editor
+
 #1: change data to DATA in analysis.log and make new file analysis1.log
 sed s/data/DATA/ analysis.log > analysis1.log
+
 #2: \ is the escape char but delimiter / can be changed to |,:
 sed 's|/usr/local/bin|/common/bin|' <old.txt >new.txt
+
 #3: using & as the matched string, -r flag is the extended regex
 echo "123 abc" | sed 's/[0-9]*/& &/'
 123 123 abc
