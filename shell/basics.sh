@@ -1,4 +1,4 @@
-
+	
 echo "start dude on `date`"
 echo $?
 #----------------------------------------------------------------------------------------------------
@@ -34,6 +34,19 @@ if test "vijay" = "vijay"
     then echo "same vijay names"
 elif ["rek"="rek"]
     then echo "same rek names"
+fi
+
+echo "enter no1:"
+read x
+echo "enter no2:"
+read y
+
+if test $x -lt $y
+ then echo "more"
+elif [ $x -gt $y ]
+ then echo "less"
+else
+ echo "equals"
 fi
 #----------------------------------------------------------------------------------------------------
 #loops
