@@ -1,4 +1,4 @@
 function say() {
- echo 'say what' $1
+	echo "hey dude $1" 
 }
-$(say)
+say "sweet"

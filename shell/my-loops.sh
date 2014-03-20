@@ -1,29 +1,6 @@
 	
-echo "start dude on `date`"
-echo $?
 #----------------------------------------------------------------------------------------------------
-#arithmetic
-x=12
-y=13
-
-z0=`expr $x + $y`
-z1=$((x+y))
-z2=$[x+y]
-echo  $x+$y is expr $z0, $z1, $z2
-
-z3=$((++x))
-z4=$((y++))
-echo pre=$z3, post=$z4
-
-echo '45/5'|bc
-#----------------------------------------------------------------------------------------------------
-#read input
-echo "give fname and lname:"
-read fname lname
-echo "hey! $fname $lname"
-
-#----------------------------------------------------------------------------------------------------
-#conditionals
+#conditionals - AND logic
 if test $x -lt $y -a  -d "/home/vijayr"
     then echo "x < y and dir exists"
 else 
@@ -40,7 +17,6 @@ echo -n "enter no1:"
 read x
 echo -n "enter no2:"
 read y
-
 if test $x -lt $y
  then echo "more"
 elif [ $x -gt $y ]
@@ -66,17 +42,24 @@ for ((i=1;i<10;i++))
 do
     echo "$number * $i = $[number*i]"
 done
+count=0
+for i in $(cat ./files/names); do
+    count=$((count + 1))
+    echo "Word $count ($i) contains $(echo -n $i | wc -c) characters"
+done
+#----------------------------------------------------------------------------------------------------
 i=1
 while [ $i -le 10 ]
 do
     echo "$number * $i = $[number*i]"
     i=$[i+1]
 done
-#----------------------------------------------------------------------------------------------------
-echo "files modified in the last one hour 1/24 = 0.041667"
-find . -mtime -0.041666667 -print
-
-
+i=1
+until [ $i -ge 10 ]
+do
+    echo "$number * $i = $[number*i]"
+    i=$[i+1]
+done
 
 
 
