@@ -36,9 +36,9 @@ elif ["rek"="rek"]
     then echo "same rek names"
 fi
 
-echo "enter no1:"
+echo -n "enter no1:"
 read x
-echo "enter no2:"
+echo -n "enter no2:"
 read y
 
 if test $x -lt $y
@@ -48,9 +48,15 @@ elif [ $x -gt $y ]
 else
  echo "equals"
 fi
+
+if [ $(id -u) != "0" ] 
+    then echo "not a super user"
+else 
+    echo "super user"
+fi
 #----------------------------------------------------------------------------------------------------
 #loops
-echo "enter number for multiplication table"
+echo -n "enter number for multiplication table: "
 read number
 for i in 1 2 3 4 5 6 7 8 9
 do 
