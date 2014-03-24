@@ -10,4 +10,8 @@ public class MyTranslator implements Translator {
         CtClass cc = pool.get(classname);
         cc.setModifiers(Modifier.PUBLIC);
     }
+
+    public static void main(String args[]){
+        while(true){System.out.print("ij");}
+    }
 }
