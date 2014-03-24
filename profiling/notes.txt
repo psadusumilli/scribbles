@@ -1,6 +1,6 @@
-A:Profiling Tools
+1:Profiling Tools
 ------------------------------------------------------------------------------------------------------
-1| free=>jvisualvm: 
+1.1| free=>jvisualvm: 
     present in jdk along with java, javac
     much better than jconsole
     automatically monitors process that uses its parent jdk
@@ -8,80 +8,163 @@ A:Profiling Tools
     can wire up with remote hosts and uses jmx/jstats
     can analyse thread dumps
 
-2| commercial=> Yourkit, Jprofile
+1.2| commercial=> Yourkit, Jprofile
 
-B:Do it yourself
 ------------------------------------------------------------------------------------------------------
-CPU Profiling:
---------------*
-1| System.currentMilliSec() => for rarely called long running methods
-
-2| ConcurrentHashMap => for frequently called short running methods. Use the data to get averages.
-
-3| Sampling - Analyse threaddumps to get hotspots (bad performing code)
-    3.1 kill -3 pid > dump.txt 
-    3.2 jstack pid > dump.txt
-    3.3 Thread.getAllStacktraces() -for programmatically getting all threads
-
-Memory Profiling:
+2: DIY
+-------
+2.1 CPU Profiling:
 ------------------*
-1|  jps => find pids of java processes
+System.currentMilliSec() => for rarely called long running methods
+ConcurrentHashMap => for frequently called short running methods. Use the data to get averages.
+Sampling - Analyse threaddumps to get hotspots (bad performing code)
+    a| kill -3 pid > dump.txt 
+    b| jstack pid > dump.txt
+    c| Thread.getAllStacktraces() -for programmatically getting all threads
 
-2|  jmap -histo <pid> => gives number of instances and memory consumed per class
-    jmap -histo:live <pid> => does a garbage collection before counting instances, 10 sec pause, cannot be used in prod
-    jmap -dump:<options> <pid> => gives thread dumps
+2.2: Memory Profiling:
+----------------------*
+a|  'jps' => find pids of java processes
 
-3|  JVM options
-    -XX:+PrintClassHistogram => on 'kill -3' will call 'jmap -histo'
-    -XX:+HeapDumpOnOutOfMemoryError => produces dump in hprof format
+b|  'jmap -histo <pid>' => gives number of instances and memory consumed per class
+    'jmap -histo:live <pid>' => does a garbage collection before counting instances, 10 sec pause, cannot be used in prod
+    'jmap -dump:<options> <pid>' => gives thread dumps
+
+c|  JVM options
+    '-XX:+PrintClassHistogram' => on 'kill -3' will call 'jmap -histo'
+    '-XX:+HeapDumpOnOutOfMemoryError' => produces dump in hprof format
     CPU and thread profiling wont help in analysing big memory allocation issues.Only slow GC reflect the issue.    
     JVM flags: 
-    3.1| verbose:gc, -XX:+PrintGC, +-XX:+PrintGCDetails => logs time spent on GC
-    3.2| -Xaprof => pints memory allocation by class on process exit
+    3.1| 'verbose:gc, -XX:+PrintGC, +-XX:+PrintGCDetails' => logs time spent on GC
+    3.2| '-Xaprof'=> pints memory allocation by class on process exit
 
-4|  Use byte code manipulation with javassist to do more tracking
+d|  Use byte code manipulation with javassist to do more tracking
     runtime byte code manipulation can be done with javaagent
 
 ------------------------------------------------------------------------------------------------------
-C: Garbage Collection |mechanical sympathy
+3: Garbage Collection |Mechanical Sympathy
 -------------------------------------------*
 Generation GC (eden.survivor, tenured) algorithms may not be good when you create a lot of long-lived objs.
 
-1| Throughput => The amount of work done by an application as a ratio of time spent in GC. 
-   Target throughput with ‑XX:GCTimeRatio=99;99 is the default equating to 1% GC time.
+3.1| Throughput => The amount of work done by an application as a ratio of time spent in GC. 
+   Target throughput with 'XX:GCTimeRatio=99';99 is the default equating to 1% GC time.
 
-2| Latency => The time taken by systems in responding to events which is impacted by pauses introduced by garbage collection. 
-   Target latency for GC pauses with ‑XX:MaximumGCPauseMillis=<n>.
+3.2| Latency => The time taken by systems in responding to events which is impacted by pauses introduced by garbage collection. 
+   Target latency for GC pauses with 'XX:MaximumGCPauseMillis=<n>'.
 
-3| Memory => The amount of memory our systems use to store state, which is often copied and moved around when being managed. 
+3.3| Memory => The amount of memory our systems use to store state, which is often copied and moved around when being managed. 
    The set of active objects retained by the application at any point in time is known as the Live Set. 
-   Maximum heap size –Xmx<n> is a tuning parameter for setting the heap size available to an application.
+   Maximum heap size '–Xmx<n>' is a tuning parameter for setting the heap size available to an application.
 
-4| Stop the world events => All threads must come to a safe point before GC can proceed.
-   -XX:PrintGCApplicationStoppedTime will show this.
+3.4| Stop the world events => All threads must come to a safe point before GC can proceed.
+   '-XX:PrintGCApplicationStoppedTime' will show this.
 
-Heap Organisation:
-------------------*
-1| eden => the region of fresh objects
-2| survivor => regions where objs that survived one eden collection.
-3| tenured => long lived objs
-4| perm => non-heap region for class, static strings, java 8 dumped it
+4: Heap Organisation:
+----------------------*
+a| eden => the region of fresh objects
+b| survivor => regions where objs that survived one eden collection.
+c| tenured => long lived objs
+d| perm => non-heap region for class, static strings, java 8 dumped it
 
-TLAB:
------*
-Each thread is allocated a Thread Local Allocation Buffer.
+5: TLAB:
+---------*
+Each thread is allocated a Thread Local Allocation Buffer in eden space.
 They create objs by bumping up a pointer in this space
 No contentions between threads, much faster than C malloc
-But when large objs are created, the TLAB can be a limiter, so the new big obj is in the tenured generation.(-XX:PretenureSizeThreshold=<n>)
+But when large objs are created, the TLAB can be a limiter, so the new big obj is in the tenured generation.'-XX:PretenureSizeThreshold=<n>'
 
-Minor Collection:
-------------------*
+-----------------------------------------------------------------------------------------------------------------------------------------------
+6:COLLECTION:
+
+6.1 Minor Collection:
+---------------------*
 Movement of objs from eden to survivor to tenured
 Search through live objs using object graphs and also any back references from older generation to new generation(card table)
 survivor space has 2 spaces (from-space, to-space)
     to-space => target region to store newly moved objs during collection
     from-space => stores objs from previous collection, also undergoes collection during minor stage.
 cost of collection is tied more to number of instances than memory, but doubling eden space can help in reducing minor collection frequency.
+– XX:MaxTenuringThreshold=<n> => jvm flag to control ageing of objs
+
+6.2 Major Collection:
+---------------------*
+Removal and compaction of objs from tenured to make space for promotion of new ones from survivor spaces
+Major collector algos use a threshold to start or a full GC will be initiated where all objs from survivor spaces are moved.
+Promotion failure is costly, avoid -XX:PromotedPadding=<n>
+When the Heap needs to grow a FullGC is triggered. These heap-resizing FullGCs can be avoided by setting –Xms and –Xmx to the same value.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+7:COLLECTORS
+-------------*
+
+7.1|Serial Collector:'-XX:+UseSerialGC' 
+    1 thread for minor and major collections, good for single processor systems, small memory footprint
+
+7.2|Parallel Collector:'-XX:+UseParallelGC'
+    multiple threads for minor collections, 1 thread for major collections
+
+7.3|Parallel Old Collector: '-XX:+UseParallelOldGC'
+    multiple threads for minor collections, multiple threads for major collections, default in all jvms since 7u4
+    best for multi-processor systems
+    dependent on number of objs than size
+    if too much pause(1-5 sec/1GB of data), use a collector that can run concurrently with application.
+
+7.4|Concurrent Mark and Sweep CMS Collector:'-XX:+UseConcMarkSweepGC'
+    Works on the tenured memory
+    Works concurrently, takes up CPU along with app, 
+    Does not compact, make free lists out of freed-up memory, can result in voids, making them unfillable for large objects from eden/survivor. 
+    This fragmentation can trigger fullGC.
+    Requires extra memory for tracking datastructures
+    CMS can suffer “concurrent mode failures”, which can be seen in the logs, when it fails to collect at a sufficient rate to keep up with promotion. 
+    
+    Process:
+    --------- 
+    initial mark=> find GC roots
+    concurrent mark=> mark all objs reachable from roots
+    concurrent preclean => check for updated references from previous phase
+    re-mark => mark again
+    concurrent sweep => reclaim memory into free lists by deleting dead objects
+    concurrent reset => reset datastructures.
+
+7.5|Garbage First Collector G1:'-XX:+UseG1GC' 
+    Breaks the heap into small regions with mixed owners ede, survivor, tenured and humungous
+    Partially concurrent running every 200ms (G1 is target driven on latency '–XX:MaxGCPauseMillis=<n>')
+    Remembers references between objects in different regions via 'Remembered Sets'
+    G1 takes the approach of concurrently marking regions to track references between regions, and to focus collection on the regions with the most free space
+    Objects larger than 50% of a region are allocated in humongous regions
+    Popular objs and region can cause issues.
+    G1 is a goodfor larger heaps that have a tendency to become fragmented when an application can tolerate pauses in the 0.5-1.0 second range for incremental compactions. 
+    Works on avoiding fullGC by preventing fragmentation.
+
+  
+7.6|Alternative collectors 
+Oracle JRockit Real Time, IBM Websphere Real Time, and Azul Zing. The JRockit & Websphere collectors have latency advantages in most cases over CMS and G1,
+but often see throughput limitations and still suffer significant stop-the-world events. 
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+8 MONITORING
+-------------*
+-verbose:gc
+-Xloggc:
+-XX:+PrintGCDetails
+-XX:+PrintGCDateStamps
+-XX:+PrintTenuringDistribution
+-XX:+PrintGCApplicationConcurrentTime 
+-XX:+PrintGCApplicationStoppedTime
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
 
 
 
