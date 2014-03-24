@@ -45,6 +45,8 @@ Memory Profiling:
 ------------------------------------------------------------------------------------------------------
 C: Garbage Collection |mechanical sympathy
 -------------------------------------------*
+Generation GC (eden.survivor, tenured) algorithms may not be good when you create a lot of long-lived objs.
+
 1| Throughput => The amount of work done by an application as a ratio of time spent in GC. 
    Target throughput with ‑XX:GCTimeRatio=99;99 is the default equating to 1% GC time.
 
@@ -54,4 +56,37 @@ C: Garbage Collection |mechanical sympathy
 3| Memory => The amount of memory our systems use to store state, which is often copied and moved around when being managed. 
    The set of active objects retained by the application at any point in time is known as the Live Set. 
    Maximum heap size –Xmx<n> is a tuning parameter for setting the heap size available to an application.
+
+4| Stop the world events => All threads must come to a safe point before GC can proceed.
+   -XX:PrintGCApplicationStoppedTime will show this.
+
+Heap Organisation:
+------------------*
+1| eden => the region of fresh objects
+2| survivor => regions where objs that survived one eden collection.
+3| tenured => long lived objs
+4| perm => non-heap region for class, static strings, java 8 dumped it
+
+TLAB:
+-----*
+Each thread is allocated a Thread Local Allocation Buffer.
+They create objs by bumping up a pointer in this space
+No contentions between threads, much faster than C malloc
+But when large objs are created, the TLAB can be a limiter, so the new big obj is in the tenured generation.(-XX:PretenureSizeThreshold=<n>)
+
+Minor Collection:
+------------------*
+Movement of objs from eden to survivor to tenured
+Search through live objs using object graphs and also any back references from older generation to new generation(card table)
+survivor space has 2 spaces (from-space, to-space)
+    to-space => target region to store newly moved objs during collection
+    from-space => stores objs from previous collection, also undergoes collection during minor stage.
+cost of collection is tied more to number of instances than memory, but doubling eden space can help in reducing minor collection frequency.
+
+
+
+
+
+
+
 
