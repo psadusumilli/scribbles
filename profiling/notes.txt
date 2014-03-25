@@ -151,6 +151,10 @@ but often see throughput limitations and still suffer significant stop-the-world
 -XX:+PrintGCApplicationConcurrentTime 
 -XX:+PrintGCApplicationStoppedTime
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+9: MEMORY ACCESS PATTERNS|Mechanical Sympathy
+---------------------------------------------*
+
 
 
 
