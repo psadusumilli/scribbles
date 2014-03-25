@@ -109,8 +109,8 @@ When the Heap needs to grow a FullGC is triggered. These heap-resizing FullGCs c
     if too much pause(1-5 sec/1GB of data), use a collector that can run concurrently with application.
 
 7.4|Concurrent Mark and Sweep CMS Collector:'-XX:+UseConcMarkSweepGC'
-    Works on the tenured memory
-    Works concurrently, takes up CPU along with app, 
+    minor collections are slow
+    Works concurrently on tenured spaces, takes up CPU along with app, 
     Does not compact, make free lists out of freed-up memory, can result in voids, making them unfillable for large objects from eden/survivor. 
     This fragmentation can trigger fullGC.
     Requires extra memory for tracking datastructures
@@ -152,8 +152,69 @@ but often see throughput limitations and still suffer significant stop-the-world
 -XX:+PrintGCApplicationStoppedTime
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-9: MEMORY ACCESS PATTERNS|Mechanical Sympathy
+9: JVM Performance Tuning| Charlie Hunt InfoQ
 ---------------------------------------------*
+GC:
+---*
+1|  frequency of minor collections is dependent upon eden space size and obj allocation rate. minor GC pause time is dependent upon number of live objects.
+2|  frequency of major collections is dependent upon minor collections frequency and survivor space size.
+3|  objects rentention is bad, leads to longer GC.
+4|  throughput, latency, footprint - u can get only 2 out of 3, achieving all 3 is tough
+5|  size of java heap does not matter, only number of live objects
+6|  gc loves small immutable objects for quick operations than mutable long living objects. But frequent allocations lead to more minor collections.
+7|  its a delicate balance heap-resizing
+8|  ideal => more minor gc (generally fast, UseParallelOldGC) and less major GC, 
+
+9|  parallel GC: fast minor collections, if you can avoid fullGC, its nice
+10| CMS GC:slow minor collections due to promotion to fragmented(free lists) tenured space, avoids fullGC by concurrent collections of older generations
+11| G1 GC:slow minor collections due to Remembered sets, avoids fullGC by concurrent collections and no fragmentation issues.
+    Works with user-set heap size and pause-time to achieve the best possible. No separate setting of specific generation sizes.
+
+12| large objects are bad for cpu, initialisation and CMS GC.
+13| array backed collections are bad, set to an fixed size if you can. This causes fragmentation.
+14| object pooling is more live objects, so longer minor collections.
+15| finalizers are super bad, requires 2 slower GC cycles. use Reference Objects
+16| soft references are bad.
+17| inner class hold references to outer class, so increased obj rentention.
+
+18| fullGC => dependent upon tenured space and collector
+    when CMS (fragmentation), G1 loses the concurrent race, fullGC is initiated    
+    CMS has the biggest pause
+
+JIT
+----*
+Does not have full program knowledge, knows only the classes loaded.
+Makes optimisation based on program execution
+Keeps adapting based on changes
+Inlining is good and Virtualisation is bad as it blocks inlining.
+Dont start writing JIT compliant code, just identify issues and tackle.
+
+
+Code Cache:
+-----------*
+48M pre Java 8- 96Mb in Java 8; -XXReservedCodeCacheSize=<n>
+is depleted in case of large systems, application slowing down is the only sympton
+
+Use monitoring like jconsole or jvisualvm.
+-XX:+PrintCompilation might help by showing up lines like 'make non-entrant, made zombie'
+-XX:+UseCodeCacheFlushing after Java 6 will help, turned on in J7, might be intrusive to JIT
+
+Tools:
+-------*
+GCHisto, GCViewer
+-XX:+PrintTimeStamps,-XX:PrintGCDateStamps, -XX:PrintGCDetails will help (safe to use in PROD)
+VisualGC plugin in jvisualvm
+-XX:+PrintOptoAssembly,-XX:+LogCompilation  to view JIT code
+Oracle Solaris Studio Analyser
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 
 
