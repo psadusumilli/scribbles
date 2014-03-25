@@ -208,6 +208,14 @@ VisualGC plugin in jvisualvm
 Oracle Solaris Studio Analyser
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+10: JVM Mechanics: InfoQ
+-------------------------*
+Compiler: 
+---------*
+removes dead code, reorders code, reduces code
+dont try to do the job of a compile, write human-readable ones
+avoid repeated reads by introducing a local variable (if a.getX() called mutiple times in code, just an extra variable x = a.getX())
+ 
 
 
 
