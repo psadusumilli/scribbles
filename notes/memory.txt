@@ -1,0 +1,50 @@
+What every programmer should know abt Memory?
+
+CHAPTER1: COMMODITY HARDWARE:
+------------------------------*
+Most chipsets follow this design: 
+
+1: Chipset|
+-----------
+'Northbridge'=> CPUs and RAM connect to this bus. All CPUs connect to Northbridge via 'FSB (Front Side Bus)'
+			  	CPUs talk between each other using this.
+			  	RAM sometimes connect via memory controllers, this depends on RAM technology.
+			  	'NUMA'(non uniform memory access): there is no Northbridge, just captive RAMs to each processor. 
+			  	But there is a cost in accessing RAM belonging to a peer CPU.
+
+'Southbridge'=> All devices like PCI, SATA, USB connect to this.
+			  	CPU will talk with these devices all the way through North and South bridges
+			  	'DMA' (direct memory access): These devices need not go through the CPU to access RAM and can directly access via Northbridge, 
+			  	so now contention for RAM between them and CPU 	
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2: RAMs|
+---------
+'Static SRAM'=> cells based on transistors, 
+			  	fast in saying 0 or 1, 
+			  	rectangular signal, 
+			  	no refresh cycles needed.
+			  	high manufacture cost, specialised use only
+			  	used in cpu caches
+
+'Dynamic DRAM'=>cells based on capacitor, 
+ 			  	slow being dependent on capacitor discharge, 
+ 			  	not a rectangular signal so need processors to decipher 0/1, 
+ 			  	need refresh cycles
+ 			  	low cost, low space, prevalent use.
+ 			  	cells are accessed using RAS(Row address selection) and CAS(Column address selection) multiplexers and de-multiplexers
+ 			  	many types exists, Asynchronous DRAM, Rambus DRAM (obsolete, not widely used), Synchronous DRAM (SDRAM), Double Data Rate DRAM(DDR)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

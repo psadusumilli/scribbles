@@ -220,6 +220,37 @@ avoid repeated reads by introducing a local variable (if a.getX() called mutiple
 
 
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+11: JVM Tuning:JavaWorld 5 part series
+---------------------------------------*
+11.1 Compilers 
+---------------*
+two types:
+    static: javac - compile only once 
+    dynamic: JIT - compiles adaptively during runtime, does code optimisation. more cpu, threads, memory.
+two phases:
+    .java -> .class file (bytecode - javac)
+    .class -> machine code (jvm compiler, jit)
+Byte code to machine code
+--------------------------
+Interpretation:=>
+An interpreter simply looks up the hardware instructions for every bytecode instruction and sends it off to be executed by the CPU
+No optimisation, looks up everytime line by line.
+
+
+
+TLAB can cause fragmentation. free-lists are linked lists of memory pockets.
+
+
+GC: 
+    references counting/tracing obj graphs
+    concurrent/serial
+
+
+
+
+
+
 
 
 
