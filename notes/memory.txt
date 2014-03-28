@@ -34,9 +34,11 @@ Most chipsets follow this design:
  			  	cells are accessed using RAS(Row address selection) and CAS(Column address selection) multiplexers and de-multiplexers
  			  	many types exists, Asynchronous DRAM, Rambus DRAM (obsolete, not widely used), Synchronous DRAM (SDRAM), Double Data Rate DRAM(DDR)
 
-
-
-
+'DRAM Access'=>
+				First RAS signal, then CAS signal is sent on the address line
+				Delay between CAS and Data availability is CAS Latency |2-2.5 clock cycles.
+					
+				
 
 
 
