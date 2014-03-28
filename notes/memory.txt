@@ -18,28 +18,50 @@ Most chipsets follow this design:
 			  	so now contention for RAM between them and CPU 	
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 2: RAMs|
----------
-'Static SRAM'=> cells based on transistors, 
-			  	fast in saying 0 or 1, 
-			  	rectangular signal, 
-			  	no refresh cycles needed.
-			  	high manufacture cost, specialised use only
-			  	used in cpu caches
+--------*
+'Static SRAM'=> 
+cells based on transistors, 
+fast in saying 0 or 1, 
+rectangular signal, 
+no refresh cycles needed.
+high manufacture cost, specialised use only
+used in cpu caches
 
-'Dynamic DRAM'=>cells based on capacitor, 
- 			  	slow being dependent on capacitor discharge, 
- 			  	not a rectangular signal so need processors to decipher 0/1, 
- 			  	need refresh cycles
- 			  	low cost, low space, prevalent use.
- 			  	cells are accessed using RAS(Row address selection) and CAS(Column address selection) multiplexers and de-multiplexers
- 			  	many types exists, Asynchronous DRAM, Rambus DRAM (obsolete, not widely used), Synchronous DRAM (SDRAM), Double Data Rate DRAM(DDR)
+'Dynamic DRAM'=>
+cells based on capacitor, 
+slow being dependent on capacitor discharge, 
+not a rectangular signal so need processors to decipher 0/1, 
+need refresh cycles
+low cost, low space, prevalent use.
+cells are accessed using RAS(Row address selection) and CAS(Column address selection) multiplexers and de-multiplexers
+many types exists, Asynchronous DRAM, Rambus DRAM (obsolete, not widely used), Synchronous DRAM (SDRAM), Double Data Rate DRAM(DDR)
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+3:'Types of DRAM':
+----------------*
+'SDRAM'=>
+Synchronous dynamic random access memory (SDRAM) is DRAM that is synchronized with the system bus. 
+Classic DRAM has an asynchronous interface, which means that it responds as quickly as possible to changes in control inputs. 
+SDRAM has a synchronous interface, meaning that it waits for a clock signal before responding to control inputs and is therefore synchronized with the computer system bus. 
+The clock is used to drive an internal finite state machine that pipelines incoming commands. 
+The data storage area is divided into several banks, allowing the chip to work on several memory access commands at a time, interleaved among the separate banks. 
+This allows higher data access rates than an asynchronous DRAM.
+SDRAM spits out one word per cycle
+
+	'DDR1' => Double Data Rate SDRAM , 2 words read/write per cycle
+	'DDR2' => Double Data Rate SDRAM , 4 words read/write per cycle
+	'DDR3' => Double Data Rate SDRAM , 8 words read/write per cycle
+	'DDR4' => Double Data Rate SDRAM , 8 words read/write per cycle, some interleaved data banks.
 
 'DRAM Access'=>
-				First RAS signal, then CAS signal is sent on the address line
-				Delay between CAS and Data availability is CAS Latency |2-2.5 clock cycles.
-					
-				
-
+First RAS signal, then CAS signal is sent on the address line
+2-3-2-8-T1. This means:
+	w 2 CAS Latency (CL) - delay between CAS and Data availability is CAS Latency |2-2.5 clock cycles.
+	x 3 RAS-to-CAS delay (tRCD) - First RAS signal, then CAS signal is sent on the address line
+	y 2 RAS Precharge (tRP) - cycles between precharge command and the row selection
+	z 8 Active to Precharge delay (tRAS) - time taken to switch one row to other (RAS switch)
+	T T1 Command Rate
+BIOS settings can help tweak these latency timings. high performance servers do it, literature available.
 
 
 
