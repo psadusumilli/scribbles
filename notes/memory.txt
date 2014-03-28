@@ -46,12 +46,23 @@ SDRAM has a synchronous interface, meaning that it waits for a clock signal befo
 The clock is used to drive an internal finite state machine that pipelines incoming commands. 
 The data storage area is divided into several banks, allowing the chip to work on several memory access commands at a time, interleaved among the separate banks. 
 This allows higher data access rates than an asynchronous DRAM.
-SDRAM spits out one word per cycle
 
-	'DDR1' => Double Data Rate SDRAM , 2 words read/write per cycle
-	'DDR2' => Double Data Rate SDRAM , 4 words read/write per cycle
-	'DDR3' => Double Data Rate SDRAM , 8 words read/write per cycle
-	'DDR4' => Double Data Rate SDRAM , 8 words read/write per cycle, some interleaved data banks.
+	'SDRAM'=> 
+		Single Data Rate SDRAM, 1 word read/write per cycle
+		The SDR DRAMs were known simply by their frequency (e.g., PC100 for 100MHz SDR) 100MHz * 64bit * 1 = 800MB/s
+	'DDR1' => 
+		Double Data Rate SDRAM, 2 words read/write per cycle
+	 	Increasing the frequency of RAM is power-expensive. DDR1 chip transports data on the rising and falling edge(“double-pumped” bus). 
+	 	To make this possible without increasing the frequency of the cell array, a 'I/O-buffer' that holds '2' bits per data line is introduced.
+	 	DDR module (they have 64-bit busses) can sustain:100MHz * 64bit * 2 = 1600MB/s [PC1600]
+	'DDR2' => Double Data Rate SDRAM, 4 words read/write per cycle
+		'I/O buffer' gets '4' bits in each clock cycle which it then can send on the bus.
+	'DDR3' => Double Data Rate SDRAM, 8 words read/write per cycle
+		The cell array of DDR3 modules will run at a quarter of the speed of the external bus which requires an '8' bit I/O buffer, up from 4 bits for DDR2
+		less power consumption
+		more latency than DDR2, should be used for high frequencies not met by DDR2.
+	'DDR4' => Double Data Rate SDRAM, 8 words read/write per cycle, some interleaved data banks.
+
 
 'DRAM Access'=>
 First RAS signal, then CAS signal is sent on the address line
@@ -62,6 +73,10 @@ First RAS signal, then CAS signal is sent on the address line
 	z 8 Active to Precharge delay (tRAS) - time taken to switch one row to other (RAS switch)
 	T T1 Command Rate
 BIOS settings can help tweak these latency timings. high performance servers do it, literature available.
+
+'DRAM- Refresh'=>
+Each DRAM cell must be refreshed every 64ms. Refresh cycles can stall data flows.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
