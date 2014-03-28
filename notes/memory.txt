@@ -1,9 +1,8 @@
+----------------------------------------------*
 What every programmer should know abt Memory?
+----------------------------------------------*
 
-CHAPTER1: COMMODITY HARDWARE:
-------------------------------*
 Most chipsets follow this design: 
-
 1: Chipset|
 -----------
 'Northbridge'=> CPUs and RAM connect to this bus. All CPUs connect to Northbridge via 'FSB (Front Side Bus)'
@@ -77,6 +76,35 @@ BIOS settings can help tweak these latency timings. high performance servers do 
 'DRAM- Refresh'=>
 Each DRAM cell must be refreshed every 64ms. Refresh cycles can stall data flows.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+4: CPU Caches:
+---------------*
+RAM as fast as current CPU cores is orders of magnitude more expensive than any dynamic RAM.
+In general, little better accessible RAMs are better than more far RAMs
+Code and Data have spatial and temporal locality
+Intel has separate code and data caches since 1993.
+data caches stored decoded instructions
+Data prefetch happening in parallel with processes is the key
+3 levels of cache exists in modern machines
+
+'Processor' has 'Cores', which in turn can have dedicated L1 caches but share L2, L3 caches between them.
+each cache entry is tagged using the address of the data word in the main memory
+memory is also need to store these address keys(tags)
+entries in cache are not words but lines of 64 bytes
+
+'Exclusive Cache'=>  
+An 'delete' in L1 means subsequent 'add/push down' in L2, which in turn 'add/push down' L3 with 'delete' of last entry from L3. so more time required.
+An 'add' in L1 is faster.
+Used by AMD and VIA processors
+
+'Inclusive Cache'=>
+Duplicate entries everywhere, An entry in L1, is duplicated in L2 and L3
+A 'delete' is fast from L1, but retained in L2/L3
+Used by Intel.
+
+'dirty entry'=>
+A cache line which has been written to and which has not been written back to main memory is said to be dirty. 
+Once it is written the dirty flag is cleared.
+
 
 
 
