@@ -105,6 +105,40 @@ Used by Intel.
 A cache line which has been written to and which has not been written back to main memory is said to be dirty. 
 Once it is written the dirty flag is cleared.
 
+'Cache Coherency'=>
+Symmetric Multi Processors should have the same consistent view of the main memory. 
+So any dirty read pending in a peer processor must also be known.
+Providing direct access to the caches of one processor from another processor is expensive. 
+Instead, processors detect when another processor wants to read or write to a certain cache line.
+If a 'write' access is detected and the processor has a clean copy of the cache line in its cache, it is marked invalid
+In case of 'read', multiple clean copies of cache lines are present in all cpu caches.
+In case of 'dirty read', one processor can read from a peer processor, and simultaneously push it to main memory.
+
+'Cache Miss'=>
+Register ≤1 cycles
+L1d ∼ 3 cycles
+L2 ∼ 14 cycles
+Main Memory ∼ 240 cycles
+
+-------------------------------------------
+'Cache Associativity':
+
+'Cache line'=> 
+In practice an address, value is split into three parts. 
+
+With a cache line size (say 32 bits) of [2 power 'O']('O'=5) the low 'O' bits are used as the 'offset' into the cache line. 
+The next 'S' bits select the 'cache set'. There are 2 power 'S' sets of cache lines. 
+This leaves the top '32−S−O = T'
+
+'fully associative' =>
+No 'S'. To access a cache line the processor core would have to compare the tags of every cache line with the tag for the requested address. 
+The tag would be comprised of the entire part of the address which is not the 'offset' into the cache line.
+Would not scala for large sizes - best of utmost 12 entries max.
+
+
+
+
+
 
 
 
