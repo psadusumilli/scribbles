@@ -241,7 +241,6 @@ No optimisation, looks up everytime line by line.
 
 TLAB can cause fragmentation. free-lists are linked lists of memory pockets.
 
-
 GC: 
     references counting/tracing obj graphs
     concurrent/serial
