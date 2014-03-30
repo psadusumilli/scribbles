@@ -282,6 +282,20 @@ uses 'performance counters' to reduce repeated bytecode which translates to a be
     inversion loops: change 'while' to 'do-while'
     unrolling loops: Reduces the number of times the loop condition has to be evaluated and also the number of jumps
 
+10.2|Java Scalability*
+----------------------
+Java application 'memory wall' - 1-4GB heap
+too little heap=> out of memory, too much heap=>fragmentation and big pauses.
+A worst-case pause time in a production environment is around '1sec/1GB' of live data in the heap.
+So either multiple JVMs in a cluster-ops nightmare OR big heap with postponed fullGC during non-peak hours
+Most cases people are running with peak load heap sizes to avoid failure, but its wastage.
+
+
+
+
+
+
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 11: JVM Flags: Java revisited
 ------------------------------*
