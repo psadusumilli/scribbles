@@ -38,6 +38,15 @@ CHAPTER1: INTRODUCTION
 	'Native methods' are stored in a dynamically linked library whose exact form is platform specific. While 'Java methods' are platform independent, native methods are not. 
 	When a running Java program calls a native method, the virtual machine loads the dynamic library that contains the native method and invokes it.
 	Use of 'Native methods' can make your program platform-specific, can be alleviated using 'JNI', but vendors are mandated to implement it.
+
+1.6|
+Many JVM implementations exists
+'HotSpot'=>Oracle implementation with JIT and adaptive optimisation.
+	'Client' version is tuned for quick loading. It makes use of interpretation. 
+	'Server' version loads more slowly, putting more effort into producing highly optimized JIT compilations, that yield higher performance
+'JRockit'=> Weblogic
+'Zing'=> Azul
+'J9'=> IBM
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CLASS LOADER
 *************

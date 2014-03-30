@@ -245,12 +245,40 @@ GC:
     references counting/tracing obj graphs
     concurrent/serial
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+12: JVM Flags: Java revisited
+------------------------------*
 
+'-X' => non-standard (thy are not guaranteed to be supported on all JVM implementations), and are subject to change without notice in subsequent jdk releases.
+'-XX' => not stable and are not recommended for casual use. These options are subject to change without notice also.
+'Boolean' JVM options can be turned on with '-XX:+' and can be turned off with '-XX:-'
+'Numeric' JVM Options can be set with '-XX:='. Numbers can include 'm'|'M' for megabytes, 'k'|'K' for kilobytes, and 'g'|'G' for gigabytes
+    'java -Xms512m -Xmx512m BigApp'
+    'java -Xss120m'
+'String' JVM options can be set by using '-XX:=', and usually used to specify a file, a path, or a list of commands.
+ManagementFactory.getRuntimeMXBean().getInputArguments() to give running JVM options
 
+GC:
+---*
+'-verbose:gc'=> logs garbage collector runs and how long they are taking. 
+'-XX:+PrintGCDetails'=> includes the data from -verbose:gc but also adds information about the size of the new generation and more accurate timings.
+'-XX:-PrintGCTimeStamps'=>  print timestamps at garbage collection.
+'-XX:-UseSerialGC'=>        Use serial garbage collection.
+'-XX:+UseParallelGC'=>      Use parallel garbage collection for scavenges
+'-XX:-UseConcMarkSweepGC'=> Use concurrent mark-sweep collection for the old generation
 
+'-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000' => for remote debugging.
+'-Xprof-Xrunhprof'=> for profiling
+'-Xbootclasspath'=> to load classes without verification
 
+'-XX:NewRatio=2'=>  Ratio of new/old generation sizes.
+'-XX:PermSize=64m -XX:MaxPermSize=128m'=> Size of the Permanent Generation.
 
-
+'-XX:+TraceClassLoading -XX:+TraceClassUnloading' => print class loading details
+'-XX:+PrintCompilation' => prints JIT compiled methods
+'-XX:HeapDumpPath=./java_pid.hprof' =>  Path to directory or file name for heap dump.
+'-XX:-PrintConcurrentLocks' =>  Print java.util.concurrent locks in Ctrl-Break thread dump.
+'-XX:-PrintCommandLineFlags' => Print flags that appeared on the command line.
 
 
 
