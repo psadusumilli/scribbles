@@ -86,7 +86,7 @@ survivor space has 2 spaces (from-space, to-space)
 cost of collection is tied more to number of instances than memory, but doubling eden space can help in reducing minor collection frequency.
 – XX:MaxTenuringThreshold=<n> => jvm flag to control ageing of objs
 
-6.2 Major Collection:
+6.2 Major Collection:(full GC)
 ---------------------*
 Removal and compaction of objs from tenured to make space for promotion of new ones from survivor spaces
 Major collector algos use a threshold to start or a full GC will be initiated where all objs from survivor spaces are moved.
@@ -126,6 +126,7 @@ When the Heap needs to grow a FullGC is triggered. These heap-resizing FullGCs c
     concurrent reset => reset datastructures.
 
 7.5|Garbage First Collector G1:'-XX:+UseG1GC' 
+    From Oracle
     Breaks the heap into small regions with mixed owners ede, survivor, tenured and humungous
     Partially concurrent running every 200ms (G1 is target driven on latency '–XX:MaxGCPauseMillis=<n>')
     Remembers references between objects in different regions via 'Remembered Sets'
@@ -137,8 +138,44 @@ When the Heap needs to grow a FullGC is triggered. These heap-resizing FullGCs c
 
   
 7.6|Alternative collectors 
-Oracle JRockit Real Time, IBM Websphere Real Time, and Azul Zing. The JRockit & Websphere collectors have latency advantages in most cases over CMS and G1,
-but often see throughput limitations and still suffer significant stop-the-world events. 
+    Oracle JRockit Real Time, IBM Websphere Real Time, and Azul Zing. The JRockit & Websphere collectors have latency advantages in most cases over CMS and G1,
+    but often see throughput limitations and still suffer significant stop-the-world events. 
+
+7.7|C4 algorithm:
+    Upgrade of the Azul Systems Pauseless GC algorithm, currently implemented only for the Zing JVM
+    C4 algorithm does compaction concurrently with running application threads
+    C4 wants as large a heap as possible to guarantee that a free page is always available for allocating threads
+    So instead of 16JVMs with 2GB space, you would move to 2JVMs with 64GB heap.
+    Consists of 3 phases
+
+    7.7.1|Marking:
+    ---------------
+    'Dirty objects and Card tables'
+    Objects that need to be revisited by the garbage collector for reasons like re-referencing are often called dirty objects. 
+    References to dirty objects, or dirty areas of the heap, are usually managed in a separate data structure, known as a 'card table'
+
+    C4 does NOT use Card table but relies on a self-healing 'load value barrier (LVB)', which enables application threads to immediately see if a reference is already marked. 
+    If the reference is not marked, the application thread will add it to the GC queue. 
+    Once the reference is in the queue it cant be re-marked. The application thread is free to continue on with its work
+    So endless remarking loops like other algos are avoided.
+
+
+    7.7.2|Relocation:
+    ------------------*
+    Collaborative and concurrent
+    If a GC thread tries to move a object that is not used by any application thread, its simple.
+    In the other case, the application thread escalates the relocation to happen faster.
+    Larger objects are moved via 'shattered object moves'
+
+    7.7.3|Remapping
+    handles updating references that are still pointing to a page where live objects have been moved out. 
+    Concurrent and collaborative.
+
+7.8|IBM JVM Balanced Garbage Collection Policy:'-Xgcpolicy:balanced'
+    Like G1 breaks heap into equal small regions
+    Works only with 64bit, NUMA and > 4GB heaps.
+    Heuristics are applied to choose which regions to garbage-collect for the best return on effort. 
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 8 MONITORING
@@ -189,7 +226,6 @@ Keeps adapting based on changes
 Inlining is good and Virtualisation is bad as it blocks inlining.
 Dont start writing JIT compliant code, just identify issues and tackle.
 
-
 Code Cache:
 -----------*
 48M pre Java 8- 96Mb in Java 8; -XXReservedCodeCacheSize=<n>
@@ -207,23 +243,9 @@ VisualGC plugin in jvisualvm
 -XX:+PrintOptoAssembly,-XX:+LogCompilation  to view JIT code
 Oracle Solaris Studio Analyser
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-10: JVM Mechanics: InfoQ
--------------------------*
-Compiler: 
----------*
-removes dead code, reorders code, reduces code
-dont try to do the job of a compile, write human-readable ones
-avoid repeated reads by introducing a local variable (if a.getX() called mutiple times in code, just an extra variable x = a.getX())
- 
-
-
-
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-11: JVM Tuning:JavaWorld 5 part series
+10: JVM Tuning:JavaWorld 5 part series
 ---------------------------------------*
-11.1 Compilers 
+10.1|Compilers 
 ---------------*
 two types:
     static: javac - compile only once 
@@ -233,20 +255,35 @@ two phases:
     .class -> machine code (jvm compiler, jit)
 Byte code to machine code
 --------------------------
-Interpretation:=>
+'Interpretation'=>
 An interpreter simply looks up the hardware instructions for every bytecode instruction and sends it off to be executed by the CPU
 No optimisation, looks up everytime line by line.
+'Compilation'=>
+Looks up the entire/partial runtime context and produces optimal machine code.
+machine are stored in 'code cache' for frequently accessed code 
+uses 'performance counters' to reduce repeated bytecode which translates to a better set of machine code.
+    
+    '-client'=> C1 used in case of limited resources, 
+                non-intrusive optimisations
+                less application startup time
+    '-server'=> C2 long running applications, 
+                advanced optimisations, 
+                takes some warmup time to identify hostspots, 
+                more CPU cycles and threads,
+                bigger code cache
+    'tiered'=>  introduced by Azul in Zing, then adopted by Oracle
+                initial compilation is C1, which sets up the performance counters for the next phase C2            
 
-
-
-TLAB can cause fragmentation. free-lists are linked lists of memory pockets.
-
-GC: 
-    references counting/tracing obj graphs
-    concurrent/serial
+'optimisations'=>
+    remove dead code
+    inline methods
+    group loops: combining neighbouring independent loop codes.
+    tiling loops: grouping code and data blocks around cpu caches.
+    inversion loops: change 'while' to 'do-while'
+    unrolling loops: Reduces the number of times the loop condition has to be evaluated and also the number of jumps
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-12: JVM Flags: Java revisited
+11: JVM Flags: Java revisited
 ------------------------------*
 
 '-X' => non-standard (thy are not guaranteed to be supported on all JVM implementations), and are subject to change without notice in subsequent jdk releases.
@@ -258,30 +295,36 @@ GC:
 'String' JVM options can be set by using '-XX:=', and usually used to specify a file, a path, or a list of commands.
 ManagementFactory.getRuntimeMXBean().getInputArguments() to give running JVM options
 
+space :
+------*
+'-Xms384m -Xmx384m -XX:NewSize=128m -XX:MaxNewSize=128m' => 1/3 of heap is for eden
+'-XX:NewRatio=2 '=>  Ratio of new to old generation sizes.
+'-XX:SurvivorRatio=8' => Ration of eden to survivor spaces
+'-XX:PermSize=64m -XX:MaxPermSize=128m'=> Size of the Permanent Generation.
+
 GC:
 ---*
 '-verbose:gc'=> logs garbage collector runs and how long they are taking. 
-'-XX:+PrintGCDetails'=> includes the data from -verbose:gc but also adds information about the size of the new generation and more accurate timings.
 '-XX:-PrintGCTimeStamps'=>  print timestamps at garbage collection.
 '-XX:-UseSerialGC'=>        Use serial garbage collection.
 '-XX:+UseParallelGC'=>      Use parallel garbage collection for scavenges
 '-XX:-UseConcMarkSweepGC'=> Use concurrent mark-sweep collection for the old generation
 
+debug/log:
+----------*
 '-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000' => for remote debugging.
 '-Xprof-Xrunhprof'=> for profiling
 '-Xbootclasspath'=> to load classes without verification
-
-'-XX:NewRatio=2'=>  Ratio of new/old generation sizes.
-'-XX:PermSize=64m -XX:MaxPermSize=128m'=> Size of the Permanent Generation.
-
 '-XX:+TraceClassLoading -XX:+TraceClassUnloading' => print class loading details
 '-XX:+PrintCompilation' => prints JIT compiled methods
 '-XX:HeapDumpPath=./java_pid.hprof' =>  Path to directory or file name for heap dump.
 '-XX:-PrintConcurrentLocks' =>  Print java.util.concurrent locks in Ctrl-Break thread dump.
 '-XX:-PrintCommandLineFlags' => Print flags that appeared on the command line.
-
-
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+12: FAQs on ORacle website:
+-----------------------------*
+The maximum theoretical heap limit for the 32-bit JVM is 4G.
+A 64-bit capable J2SE is an implementation of the Java SDK (and the JRE along with it) that runs in the 64-bit environment of a 64-bit OS on a 64-bit processor. 
 
 
 

@@ -161,7 +161,7 @@ Throws ClassNotFoundException, MethodNotFoundException for cases when they could
 Also does the following, though the language compiler has already done it
     a) type-safe reference casting
     b) structured memory access (no pointer arithmetic)
-    c) automatic garbage collection (can't explicitly free allocated memory)
+    c) automatic garbage collection (cant explicitly free allocated memory)
     d) array bounds checking
     e) checking references for null
 
@@ -177,7 +177,10 @@ Native methods are still points of weakness as they dont fall under Java Securit
 
 3.4| Exceptions 
 --------------------------------
-One final mechanism that is built into the Java Virtual Machine that contributes to security is structured error handling with exceptions. Because of its support for exceptions,  JVM has something structured to do when a security violation occurs. Instead of crashing, the Java Virtual Machine can throw an exception or an error, which may result in the death of the offending thread, but shouldn't crash the system. Throwing an error (as opposed to throwing an exception) almost always results in the death of the thread in which the error was thrown.
+One final mechanism that is built into the Java Virtual Machine that contributes to security is structured error handling with exceptions. 
+Because of its support for exceptions,  JVM has something structured to do when a security violation occurs.
+Instead of crashing, the Java Virtual Machine can throw an exception or an error, which may result in the death of the offending thread, but shouldnt crash the system. 
+Throwing an error (as opposed to throwing an exception) almost always results in the death of the thread in which the error was thrown.
 
 3.5|
 Security Manager
@@ -209,7 +212,7 @@ Dynamic linking - all symbolic references only, no inlining of called code.
 Dynamic extensions - URLCLassloaders 
 Compaction - jar files.
 
-The main way Java's architecture facilitates network-mobility directly is by breaking up the monolithic binary executable into compact class files, which can be loaded as needed.
+The main way Javas architecture facilitates network-mobility directly is by breaking up the monolithic binary executable into compact class files, which can be loaded as needed.
 Bytecode streams they contain are designed to be compact. They are called "bytecodes" because each instruction occupies only one byte
 The JAR file is to group classes to consolidate TCP handshake times of mutiple classes.
 
@@ -286,7 +289,7 @@ Additional data can also be stored for garbage collection mechanisms. A mark and
 
 #finaliser
 Garbage collectors must run the finalizer of any object whose class declares one before it reclaims the memory occupied by that object. 
-The specification states that a garbage collector will only execute an object's finalizer once, but allows that finalizer to "resurrect" the object: to make the object referenced again. 
+The specification states that a garbage collector will only execute an objects finalizer once, but allows that finalizer to "resurrect" the object: to make the object referenced again. 
 When the object becomes unreferenced for a second time, the garbage collector must not finalize it again
 
 Arrays, like classes, are stored in the heap.
@@ -338,7 +341,7 @@ Like the local variables, the operand stack is organized as an array of words. B
 
 5.6.3|Frame Data
 In addition to the local variables and operand stack, the Java stack frame includes data to support constant pool resolution, normal method return, and exception dispatch. This data is stored in the frame data portion of the Java stack frame.
-The frame data must also contain some kind of reference to the method's exception table. When a method throws an exception, the Java Virtual Machine uses the exception table referred to by the frame data to determine how to handle the exception. If the virtual machine finds a matching catch clause in the methodís exception table, it transfers control to the beginning of that catch clause. If the virtual machine doesnít find a matching catch clause, the method completes abnormally. The virtual machine uses the information in the frame data to restore the invoking methodís frame. It then rethrows the same exception in the context of the invoking method.
+The frame data must also contain some kind of reference to the method exception table. When a method throws an exception, the Java Virtual Machine uses the exception table referred to by the frame data to determine how to handle the exception. If the virtual machine finds a matching catch clause in the methodís exception table, it transfers control to the beginning of that catch clause. If the virtual machine doesnít find a matching catch clause, the method completes abnormally. The virtual machine uses the information in the frame data to restore the invoking methodís frame. It then rethrows the same exception in the context of the invoking method.
 -------------------------------------------------------------------------------------------------------------------
 5.7| Native Stack
 For native method execution
@@ -350,7 +353,7 @@ The implementors can decide to interpret, just-in-time compile, adaptive optimis
 Each thread of a running Java application is a distinct instance of the virtual machineís execution engine. 
 
 5.8.1|Instruction Set
-A method's bytecode stream is a sequence of instructions for the Java Virtual Machine. Each instruction consists of a one-byte opcode followed by zero or more operands. The opcode indicates the operation to be performed. Operands supply extra information needed by the Java Virtual Machine to perform the operation specified by the opcode. The opcode itself indicates whether or not it is followed by operands, and the form the operands (if any) take. Many Java Virtual Machine instructions take no operands, and therefore consist only of an opcode. Depending upon the opcode, the virtual machine may refer to data stored in other areas in addition to (or instead of) operands that trail the opcode. When it executes an instruction, the virtual machine may use entries in the current constant pool, entries in the current frameís local variables, or values sitting on the top of the current frameís operand stack.
+A method bytecode stream is a sequence of instructions for the Java Virtual Machine. Each instruction consists of a one-byte opcode followed by zero or more operands. The opcode indicates the operation to be performed. Operands supply extra information needed by the Java Virtual Machine to perform the operation specified by the opcode. The opcode itself indicates whether or not it is followed by operands, and the form the operands (if any) take. Many Java Virtual Machine instructions take no operands, and therefore consist only of an opcode. Depending upon the opcode, the virtual machine may refer to data stored in other areas in addition to (or instead of) operands that trail the opcode. When it executes an instruction, the virtual machine may use entries in the current constant pool, entries in the current frameís local variables, or values sitting on the top of the current frameís operand stack.
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 CHAPTER 6: THE CLASS FILE
 ****************************
@@ -512,7 +515,7 @@ application code can call finalise multiple times.
 
 6.7|Unloading of Class
 ---------------------------------
-JVM will run a class's classFinalize() method (if the class declares one) before it unloads the class. 
+JVM will run a class classFinalize() method (if the class declares one) before it unloads the class. 
 Types loaded through the primordial class loader will always be reachable and never be unloaded. Only dynamically loaded types--those loaded through class loader objects--can become unreachable and be unloaded by the virtual machine. A dynamically loaded type is unreachable if its Class instance is found to be unreachable through the normal process of garbage collecting the heap. 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 CHAPTER 7: THE LINKING MODEL
