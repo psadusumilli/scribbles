@@ -289,12 +289,7 @@ too little heap=> out of memory, too much heap=>fragmentation and big pauses.
 A worst-case pause time in a production environment is around '1sec/1GB' of live data in the heap.
 So either multiple JVMs in a cluster-ops nightmare OR big heap with postponed fullGC during non-peak hours
 Most cases people are running with peak load heap sizes to avoid failure, but its wastage.
-
-
-
-
-
-
+Setting eden size matter and should be done in prod-like environment
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 11: JVM Flags: Java revisited
@@ -339,6 +334,32 @@ debug/log:
 -----------------------------*
 The maximum theoretical heap limit for the 32-bit JVM is 4G.
 A 64-bit capable J2SE is an implementation of the Java SDK (and the JRE along with it) that runs in the 64-bit environment of a 64-bit OS on a 64-bit processor. 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+13:IBM Developerworks:Brian Goetz - 
+---------------------------------*
+some features will be available in IBM JVM only
+
+memory alloc/deallocs were costly before 1.2
+Sun estimates allocation costs at approximately '10 machine instructions' which is very cheap
+sometimes a obj can be just allocated on stack instead of heap if its too short lived.
+'finalizers' are bad, they must be executed only by GC thereby requires 2 cycles to clean these objs (1 cycle to identify, 1 cycle to execute finalise)
+'object pooling' is bad 
+    its ok only for objects that are costly to create and numbers are small
+    tough to maintain a synchronised access system for all threads using it
+    deallocation is done manually, which in most cases incorrect.
+'explicit nulling' is bad
+    useless in most cases, can be dangerous in some cases
+    ok for situations like a stack backed by an array. When the element is dequeued and the head pointer is updated, just nullify the reference.
+'explicit gc' is bad
+    System.gc triggers fullGC which is bad
+    JVM knows better than you when to collect
+    '-XX:+DisableExplicitGC' will eliminate hidden calls if any in codebase.
+'immutability' is good
+    Older generation mutable objects which are updated reqularly will hold links to objs in new generation.
+    The use of mutable references for long-lived container objects increases the work done to track old-to-young references at collection time.
+    young-to-old references driven by immuatability are gentle for GC
+
+
 
 
 
