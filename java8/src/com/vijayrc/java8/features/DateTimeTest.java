@@ -1,4 +1,4 @@
-package com.vijayrc.java8;
+package com.vijayrc.java8.features;
 
 import org.junit.Test;
 

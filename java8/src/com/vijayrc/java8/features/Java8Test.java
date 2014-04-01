@@ -1,5 +1,6 @@
-package com.vijayrc.java8;
+package com.vijayrc.java8.features;
 
+import com.vijayrc.java8.Log;
 import org.junit.Test;
 
 import javax.script.ScriptEngine;
