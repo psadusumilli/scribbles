@@ -1,3 +1,65 @@
+Oracle has two major Java Virtual Machine (JVM) implementations, the Java HotSpot VM and the Oracle JRockit JVM. 
+In the short-to-medium term, both will continue as strategic JVMs with active investment. 
+Over time, Oracle plans to converge the functionality and code bases of these JVMs.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Sun/Oracle HotSpot
+-------------------*
+HVM-> HotSpot VM
+CVM-> Classic VM before HVM
+
+Client HVM, tuned for best performance when running applications in a client environment by reducing application start-up time and memory footprint.
+Server HVM, which is designed for maximum program execution speed for applications running in a server environment.
+
+1| 	Unlike CVM, HotSpot VM does not use indirect handles for obj references (they were originally helpful for GC compaction)
+	This avoids indirection by using direct pointers
+2|	Uses 2 word obj headers unlike 3-words for CVM, saves space.
+3| 	Classes, methods, and other internal reflective data are represented directly as objects on the heap, simplifies internal VM object model.
+4|  Uses native OS threads and scheduling
+5| 	Parallel Young is the default GC algo. Has concurrent-mark-sweep, parallel old.
+
+6| 	Ultrafast synchronisation:	
+	A 'contended lock' has at least one thread waiting for it; it may have many more. 
+	Note that a contended lock becomes 'uncontended lock'when threads are no longer waiting to acquire it.
+	'Uncontended synch'=> which dynamically comprise the majority of synchronizations, are implemented with ultra-fast, constant-time techniques.	
+	'Contended synch'=>Uses advanced adaptive spinning techniques to improve throughput even for applications with significant amounts of lock contention 
+7| 	64bit architecture:
+	Users can select either 32-bit or 64-bit operation by using commandline flags -d32 or -d64 respectively
+	those that store very large data sets in memory can use 64bit addressing.
+	Object packing => pack type-related fields together (int, long, object) to save space.
+
+8| 	Adaptive Optimisation:
+	'Full Optimisation' 
+	is not effective because
+		dynamic loading/unloading of classes is prevalent during runtime
+		casting, polymorphic method calls are also present during runtime
+	'HotSpot Identification' 
+	JIT used to compile every method to machine code on its first execution
+	Instead of compiling all bytecode methods to machine code, HVM uses intepreter first
+	Then follows usage patterns, the compiles these potions alone using native compiler.
+	'Method Inlining'
+	Helps to avoid unnecessary method calls
+	Bigger blocks of code available for optimisation.
+	'Dynamic deoptimisation' 
+	on class unloading/loading, must depotimise and reoptimise.
+
+9| Ergonomics - changing according to physical hardware
+				self tuning heap sizes (young/old), no need to explicitly set it up.
+10|Fast reflection code
+11| 						
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 IBM J9:
 -------*
 
@@ -19,17 +81,20 @@ IBM J9:
 	'heap allocation'=>second allocation if cache overflows, then head to 'heap' lock 
 	'large object allocation LOA'=> separate areas for large objects (>64kb), can grow/shrink based on usage, not used in balanced garbage policy mode.
 
-8| 	GC:
+8| 	GC Policy1:
 	IBM® Garbage Collector (GC) is a stop-the-world (STW) operation, because all application threads are stopped while the garbage is collected.
 	Goes through the three phases: 
-		mark => trace from root objs in thread stackframes to everything reachable 
-		sweep => identify chunks of unreachable objs thereby memory spaces to reclaim
-		compaction.=> if required, defragmentation to close pockets
-	A global garbage collection occurs only in exceptional circumstances when using the Balanced Garbage Collection policy. 
-	Circumstances that might cause this rare event include:
-		System.gc() call.
-		request by tooling.
-		combination of heap size, occupied heap memory, and collection rates that cannot keep up with demand.
+		8.1|'mark' => 
+		trace from root objs in thread stackframes to everything reachable 
+
+
+
+
+		8.2|'sweep' => identify chunks of unreachable objs thereby memory spaces to reclaim
+
+
+
+		8.3|'compaction' => if required, defragmentation to close pockets
 		
 
 
