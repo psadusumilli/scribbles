@@ -1,0 +1,40 @@
+IBM J9:
+-------*
+
+1| 	Has different heap structure 
+2| 	No permanent generation 
+3| 	No generational collectors, can be enabled via '-Xgcpolicy:gencon'
+4| 	Ahead of Time (AOT) Compiler:
+		Works to reduce some overhead form JITing code whenever JVM starts. 
+		memory maps pre-compiled class file so that they dont need to go JIT compilation when IBM JVM runs.
+5| 	sharing classes across jvms 
+6| 	supported 'compressedOOPs' before jdk 6 started
+	'XX:+UseCompressedOops' => in a 64bit jvm, the memory pointers become 64bit thereby leading to inefficient cpu cache usage.
+	this option mitigates the overhead, but limits the max heap size to 32G.
+
+7| 	Allocator:	
+	used for allocating large areas of memory
+	still small compared to the task of garbage collectors
+	'cache allocation'=>first allocation is always from cache (thread local heap), max objsize = 512K
+	'heap allocation'=>second allocation if cache overflows, then head to 'heap' lock 
+	'large object allocation LOA'=> separate areas for large objects (>64kb), can grow/shrink based on usage, not used in balanced garbage policy mode.
+
+8| 	GC:
+	IBM® Garbage Collector (GC) is a stop-the-world (STW) operation, because all application threads are stopped while the garbage is collected.
+	Goes through the three phases: 
+		mark => trace from root objs in thread stackframes to everything reachable 
+		sweep => identify chunks of unreachable objs thereby memory spaces to reclaim
+		compaction.=> if required, defragmentation to close pockets
+	A global garbage collection occurs only in exceptional circumstances when using the Balanced Garbage Collection policy. 
+	Circumstances that might cause this rare event include:
+		System.gc() call.
+		request by tooling.
+		combination of heap size, occupied heap memory, and collection rates that cannot keep up with demand.
+		
+
+
+
+		
+
+
+ 
