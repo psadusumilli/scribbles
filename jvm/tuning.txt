@@ -176,6 +176,23 @@ When the Heap needs to grow a FullGC is triggered. These heap-resizing FullGCs c
     Works only with 64bit, NUMA and > 4GB heaps.
     Heuristics are applied to choose which regions to garbage-collect for the best return on effort. 
 
+7.9|Sun Real Time GC
+    Henriksson GC that attempts to ensure strict thread scheduling, makes its best effort so that GC does not block critical application threads
+    'Scoped'=>Treating some method executions specially by deleting all its variables after its completion.(just like stack)
+    'Immortal objects'=> objects allocated via the immortal memory area, are never garbage collected
+    IBM promotes its real-time garbage collector by guaranteeing ≤1 ms pause time. 
+    Oracle JRockit provides a deterministic garbage collector, in which the maximum GC pause can be configured. 
+    Other JVMs, such as Zing, from Azul Systems, try to solve this issue by completely removing the stop-the-world event from the garbage collector.
+
+7.10| Remote GC
+    RMI stubs and server side objs come under this.
+    Process:
+    When a client receives a stub from a server, it acquires a lease for it. The server side object is considered referenced by the client stub.
+    A server-side object is being kept alive by the RMI implementation itself until the lease expires, which is a simple timeout.
+    Existing client side stubs execute regular heartbeats (known informally as dirty calls) to renew their leases. (This is done automatically by the RMI implementation.)
+    The server side checks periodically for expired leases.
+    Once the lease expires (because no clients exist anymore to reference the object) the RMI implementation simply forgets the object. It can then be garbage-collected like any other object   
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 8 MONITORING
