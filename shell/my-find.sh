@@ -10,3 +10,5 @@ find . -mtime +50 –mtime -100 #modified 50days ago but not older than 100 days
 find . -cmin -60 #changed files in 1 hr
 find . -mmin -60 #modified files in 1 hr
 find . -amin -60 #accessed files in 1 hr
+
+ find . -name config.properties -exec sed 's/TUESDA30/MONOCT01/' {} \;

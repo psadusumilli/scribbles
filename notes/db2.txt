@@ -26,7 +26,7 @@ Then, if the value of A is not later committed, but backed out, the calculations
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 3) Phantom read :
 Your application executes a query that reads a set of rows based on some search criterion. 
-Another application inserts new data or updates existing data that would satisfy your application's query.
+Another application inserts new data or updates existing data that would satisfy your applications query.
 Your application repeats the query from the first step (within the same unit of work). 
 Now some additional phantom rows are returned as part of the result set that were not returned when the query was initially executed in the first step.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

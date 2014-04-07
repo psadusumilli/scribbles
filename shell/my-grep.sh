@@ -57,6 +57,11 @@ grep "6/3/13" SystemOut.log| grep -E "16:0[0-1]"
 from 6/3/13 16:00 to 16:01
 [6/3/13 16:12:16:001 EDT] 00000795 SystemOut INFO  com.bcbsa.blue2.dao.Blue2Dao - INSERT INTO PNASCO.IPP_MSG_STATE(MSG_ID, MSG_ST_TS, MSG_ST_CD, BLUE2_USER_ID, PART_KEY_NUM) VALUES(?, ?, ?, ?, ?)[6ba545d1d88cfc186d01fc0847d047db, 2013-06-03 16:12:15.868, PRSD, NZQG6S, 76]
 [6/3/13 16:12:16:013 EDT] 00004106 SystemOut INFO  com.bcbsa.csdp.util.Blue2Config - For boid: 8342 , returning Business Unit : WellPoint HOME
+
+grep -E "\s+5:0[0-2]" *
+
+
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 #6: context
 grep "12342" *.log -A 20 -B 30 #A- after context, B-before context
