@@ -7,15 +7,23 @@ Sun/Oracle HotSpot
 HVM-> HotSpot VM
 CVM-> Classic VM before HVM
 
-Client HVM, tuned for best performance when running applications in a client environment by reducing application start-up time and memory footprint.
-Server HVM, which is designed for maximum program execution speed for applications running in a server environment.
+-1|	Client HVM, tuned for best performance when running applications in a client environment by reducing application start-up time and memory footprint.
+	Server HVM, which is designed for maximum program execution speed for applications running in a server environment.
+
+0|	Heap has 'eden, from-survivor, target-survivor, tenured'
 
 1| 	Unlike CVM, HotSpot VM does not use indirect handles for obj references (they were originally helpful for GC compaction)
 	This avoids indirection by using direct pointers
 2|	Uses 2 word obj headers unlike 3-words for CVM, saves space.
 3| 	Classes, methods, and other internal reflective data are represented directly as objects on the heap, simplifies internal VM object model.
 4|  Uses native OS threads and scheduling
-5| 	Parallel Young is the default GC algo. Has concurrent-mark-sweep, parallel old.
+
+5| 	GC:
+	'Young generation'=>'Parallel Young' is the default
+	'Old generation' => can be configured to use 'serial','concurrent-mark-sweep', 'parallel old'.
+	'permanent generation' => only collected during fullGC
+
+	'G1' is the newest algo from java7, breaks heap into small regions, regions with most garbage collected first, runs concurrently
 
 6| 	Ultrafast synchronisation:	
 	A 'contended lock' has at least one thread waiting for it; it may have many more. 
@@ -45,27 +53,27 @@ Server HVM, which is designed for maximum program execution speed for applicatio
 9| Ergonomics - changing according to physical hardware
 				self tuning heap sizes (young/old), no need to explicitly set it up.
 10|Fast reflection code
-11| 						
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Oracle JRockit:
+---------------*
 
-
-
-
-
-
-
-
-
-
-
+Either a single continuous heap or generational GC
+Broken into 'nursery' and 'tenured'
+A separate portion of nursery is marked as 'keep' which is left untouched for a while
+New allocations happen in rest of the nursery
+Once nursery is full, 'keep' is used, so keep always contains newest objs
+All live objs in 'non-keep' areas are ported to 'tenured'
+Now the non-keep and keep areas switch roles
+nursery GC is stop the world
+tenured GC can be parallel, concurrent
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 IBM J9:
 -------*
 
-1| 	Has different heap structure 
-2| 	No permanent generation 
-3| 	No generational collectors, can be enabled via '-Xgcpolicy:gencon'
+1| 	Has different heap structure (Allocate, Survivor, Tenured).
+2| 	No permanent generation so class data is subject to GC.
+3| 	No eden space
 4| 	Ahead of Time (AOT) Compiler:
 		Works to reduce some overhead form JITing code whenever JVM starts. 
 		memory maps pre-compiled class file so that they dont need to go JIT compilation when IBM JVM runs.
@@ -81,18 +89,16 @@ IBM J9:
 	'heap allocation'=>second allocation if cache overflows, then head to 'heap' lock 
 	'large object allocation LOA'=> separate areas for large objects (>64kb), can grow/shrink based on usage, not used in balanced garbage policy mode.
 
-8| 	GC Policy1:
-	IBM® Garbage Collector (GC) is a stop-the-world (STW) operation, because all application threads are stopped while the garbage is collected.
+8| 	GC: 
+	'Generational collectors', can be only enabled via '-Xgcpolicy:gencon', available from JDK 6
+	'Classic Mark and Sweep'(default)
+	all application threads are stopped while the garbage is collected.
+	Not good for heaps beyond 100M
 	Goes through the three phases: 
 		8.1|'mark' => 
 		trace from root objs in thread stackframes to everything reachable 
 
-
-
-
 		8.2|'sweep' => identify chunks of unreachable objs thereby memory spaces to reclaim
-
-
 
 		8.3|'compaction' => if required, defragmentation to close pockets
 		
