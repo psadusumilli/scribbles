@@ -59,6 +59,7 @@ mysql>show columns from <table-name>;
 mysql>show index from <table-name>;
 mysql>show table status like 'handset'\G
 mysql>show create table handset\G;
+mysql>show variable like 'AUTOCOMMIT';
 
 mysql>create database <db-name>;
 mysql>drop database <db-name>;
@@ -74,6 +75,104 @@ mysql>alter table handset add primary key(name);
 mysql>alter table handset drop primary key;
 mysql>alter table handset add index name_index(manufacturer);
 mysql>alter table handset add unique index name_index(name); #duplicates are ok
+
+#architecture------------------------------------------------------------------------------------------
+'3 layers':
+-------------
+layer1: network connection, security, authentication
+layer2: query parsing, functions, stored procedures, caching
+		query is parsed into a tree structure and optimisations are executed, some affected by table storage engines.
+		only 'select' queries are cached with resultsets.
+layer3: storage engines, access via abstract apis, dont talk with each other but only with server.
+
+'concurrency control':
+-------------------------
+lock strategies:
+a 'write lock' blocks other writes and precedes 'read lock'
+table lock=> 
+	low overhead, low concurrency
+	at table level (alter table...) 
+	write lock on CUD on table, 
+	many subtypes exists, 
+	independent of storage engines
+row lock=>
+	high overhead, high concurrency
+	implemented in storage engine not server level,
+	available in innoDB/xtraDB
+
+ACID:
+-----*
+transactions=> start <sqls> commit|rollback
+Atomicity=> all or nothing
+Consistency=> db moves from one consistent state to another
+Isolation=> transactions effects visibility 
+Durability=> once committed, its not lost.
+
+ANSI SQL isolation levels
+--------------------------
+READ UNCOMMITTED=>read uncommitted data('dirty reads') from other transactions, rarely used
+READ COMMITTED=>read only committed data from other transactions, but 'nonrepeatable reads' are still possible
+				'nonrepeatable read': row content which is picked twice within this T1, altered by another committed T2.
+				default in most databases
+REPEATABLE READ=>read only committed data from other transactions, but 'phantom reads' are still possible, 
+				'phantom read': row content picked twice by T1 not altered, but number of rows can be changed by T2
+				default in mysql
+SERIALIZABLE=>locks every row it reads.
+---------------------------------------------------------------------------------------
+Isolation level 	|Dirty reads	|Nonrepeatable reads |Phantom reads	|Locking reads
+---------------------------------------------------------------------------------------
+READ UNCOMMITTED 		Yes 			Yes 				Yes 			No
+READ COMMITTED 			No 				Yes 				Yes 			No
+REPEATABLE READ 		No 				No 					Yes 			No
+SERIALIZABLE 			No 				No 					No 				Yes
+---------------------------------------------------------------------------------------
+
+'deadlocks': T1 and T2 can lock each other out.
+T1: 
+	begin; 
+	update handset set name="a" where id=1;
+	update handset set name="b" where id=2;
+	end
+T2: 
+	begin; 
+	update handset set name="b" where id=2;
+	update handset set name="a" where id=1;
+	end
+InnoDB can detect circular dependencies and throw out errors.
+transactions are controlled at storage engines level. 
+If in a transaction, you mix non-transaction tables (myISAM) with transaction ones(innodb),rollback not possible in myISAM.
+InnoDB supports 2 phase implicit locking in transactions
+Explicit locking can be done using non-ansi sql 'select ..  lock in share mode' or 'lock tables'
+
+'MVCC-Multiversion Concurrency Control:'
+----------------------------------------
+REPEATABLE READ, READ COMMITTED use this mechanism instead of row-level locking like SERIALIZABLE.
+Its just like codebase management using versions and multiple coders.
+Each transaction sees a snapshot of the database before it started.
+Every row has hidden additional data 
+	T1 -> id of the creator transaction (insert)
+	T2 -> id of the expiry transaction (delete, update(a row expiry followed by a insert)) 
+transaction ids T(1..N) are global numbers 
+A transaction T(N) picks rows whose T1<N T2=0|N 
+If conflict occurs during update, last transaction is rolled back.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
