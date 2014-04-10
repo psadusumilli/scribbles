@@ -43,14 +43,15 @@ mysql -u rekha -p
 
 #data types------------------------------------------------------------------------------------------
 smallint, int, mediumint, bigint
-float(m,d), double(m,d), decimal(m,d) => m-length, d-decimals (10,2)(16,4) defaults
+float(m,d), double(m,d), decimal(m,d) => m-length, d-decimals (10,2)(16,4) defaults, this does not affect storage, just display in client utilities
 char(20), varchar(20)
 text, blob (tiny|medium|long)=> large binary/text content
 date => yyyy-mm-dd
 datetime => yyyy-mm-dd HH:MM:ss
 time => HH:MM:ss
-timestamp => yyyymmddHHMMss
+timestamp => yyyymmddHHMMss (display format, but stores seconds from jan 1 1970 GMT)
 enum('a','b')
+INTEGER, BOOL, and NUMERIC are alias types
 
 #commands------------------------------------------------------------------------------------------
 mysql>show databases;
@@ -150,11 +151,257 @@ REPEATABLE READ, READ COMMITTED use this mechanism instead of row-level locking 
 Its just like codebase management using versions and multiple coders.
 Each transaction sees a snapshot of the database before it started.
 Every row has hidden additional data 
-	T1 -> id of the creator transaction (insert)
-	T2 -> id of the expiry transaction (delete, update(a row expiry followed by a insert)) 
+	T1 id of the creator transaction (insert)
+	T2 id of the expiry transaction (delete, update(a row expiry followed by a insert)) 
 transaction ids T(1..N) are global numbers 
 A transaction T(N) picks rows whose T1<N T2=0|N 
 If conflict occurs during update, last transaction is rolled back.
+
+'write-ahead-logging'
+all operations are written in transaction logs then and applied later to disk for performance
+all used for crash recovery
+
+
+'storage engines:brief:'
+#----------------------*----------------------*----------------------*----------------------*----------------------*----------------------*----------------------*
+1|'innodb:':
+short-lived transactions and crash recovery
+building indexes by sorting, 
+the ability to drop and add indexes without rebuilding the whole table, 
+and a new storage format that offers compression,
+a new way to store large values such as BLOB columns, and file format management.
+by default since 5.5 , Facebook, Google and Oracle contributions
+uses REPEATABLE READ with MVCC and a key-lock strategy to avoid phantom reads
+clustered index: Primary Key lookup is very fast, but they tend to be associated with every other index created on the table. So PK column size should be small.
+
+2|'myISAM':
+no transactions, no crash recovery
+locks entire tables, not rows. Readers obtain shared (read) locks on all tables they need to read. Writers obtain exclusive (write) locks
+table is stored as files with .MYD(data) and .MYI(index) extensions
+'CHECK TABLE mytable' and 'REPAIR TABLE mytable' to repair tables, but unreliable
+create indexes on the first 500 characters of BLOB and TEXT columns in MyISAM tables. 
+supports full-text indexes, which index individual words for complex search operations
+'myisampack' to compress read-only tables, this is done at row-level. this saves diskIO time, uncompressing data while reading is more CPU work but still fast.
+
+3|'archive':only insert and select. best suited for fast inserts as selects are table scans. no transactions, compressed storage
+4|'blackhole':inserts are diverted from being written to a disk but to a 'log'.this can be used for fancy replication tools and auditing.
+5|'csv':stores cvs files as tables, just move them to mysql data dirs even on a running server, but no indexes
+6|'federated':  just a proxy to a remote server, executes sqls there and then returns results here.
+
+7|'memory':
+formerly called HEAP tables)
+are useful when you need fast access to data that either never changes or doesn’t need to persist after a restart. 
+can be up to an order of magnitude faster than MyISAM tables. 
+stored in memory, so queries don’t have to wait for disk I/O. 
+table structure of a Memory table persists across a server restart, but no data survives.
+
+8|'NDB'
+MySQL AB acquired the NDB database from Sony Ericsson in 2003 and built the NDB Cluster storage engine as an interface between the SQL used in MySQL and the native
+NDB protocol. The combination of the MySQL server, the NDB Cluster storage engine, and the distributed, shared-nothing, fault-tolerant, highly available NDB database is
+known as 'MySQL Cluster'
+
+9|'3rd party': 
+xtraDB plugin from Percona, compatible with innodb files, more performant.
+'rethinkDB': append only B tree
+'tokuDb': marketed as a Big Data storage engine, because it has high compression ratios and can support lots of indexes on large data volumes
+
+Conversions:
+---------------
+mysql> ALTER TABLE mytable ENGINE = InnoDB;	
+use mysqldump for safety
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+'Benchmarking:'
+---------------*
+sysbench=> tool for benchmarking
+just general guidelines, nothing specific
+'profiling:'
+-----------*
+measure of sql query occurrences with response times over a fixed observatopn period.
+execution-time profing=>sqls that take more cpu time
+wait-analysis=>sqls blocked waiting for other sqls
+'show status' was the only instrumentation data before 5.1, now 'performance schema' is available.
+better to profile from the server to db to get user patterns (jmeter)
+'slow query log' to log al slow queries, but can log everything wwith response if threshold made zero.
+'pt-query-digest' to profile sqls executed (only in Percona Server)
+
+
+mysql> set profiling=1; #captures record of all sqls with response times
+mysql> show profiles;  #show the results
++----------+------------+-------------------------------------------------+
+| Query_ID 	| Duration 		| Query |
++----------+------------+-------------------------------------------------+
+| 1 		| 0.16767900 	| SELECT * FROM sakila.nicer_but_slower_film_list |
++----------+------------+-------------------------------------------------+
+mysql> show profile for query 1;
++----------------------+----------+
+| Status | Duration |
++----------------------+----------+
+| starting | 0.000082 |
+| Opening tables | 0.000459 |
+| System lock | 0.000010 |
+| Table....
+
+
+mysql> SET @query_id = 1; #variable
+Query OK, 0 rows affected (0.00 sec)
+mysql> SELECT 
+	STATE, 
+	SUM(DURATION) AS Total_R, 
+	ROUND(100 * SUM(DURATION) /(SELECT SUM(DURATION) FROM INFORMATION_SCHEMA.PROFILING WHERE QUERY_ID = @query_id), 2) AS Pct_R,
+	COUNT(*) AS Calls,
+	SUM(DURATION) / COUNT(*) AS "R/Call"
+FROM INFORMATION_SCHEMA.PROFILING
+WHERE QUERY_ID = @query_id
+GROUP BY STATE
+ORDER BY Total_R DESC;
+
+mysql> show status; #show server level numbers
+mysql> explain select * from handsets;
+
+'performance schema' : 5.5+
+mysql> SELECT event_name, count_star, sum_timer_wait FROM events_waits_summary_global_by_event_name ORDER BY sum_timer_wait DESC LIMIT 5;
++-------------------------------------------+---------------+-------------------------+
+| event_name 								| count_star 	| sum_timer_wait 	|
++-------------------------------------------+---------------+-------------------------+
+| innodb_log_file 							| 205438 		| 2552133070220355 	|
+| Query_cache::COND_cache_status_changed 	| 8405302 		| 2259497326493034 	|
+| Query_cache::structure_guard_mutex 		| 55769435 		| 361568224932147 	|
+| innodb_data_file 							| 62423 		| 347302500600411 	|
+| dict_table_stats 							| 15330162 		| 53005067680923 	|
++--------------------------------------------+--------------+-------------------------+
+mysql>SHOW PROCESSLIST # lok for lots of threads that are in unusual states or have some other unusual characteristi
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+'Schema optimisations:'
+------------------------*
+
+1|datatypes:
+---------------
+choose smallest possible type for your need (int, tinyint, char)
+avoid null in indexed columns, extra space and cpu time in indexing
+use'datetime, time' instead of string for dates.
+use'VARCHAR'
+	 when the maximum column length is much larger than the average length; 
+	 when updates to the field are rare, so fragmentation is not a problem; a
+	 when you’re using a complex character set such as UTF-8, where each character uses a variable number of bytes of storage.
+use 'char' 
+	when updates are more and width is less.
+	'blob' types store binary data with no collation or character set, but 'text' types have a character set and collation.	 
+
+use 'enum'
+	saves space by mapping them into integers (1,2..), 
+	but adding a new item is costly as 'alter table' is needed
+	joining other char or varchar to enums in sqls can be costly
+'join' only same data types or closely related types
+
+2| Identifiers(PK,FK,join columns)
+-------------------------------
+'Integers' are usually the best choice for identifiers (pk, fk, join), because they’re fast and they work with AUTO_INCREMENT.
+'enum/set' are bad
+'string' are bad
+	when used in myISAM,
+	when randomly generated by MD5(), SHA(), UUID() bcos
+		random seek in case of indexes during 'insert' and 'select'
+		cache locality failure  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+'Replication setup:'
+--------------------*
+MySQL replication server configuration
+
+Main steps
+
+Note:  Consider server1 as master and server2 as slave and replicating database as exampledb. 
+
+'Server 1(Master)'
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+1) Configuring the Master
+	To make sure that the replication can work, we must make MySQL listen on all interfaces on the master (server1), 
+	therefore we comment out the line bind-address = 127.0.0.1 in /etc/mysql/my.cnf:
+
+	#bind-address           = 127.0.0.1
+
+	We have to tell MySQL for which database it should write logs (these logs are used by the slave to see what has changed on the master), 
+	which log file it should use, and we have to specify that this MySQL server is the master. We want to replicate the database exampledb
+
+	server-id               = 1
+	log_bin                 = /var/log/mysql/mysql-bin.log
+	expire_logs_days        = 10
+	max_binlog_size         = 100M
+	binlog_do_db            = exampledb
+
+2)  Restart MySQL server
+3)  Set up a replication user slave_user that can be used by server2 to access the MySQL    database on server1:
+		mysql>  GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%' IDENTIFIED BY 'slave_password';
+		mysql>   FLUSH PRIVILEGES;
+4)  Find out the master status of the server1 and create a SQL dump of the database.
+        mysql>  USE exampledb;
+        mysql>  FLUSH TABLES WITH READ LOCK;
+        mysql>  SHOW MASTER STATUS;
+    In another shell,
+   		$> mysqldump -u root -pyourrootsqlpassword --opt exampledb > snapshot.sql
+5)  Unlock tables
+		mysql> UNLOCK TABLES; 
+
+ 'Server 2(Slave)'
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+1)  Configure slave  server by changing  'my.cnf' file
+		server-id=2
+        master-connect-retry=60
+        replicate-do-db=exampledb
+2)  Restart MySQL server
+3)  Import the SQL dump 
+        $> mysql -u root -pyourrootsqlpassword exampledb < snapshot.sq
+4)  Give slave parameters
+        mysql>  CHANGE MASTER TO MASTER_HOST='192.168.0.100',           
+         		MASTER_USER='slave_user',   MASTER_PASSWORD='slave_password',          
+        		MASTER_LOG_FILE='mysql-bin.000001',  MASTER_LOG_POS=19467;
+5)  Start slave
+        mysql>  START SLAVE;
+6)  Check  slave status (It is important that both Slave_IO_Running and Slave_SQL_Running have the value Yes in the output. 
+ 	And also  Slave_IO_State should be Waiting for master to send event)
+        mysql> SHOW SLAVE STATUS \G
+
+
+
+
+
+
+
 
 
 
