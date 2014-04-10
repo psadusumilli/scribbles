@@ -17,8 +17,8 @@ needs more land
 48%=> computing costs
 20%=> power and cooling
 
-Saas=>Software as a Service, Salesforce,.com
-PasS=>Platform as a Service, AWS DynamoDB, Google Apps,  
+Saas=>Software as a Service, Salesforce,.com, Gmail, Drive, iCloud, Box, DropBox
+PasS=>Platform as a Service, AWS DynamoDB, Google Apps, (softwares running on their systems)
 Iaas=> Infrastructure as a Service, AWS, Rackspace, Google.
 
 SERVERS:
