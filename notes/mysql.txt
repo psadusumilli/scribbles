@@ -1,0 +1,184 @@
+MYSQL:
+-------*
+sudo yum install mysql
+
+sudo service mysqld start
+sudo service mysqld stop
+sudo service mysqld status
+
+mysql -u root 
+mysql> show databases;
+mysql> use mobile_deals;
+mysql> show tables;
+mysql> select * from handset;
+
+sudo su root
+mysqladmin --version
+mysqladmin variables
+
+mysqladmin -u root password "shravan210"
+mysql -u root -p
+Enter password: 
+mysql> exit
+
+#add user------------------------------------------------------------------------------------------
+#option-1 
+mysql> use mysql;
+mysql> INSERT INTO user (host, user, password, select_priv, insert_priv, update_priv) 
+		VALUES ('localhost', 'guest', PASSWORD('guest123'), 'Y', 'Y', 'Y');
+mysql> FLUSH PRIVILEGES; #reload the grant tables.
+mysql> SELECT host, user, password FROM user WHERE user = 'guest'; 
++---- -------+---------+------------------+
+| host      | user    | password         |
++-----------+---------+------------------+
+| localhost | guest | 6f8c114b58f2ce9e |
++-----------+---------+------------------+
+1 row in set (0.00 sec)
+mysql -u guest -p
+
+#option-2
+GRANT SELECT,INSERT,UPDATE on mobile_deals.* to 'rekha'@'localhost' IDENTIFIED BY 'wifey';
+mysql -u rekha -p 
+
+
+#data types------------------------------------------------------------------------------------------
+smallint, int, mediumint, bigint
+float(m,d), double(m,d), decimal(m,d) => m-length, d-decimals (10,2)(16,4) defaults
+char(20), varchar(20)
+text, blob (tiny|medium|long)=> large binary/text content
+date => yyyy-mm-dd
+datetime => yyyy-mm-dd HH:MM:ss
+time => HH:MM:ss
+timestamp => yyyymmddHHMMss
+enum('a','b')
+
+#commands------------------------------------------------------------------------------------------
+mysql>show databases;
+mysql>show tables;
+mysql>show columns from <table-name>;
+mysql>show index from <table-name>;
+mysql>show table status like 'handset'\G
+mysql>show create table handset\G;
+mysql>show variable like 'AUTOCOMMIT';
+
+mysql>create database <db-name>;
+mysql>drop database <db-name>;
+mysql>create table handsets(name varchar(20) NOT NULL PRIMARY KEY, price integer) TYPE=InnoDB; #innodb optional
+mysql>drop table handsets;
+mysql>SELECT name FROM person_tbl WHERE name REGEXP '^st'; #stan
+mysql>alter table handset drop col1;
+mysql>alter table handset drop col1 int;
+mysql>alter table handset modify col1 char(10) not null default 'some';
+mysql>alter table handset rename to mobiles;
+mysql>create unique index on handset(name,manufacturer) #combination must be unique
+mysql>alter table handset add primary key(name);
+mysql>alter table handset drop primary key;
+mysql>alter table handset add index name_index(manufacturer);
+mysql>alter table handset add unique index name_index(name); #duplicates are ok
+
+#architecture------------------------------------------------------------------------------------------
+'3 layers':
+-------------
+layer1: network connection, security, authentication
+layer2: query parsing, functions, stored procedures, caching
+		query is parsed into a tree structure and optimisations are executed, some affected by table storage engines.
+		only 'select' queries are cached with resultsets.
+layer3: storage engines, access via abstract apis, dont talk with each other but only with server.
+
+'concurrency control':
+-------------------------
+lock strategies:
+a 'write lock' blocks other writes and precedes 'read lock'
+table lock=> 
+	low overhead, low concurrency
+	at table level (alter table...) 
+	write lock on CUD on table, 
+	many subtypes exists, 
+	independent of storage engines
+row lock=>
+	high overhead, high concurrency
+	implemented in storage engine not server level,
+	available in innoDB/xtraDB
+
+ACID:
+-----*
+transactions=> start <sqls> commit|rollback
+Atomicity=> all or nothing
+Consistency=> db moves from one consistent state to another
+Isolation=> transactions effects visibility 
+Durability=> once committed, its not lost.
+
+ANSI SQL isolation levels
+--------------------------
+READ UNCOMMITTED=>read uncommitted data('dirty reads') from other transactions, rarely used
+READ COMMITTED=>read only committed data from other transactions, but 'nonrepeatable reads' are still possible
+				'nonrepeatable read': row content which is picked twice within this T1, altered by another committed T2.
+				default in most databases
+REPEATABLE READ=>read only committed data from other transactions, but 'phantom reads' are still possible, 
+				'phantom read': row content picked twice by T1 not altered, but number of rows can be changed by T2
+				default in mysql
+SERIALIZABLE=>locks every row it reads.
+---------------------------------------------------------------------------------------
+Isolation level 	|Dirty reads	|Nonrepeatable reads |Phantom reads	|Locking reads
+---------------------------------------------------------------------------------------
+READ UNCOMMITTED 		Yes 			Yes 				Yes 			No
+READ COMMITTED 			No 				Yes 				Yes 			No
+REPEATABLE READ 		No 				No 					Yes 			No
+SERIALIZABLE 			No 				No 					No 				Yes
+---------------------------------------------------------------------------------------
+
+'deadlocks': T1 and T2 can lock each other out.
+T1: 
+	begin; 
+	update handset set name="a" where id=1;
+	update handset set name="b" where id=2;
+	end
+T2: 
+	begin; 
+	update handset set name="b" where id=2;
+	update handset set name="a" where id=1;
+	end
+InnoDB can detect circular dependencies and throw out errors.
+transactions are controlled at storage engines level. 
+If in a transaction, you mix non-transaction tables (myISAM) with transaction ones(innodb),rollback not possible in myISAM.
+InnoDB supports 2 phase implicit locking in transactions
+Explicit locking can be done using non-ansi sql 'select ..  lock in share mode' or 'lock tables'
+
+'MVCC-Multiversion Concurrency Control:'
+----------------------------------------
+REPEATABLE READ, READ COMMITTED use this mechanism instead of row-level locking like SERIALIZABLE.
+Its just like codebase management using versions and multiple coders.
+Each transaction sees a snapshot of the database before it started.
+Every row has hidden additional data 
+	T1 -> id of the creator transaction (insert)
+	T2 -> id of the expiry transaction (delete, update(a row expiry followed by a insert)) 
+transaction ids T(1..N) are global numbers 
+A transaction T(N) picks rows whose T1<N T2=0|N 
+If conflict occurs during update, last transaction is rolled back.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
