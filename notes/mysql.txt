@@ -337,8 +337,62 @@ selecting between de/normalisation them depends on your needs
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------
 'Indexes:'
 -----------*
-B-tree=> a generalisation of the binary tree where a range of data blocks sit in each node, both intermediate and leaf.
+1| 'B-tree Index'
+B-tree=> a generalisation of the binary tree where a varying range of data blocks sit in each node, both intermediate and leaf.
 B+tree=> A B-tree where each leaf points to the next
+
+B-tree of order m (say 5)
+	each node should have m/2 -m children (3-5)
+	root can have 2 children
+	the leaf nodes must be at the same level, so tree goes bottom-up.
+	whenever a leaf node overflows m, its split into 2 leaves at the same level, pushing midpoint up into its parent.
+	this grouped structure helps in reducing the disk seek time 
+
+column order is important in index creation
+
+2|'Hash Index' 
+Participating columns contents are used to generate a hash which is stored as a B-tree
+No partial or range queries only strict equality
+innoDB does 'adaptive has indexing' for freqently accessed indexes, cannot be configured done by internal optimisations.
+make sure hash function returns integer, distributes well, not many collisions. 
+sha1(), md5() return big strings, so not ok
+mysql> SELECT id FROM url WHERE url_crc=CRC32("http://www.mysql.com") AND url="http://www.mysql.com"; #literal value required for collision(like equals() and hash())
+
+3|rest: full-text indexes, Spatial R index.
+
+'strategies:'
+-------------*
+1| 	isolating the columns=> the 'where' column should contain expressions or functions
+		mysql> SELECT actor_id FROM sakila.actor WHERE actor_id + 1 = 5; #bad
+		mysql> SELECT ... WHERE TO_DAYS(CURRENT_DATE) - TO_DAYS(date_col) <= 10; #bad
+2| 	wide text columns should use 'prefix', again research should be done on the right prefix length.
+3| 	multi-column indexes better than having multiple single column indexes, depending on the sqls. mysql does index merging in case of multiple single column indexes.
+4| 	in multi-column index, having the most selective(filters most) column as the left-most is a thumb rule but not always effective.(data distribution) 
+5| 'clustered indexes'=> 
+	storing the index and data files together (recall 'structured index in sql server')
+	only one index per table as rows storage can be altered only once.
+	only leaf nodes contain data rest contain the indexed column.
+	performant, no pointer redirection from index.
+6| 	sequential keys are much better than random uuid keys in case of storage in DB pages. The b-tree wont have much flux in sequential keys.
+
+7| 'sorting':
+	Ordering the results by the index works only when the index’s order is exactly the same as the ORDER BY clause and all columns are sorted in the same direction (ascending or
+	descending).
+	The ORDER BY clause also has the same limitation as lookup queries: it needs to form a leftmost prefix of the index. In all other cases, MySQL uses a sort.
+	If the query joins multiple tables, it works only when all columns in the ORDER BY clause refer to the first table
+8| myISAM prepack prefix indexes (like perform, performance stored as '7'ance). Not good for individual lookup, sorting.
+9| redudant indexex can be good at times or bad, unused indexes are bad
+
+
+
+
+
+
+
+
+
+
+
 
 
 
