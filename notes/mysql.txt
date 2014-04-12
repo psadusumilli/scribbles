@@ -402,6 +402,64 @@ No of rows accessed
 'restructure':
 chopping a big query into small ones can help at times when you dont have to worry about network speed.
 
+'execution steps'
+1. The client sends the SQL statement to the server.
+2. The server checks the query cache. If there’s a hit, it returns the stored result from the cache; otherwise, it passes the SQL statement to the next step.
+3. The server parses, preprocesses, and optimizes the SQL into a query execution plan.
+4. The query execution engine executes the plan by making calls to the storage engine API.
+5. The server sends the result to the client. Each of these steps has some extra complexity,
+
+'client-server connection:'
+its a half-duplex, either request or response can happen at any point of time, not simultaneously.
+server sends entire resultset always, no buffering anywhere in mysql (ur client library can), so client must wait
+its best to use 'limit' based on needs to limit the traffic
+
+'query-thread-states'
+mysql>show full processlist #can help in viewing states
+
+a) Sleep=>The thread is waiting for a new query from the client.
+b) Query=>The thread is either executing the query or sending the result back to the client.
+c) Locked=>
+		The thread is waiting for a table lock to be granted at the server level. 
+		Locks that are implemented by the storage engine, such as InnoDB’s row locks, do not cause the thread to enter the Locked state. 
+		This thread state is the classic symptom of MyISAM locking, but it can occur in other storage engines that don’t have rowlevel locking, too.
+d) Analyzing and statistics=>The thread is checking storage engine statistics and optimizing the query.
+e) Copying to tmp table [on disk]=>
+	The thread is processing the query and copying results to a temporary table, probably for a GROUP BY, for a filesort, or to satisfy a UNION. 
+	If the state ends with “ondisk,” MySQL is converting an in-memory table to an on-disk table.
+f) Sorting result=>The thread is sorting a result set.
+g) Sending data=>This can mean several things: the thread might be sending data between stages of the query, generating the result set, or returning the result set to the client.
+
+'query cache' stores hash of whole query, checks privileges first, then if found returns resultset.
+'query parsing': makes a parse tree, check privileges
+'query optimizing': 
+works in the server, uses data from storage engines.
+make a execution plan with analysing options and picking one with minimum cost
+they might not be right always, though its a complex process.
+ 	cost of a query:		
+		mysql> SELECT SQL_NO_CACHE COUNT(*) FROM sakila.film_actor;
+		+----------+
+		| count(*) |
+		+----------+
+		| 5462 |
+		+----------+
+		mysql> SHOW STATUS LIKE 'Last_query_cost';
+		+-----------------+-------------+
+		| Variable_name | Value |
+		+-----------------+-------------+
+		| Last_query_cost | 1040.599000 | #1040 random page reads
+		+-----------------+-------------+
+
+static optimizing => not dependent on predicate values or context, done once for a query
+dynamic optimizing => done during runtime, depends on context
+
+'optimizing strategies':
+	reorder joins
+	converting outer join to inner joins
+	simplify predicate expressions
+	subquery optimizing
+	early termination-limit, impossible condition
+	covering indexes.
 
 
 
