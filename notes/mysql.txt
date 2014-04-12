@@ -373,18 +373,34 @@ mysql> SELECT id FROM url WHERE url_crc=CRC32("http://www.mysql.com") AND url="h
 	only one index per table as rows storage can be altered only once.
 	only leaf nodes contain data rest contain the indexed column.
 	performant, no pointer redirection from index.
-6| 	sequential keys are much better than random uuid keys in case of storage in DB pages. The b-tree wont have much flux in sequential keys.
-
+6| 	'sequential keys' are much better than random uuid keys in case of storage in DB pages. The b-tree wont have much flux in sequential keys.
 7| 'sorting':
 	Ordering the results by the index works only when the index’s order is exactly the same as the ORDER BY clause and all columns are sorted in the same direction (ascending or
 	descending).
 	The ORDER BY clause also has the same limitation as lookup queries: it needs to form a leftmost prefix of the index. In all other cases, MySQL uses a sort.
 	If the query joins multiple tables, it works only when all columns in the ORDER BY clause refer to the first table
 8| myISAM prepack prefix indexes (like perform, performance stored as '7'ance). Not good for individual lookup, sorting.
-9| redudant indexex can be good at times or bad, unused indexes are bad
+9| 'redudant indexes' can be good at times or bad, 'unused indexes' are bad
+10| 'covered index' has all columns needed in a query. No need to lookup the table again.
 
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+'Query optimisations:'
+---------------------*
+'Slow query gotchas':
+1| fetching too many rows => use 'limit'
+2| fetching too many columns => select *
+3| fetching all columns in a multi-join => select * from A join B using(some_id)
+4| fetching same data repeatedly => use cache 
 
-
+'metrics':
+Response time 
+	queue time(io+locks) + service time(process query)
+	determine counts of random and sequential access and multiply by hardware time.
+No of rows accessed
+	not perfect, some rows are big, some are small
+	ratio of rows examined/rows returned matters 
+'restructure':
+chopping a big query into small ones can help at times when you dont have to worry about network speed.
 
 
 
