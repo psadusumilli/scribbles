@@ -464,6 +464,70 @@ dynamic optimizing => done during runtime, depends on context
 
 
 
+-------------------+++---------------
+'query optimizing hints'
+count(*) gives no of rows, while count(column1) gives no of non-null values in column1
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------
+Advanced MySQL features:
+------------------------*
+1|'partitioning':
+partitioned tables have multiple underlying tables, which are represented by Handler objects
+implements partitioning—as a wrapper over hidden tables—means that indexes are defined per-partition, rather than being created over the entire table.
+can be distributed physically, enabling the server to use multiple hard drives more efficiently.
+back up and restore individual partitions
+
+'partition by' clause decides the mechanism, for example,
+here’s a simple way to place each year’s worth of sales into a separate partition:
+mysql>	CREATE TABLE sales (order_date DATETIME NOT NULL,-- Other columns omitted) ENGINE=InnoDB 
+		PARTITION BY RANGE(YEAR(order_date)) (
+			PARTITION p_2010 VALUES LESS THAN (2010),
+			PARTITION p_2011 VALUES LESS THAN (2011),
+			PARTITION p_2012 VALUES LESS THAN (2012),
+			PARTITION p_catchall VALUES LESS THAN MAXVALUE );
+mysql> EXPLAIN PARTITIONS select ...; #good to have partition column as predicate, otherwise bad scanning all partitions
+
+2|'merge tables':
+older form of partitioning with some niche features.
+works only in myISAM.
+
+3|'views': 
+mysql> CREATE VIEW Oceania AS SELECT * FROM Country WHERE Continent = 'Oceania' WITH CHECK OPTION;
+mysql uses 
+	'merge' algorithm when no aggregates in query, no temp table required, just merges view sql+query qsql
+	'template' algorithm when aggregates used.
+	mysql> explain select * from <view>
+4| 'updatable views'
+	A view is not updatable if it contains GROUP BY, UNION, an aggregate function, or any of a few other exceptions. 
+	A query that changes data might contain a join, but the columns to be changed must all be in a single table. 
+	Any view that uses the TEMPTABLE algorithmis not updatable.	
+	'with check option' will let you not update using an view where it changes 'Continent'
+5| mysql does not support 'materialized views' and 'indexable views'
+6| 'foreign keys' - supported only innodb and best to index them for performance.
+7| 'stored procedures' - 
+	mysql development tools are limited
+	not testable, avoid it
+	optimizer cannot work on it
+	caching works per connection, so repeated execution on separate connections cause similar creations of cache execution plans and caching them.
+
+8| 'trigger'
+• They can obscure what your server is really doing, because a simple statement can make the server perform a lot of “invisible” work. 
+For example, if a trigger updates a related table, it can double the number of rows a statement affects.
+• Triggers can be hard to debug, and it’s often difficult to analyze performance bottlenecks when triggers are involved.
+• Triggers can cause nonobvious deadlocks and lock waits. If a trigger fails the original query will fail, and if you’re not aware the trigger exists, it can be hard to
+decipher the error code.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
