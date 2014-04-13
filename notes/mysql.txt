@@ -460,10 +460,31 @@ dynamic optimizing => done during runtime, depends on context
 	subquery optimizing
 	early termination-limit, impossible condition
 	covering indexes.
+	equality probagation=> columns on a join and a where clause will be probagated to both leading to faster filtering.
+	in clause=> sorts the items in 'in'leading to O(log(n))
+
+'joins'	
+	mysql execution of joins is nested for every join (for i{..{for j..{for k..}}}
+	results are put in a temp table
+	mysql>explain extended select ... show warnings;
+'order by'
+	sorting can be done in-memory or in disk
+	sorting can be 
+		2-pass: older than 4.2
+				1pass:row pointers + columns picked first,sorted
+				2pass:sorted rowpointers are then used to scan table and pick real content
+
+		1-pass: all data picked in one shot and sorted
+				more space required.
+'execution engine'
+	simpler compared to the optimiser.
+	receives a datastructure of instructions from optimisations and just executes them by calling Storage apis.
+
+	
 
 
 
-
+	
 
 
 
