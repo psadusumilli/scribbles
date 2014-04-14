@@ -480,9 +480,6 @@ dynamic optimizing => done during runtime, depends on context
 	simpler compared to the optimiser.
 	receives a datastructure of instructions from optimisations and just executes them by calling Storage apis.
 
-	
-
--------------------+++---------------
 'query optimizing hints'
 count(*) gives no of rows, while count(column1) gives no of non-null values in column1
 
@@ -530,11 +527,70 @@ mysql uses
 	caching works per connection, so repeated execution on separate connections cause similar creations of cache execution plans and caching them.
 
 8| 'trigger'
-• They can obscure what your server is really doing, because a simple statement can make the server perform a lot of “invisible” work. 
-For example, if a trigger updates a related table, it can double the number of rows a statement affects.
-• Triggers can be hard to debug, and it’s often difficult to analyze performance bottlenecks when triggers are involved.
-• Triggers can cause nonobvious deadlocks and lock waits. If a trigger fails the original query will fail, and if you’re not aware the trigger exists, it can be hard to
-decipher the error code.
+	can obscure what your server is really doing
+	can be hard to debug, and it’s often difficult to analyze performance bottlenecks
+	can cause nonobvious deadlocks and lock waits. 
+	can be part of transactions, but tables should be really part of the transaction (in innodb 'for update' in the trigger tables)
+
+9| 'events'
+	scheduled cron-like stored procedures triggered by a separate scheduled thread.
+	good uses for events include periodic maintenance tasks,rebuilding cache and summary tables to emulate materialized views, or saving status values for monitoring and diagnostics
+10|'cursors'
+	more like a row pointer to iterate over in a set of rows fetched	
+	used more in stored procedures
+	mysql implementation of cursor is not great.
+
+11| 'prepared statement'
+	uses binary protocol for client-server communication
+	parses a query once and saves it as a partial structure with placeholders for parameters.
+	reduces the traffic, by sending only the parameters, not the entire query text needed for each execution
+	
+	mysql> SET @sql := 'SELECT actor_id, first_name, last_name FROM sakila.actor WHERE first_name = ?';
+	mysql> PREPARE stmt_fetch_actor FROM @sql;
+	mysql> SET @actor_name := 'Penelope';
+	mysql> EXECUTE stmt_fetch_actor USING @actor_name;
+	mysql> DEALLOCATE PREPARE stmt_fetch_actor;
+
+12| 'user defined functions' - UDF
+	can write UDFs in any programming language that supports C calling conventions
+	must be compiled and then dynamically linked with the server, making them platform-specific and giving you a lot of power
+	memcached uses this somewhere
+
+13| 'character sets and collation'
+	A character set is a mapping from binary encodings to a defined set of symbols; alphabet in bits
+	they are inherited at every level (db, table, column)
+	mysql> show character set
+	mysql> show collation
+
+14| 'full text indexing'
+	A MyISAM full-text index is a special type of B-Tree index with two levels. 
+	The first level holds keywords. Then, for each keyword, the second level holds a list of associated document pointers that point to full-text collections that contain that keyword.
+
+15| 'XA transactions'
+	transactions across different softwares
+	'external'=> can act as a participant in XA transactions, but not as a coordinator.
+	'internal'=> any cross-storage engine is a xa one controlled by the mysql server.
+16| 'query cache'
+	stores hash of sql+parameters with the complete resultset
+	when a query cache hit occurs, the server can simply return the stored results immediately, skipping the parsing, optimization, and execution steps.
+	keeps track of which tables a query uses, and if any of those tables changes, it invalidates the cache entry
+	keeping the size small is very critical as it can become a concurrent threads bottleneck.
+	can store only deterministic sqls (no CURRENT_DATE, CURRENT_USER)
+	can be a performance bottleneck for both reads and writes(invalidation)
+	everything is stored in memory
+	the query cache hit rate is given by the formula 'Qcache_hits / (Qcache_hits+Com_select)'
+
+	'some techniques':
+	Having multiple smaller tables instead of one huge one can help
+	It’s more efficient to batch writes than to do them singly, because this method invalidates cached cache entries only once
+	server can stall for a long time while invalidating entries in or pruning a very large query cache
+	cannot control the query cache on a per-database or per-table basis, but you can include or exclude individual queries
+	disabling the query cache for a write-heavy app is good
+	
+
+
+
+	
 
 
 
