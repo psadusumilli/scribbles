@@ -586,81 +586,45 @@ mysql uses
 	server can stall for a long time while invalidating entries in or pruning a very large query cache
 	cannot control the query cache on a per-database or per-table basis, but you can include or exclude individual queries
 	disabling the query cache for a write-heavy app is good
-	
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------
 'Replication setup:'
 --------------------*
-MySQL replication server configuration
+1|two kinds:
+	statement-based=>
+		for every logical sql statement, 
+		uses binary log, simple to implement, 
+		does not work with non-deterministic sqls
+		good when master-slave schema differ slightly
+		best to avoid given the bugs
+	row-based=>
+		came after 5.1, 
+		uses binary log, 
+		uses more traffic, 
+		better is most scenarios
+		uses less cpu as no query parsing is done.
 
-Main steps
 
+2|'master' must turn on binary logging, good overhead in all 'slaves' reading from it.
+3| good for scaling reads not writes
+4| benefits:
+	data-distribution=>move data to another remote server.
+	load-balancing=>distribute read queries across several servers,which works very well for read-intensive applications
+	can help in backups, high availability and failover
+	testing mysql upgrades 
+5| high level steps:
+	1. The master records changes to its data in its 'binary log'. (These records are called binary log events.)
+	2. The replica copies the master’s binary log events to its 'relay log'.
+	   The slave I/O thread opens an ordinary client connection to the master, then starts a special 'binlog' dump process
+	3. The replica replays the events in the relay log, applying the changes to its own data.	
+
+'simple setup steps'
 Note:  Consider server1 as master and server2 as slave and replicating database as exampledb. 
 
 'Server 1(Master)'
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------
 1) Configuring the Master
 	To make sure that the replication can work, we must make MySQL listen on all interfaces on the master (server1), 
-	therefore we comment out the line bind-address = 127.0.0.1 in /etc/mysql/my.cnf:
+	therefore we comment out the line bind-address = 127.0.0.1 in '/etc/mysql/my.cnf':
 
 	#bind-address           = 127.0.0.1
 
@@ -674,9 +638,9 @@ Note:  Consider server1 as master and server2 as slave and replicating database 
 	binlog_do_db            = exampledb
 
 2)  Restart MySQL server
-3)  Set up a replication user slave_user that can be used by server2 to access the MySQL    database on server1:
+3)  Set up a replication user slave_user that can be used by server2 to access the MySQL database on server1:
 		mysql>  GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%' IDENTIFIED BY 'slave_password';
-		mysql>   FLUSH PRIVILEGES;
+		mysql>  FLUSH PRIVILEGES;
 4)  Find out the master status of the server1 and create a SQL dump of the database.
         mysql>  USE exampledb;
         mysql>  FLUSH TABLES WITH READ LOCK;
@@ -687,7 +651,6 @@ Note:  Consider server1 as master and server2 as slave and replicating database 
 		mysql> UNLOCK TABLES; 
 
  'Server 2(Slave)'
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------
 1)  Configure slave  server by changing  'my.cnf' file
 		server-id=2
         master-connect-retry=60
@@ -704,6 +667,29 @@ Note:  Consider server1 as master and server2 as slave and replicating database 
 6)  Check  slave status (It is important that both Slave_IO_Running and Slave_SQL_Running have the value Yes in the output. 
  	And also  Slave_IO_State should be Waiting for master to send event)
         mysql> SHOW SLAVE STATUS \G
+
+7) mysql> SHOW PROCESSLIST\G on both master ans slave to confirm replication is up.
+
+'files used:'
+mysql-bin.index=>index of binary log files
+mysql-relay-bin.index=>index of relay binary log files
+master.info=>slave file containing details like user/password to access master 
+relay-log.info=>current position of replica wrt master log file.
+
+'strategies'
+replicas can be filtered to receive certain events only (can be done either at master or slave end)
+one master->many replicas linked to each other in serial fashion
+one master->many slaves, but a slave can have only one master anytime
+one master->one master | active mode - write and reads on both masters and synching back and forth. possible but rife with issues.
+one master->one master | passive mode - write/read in one while only read in passive
+one master with slaves->one master with slaves 
+
+
+
+
+
+
+
 
 
 

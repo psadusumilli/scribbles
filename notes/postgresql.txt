@@ -1,0 +1,3 @@
+POSTGRESQL:
+-----------*
+history: Came from 'Ingres'->'Postgres'->'PostgreSQL'(supporting sql, prev QUEL a proprietary language)
