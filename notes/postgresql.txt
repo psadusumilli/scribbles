@@ -2,6 +2,59 @@ POSTGRESQL:
 -----------*
 history: Came from 'Ingres'->'Postgres'->'PostgreSQL'(supporting sql, prev QUEL a proprietary language)
 
+overview:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 puppet file from motech:
 -------------------------*
 class postgres ( $postgresUser, $postgresPassword, $postgresMachine, $postgresMaster, $postgresSlave, $os, $wordsize, $changeDefaultEncodingToUTF8) {
@@ -109,7 +162,6 @@ class postgres ( $postgresUser, $postgresPassword, $postgresMachine, $postgresMa
                 mode        => 600,
                 require     => Exec["backup_conf"],
             }
-
             file {"/usr/local/pgsql/data/postgresql.conf":
                 content     => template("postgres/master_postgresql.erb"),
                 owner       => "${postgresUser}",
@@ -118,7 +170,6 @@ class postgres ( $postgresUser, $postgresPassword, $postgresMachine, $postgresMa
                 require     => Exec["backup_conf"],
             }
         }
-
         slave:{
             file {"/usr/local/pgsql/data/pg_hba.conf":
                 content     => template("postgres/slave_pg_hba.erb"),
@@ -144,4 +195,45 @@ class postgres ( $postgresUser, $postgresPassword, $postgresMachine, $postgresMa
             }
         }
     }
-}
+-----------------------------------------------------------------------------------------*    
+'master_pg_hba.erb'
+# TYPE  DATABASE        USER            ADDRESS                 	METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     	trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            	trust
+host    all             all             <%= postgresSlave %>/32		trust
+host    all             all             <%= postgresMaster %>/32	trust
+# IPv6 local connections:
+host    all             all             ::1/128                 	trust
+# Allow replication connections from localhost, by a user with the replication privilege
+host    replication     all             <%= postgresSlave %>/32  	trust
+
+'slave_pg_hba.erb'
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+host    all             all             <%= postgresSlave %>/32	trust
+host    all             all             <%= postgresMaster %>/32	trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+
+'slave_recovery.erb'
+standby_mode = 'on'
+primary_conninfo = 'host=<%= postgresMaster %>'
+
+'master_postgresql.conf' 
+listen_address = # make sure we're listening as appropriate
+wal_level = hot_standby
+max_wal_senders = 3
+checkpoint_segments = 8    
+wal_keep_segments = 8 
+'slave_postgresql.conf'
+wal_level = hot_standby
+max_wal_senders = 3
+checkpoint_segments = 8    
+wal_keep_segments = 8 
+hot_standby = on
+-----------------------------------------------------------------------------------------*  
