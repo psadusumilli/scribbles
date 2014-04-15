@@ -683,6 +683,8 @@ one master->many slaves, but a slave can have only one master anytime
 one master->one master | active mode - write and reads on both masters and synching back and forth. possible but rife with issues.
 one master->one master | passive mode - write/read in one while only read in passive
 one master with slaves->one master with slaves 
+ring -> dont do it
+
 
 
 
