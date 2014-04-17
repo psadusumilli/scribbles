@@ -19,6 +19,12 @@ object-relational model - mix
 	reporting =>current data(not historical) used for reporting
 3| hybrid - mix of both
 
+'cardinality':
+uniqueness of values in a column
+high=> PK, identifiers like email address.
+medium=> names and street address.
+low=> status flags, enums.
+
 #----------------------------------------------------------------------------------------------------------------------------------------------
 'codd rules':
 

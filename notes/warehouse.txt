@@ -1,0 +1,9 @@
+'Data WareHouse':
+#---------------------------------------------------------------------------------------------------------------
+
+'Overview':
+	
+	SALES-DB	|--|						|REPORT		
+	INVENTORY-DB|--|--ETL-->DATAWAREHOUSE-->|OLAP (star schema and data cubes)
+	LOGISTICS-DB|--|						|DATA MINING 
+
