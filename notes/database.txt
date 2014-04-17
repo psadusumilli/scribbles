@@ -77,17 +77,28 @@ security or integrity constraint.
 'Normalisation-normal forms'
 splitting data with relationships
 
-'1NF'=>all records in a table must have same number columns
-'2NF'=>non-key column is a fact about another column based on key column
+'1NF'=>	all records in a table must have same number columns
+
+'2NF'=>	non-key column is a fact about another column based on key column
+		also satisfy '1NF'
 	bad=> 	PART | WAREHOUSE | QUANTITY | WAREHOUSE-ADDRESS  #WAREHOUSE is related to key field PART but WAREHOUSE-ADDRESS is tied to WAREHOUSE
 	good=> 	PART | WAREHOUSE | QUANTITY #table1
 	  		WAREHOUSE | QUANTITY		#table2
-'3NF'=>non-key column is not related to key column 
+
+'3NF'=>	non-key column is not related to key column, 
+		also satisfy '2NF'
 	bad=>	WORKER|SHOPFLOOR|LOCATION #	LOCATION is not wired to WORKER but SHOPFLOOR
 	good=> 	WORKER|SHOPFLOOR  			#table1
 			SHOPFLOOR|LOCATION			#table2
 
+'4NF'=> a record type should not contain two or more independent multi-valued facts about an entity
+		also satisfy '3F'
+	bad=> 	WORKER|SKILL|LANGUAGE # language and skill are independent of each other, though related to worker
+	good=> 	WORKER|SKILL 
+			WORKER|LANGUAGE
 
+
+					
 
 
 
