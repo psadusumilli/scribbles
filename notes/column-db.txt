@@ -1,6 +1,9 @@
 
 'Column database':
 #---------------------------------------------------------------------------------------------------------------------------
+
+A| wikipedia
+**************
 Crude explanation:=>every column is indexed and stored in a serial fashion with one column data followed by the other.
 'rdbms':=> row_id is the pivot
 #-----------------------------------------
