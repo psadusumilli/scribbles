@@ -1,0 +1,24 @@
+
+'Column database':
+#---------------------------------------------------------------------------------------------------------------------------
+Crude explanation:=>every column is indexed and stored in a serial fashion with one column data followed by the other.
+'rdbms':=> row_id is the pivot
+#-----------------------------------------
+|EmpId	|Lastname	|Firstname	|salary
+#-----------------------------------------
+ 10		 Smith		 Joe		 40000
+ 12		 Jones		 Mary		 50000
+ 11		 Johnson	 Cathy	  	 44000
+ 22		 Jones		 Bob		 55000
+#-----------------------------------------
+in disk:001|10,Smith,Joe,40000;002|12,Jones,Mary,50000;...
+pros=>pick all columns of a required single row is fast
+cons=>range queries suffer with random IO (avg salary of smiths)
+
+'columndbms'=>not just columns are arranged serially, the data is the pivot, not the row_id
+10|001,12|002,11|003,22|004;Smith|001,Jones|002,Johnson|003,Jones|004;Joe|001,Mary|002,Cathy|003,
+If adding more Jones
+…;Smith|001,Jones|002,004,Johnson|003;…
+
+
+
