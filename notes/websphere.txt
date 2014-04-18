@@ -84,6 +84,55 @@ administrative(wsadmin, console users),
 application(security role mapping to ldap,identity systems) 
 java security policies
 
+'service integration'
+1|jms 1.1=>default messaging provider
+2|service integration bus (bus)=> is the communication infrastructure that provides service integration through messaging. 
+	It is an administrative concept that is used to configure and host messaging resources like jms, webservices, more like a mini esb.
+3|webservice gateway=> serves as a front to webservices running inside the server. (just like b2 router)
+
+'clustering'
+vertical=>servers in same machine
+horizontal=>servers in different machines
+mix=>some in same machines, some across machines
+supports HTTP session memory-to-memory replication,and session database persistence that can replicate session data between cluster members.
+
+#-------------------------------------------------------------------------------------------------------------------------------------
+CHAP3: integration with other software
+*****************************************
+1|'Tivoli Access Manager':
+TAS client is bundled with WAS Network Deployment.
+All communication between the clients and the TAM server is run through the Java Authorization Contract for Containers (JACC) application programming interface (API).
+The 'WebSEAL' server is a resource manager in the Tivoli Access Manager architecture that you can use to manage and protect web content resources. 
+WebSEAL works as a reverse HTTP/HTTPS proxy server in front of the web servers or application servers. It
+
+2|'Tivoli LDAP'
+If you use a federated repository, choose from the following repository solutions based on LDAP:
+	Single LDAP (full LDAP tree)
+	Subtree of an LDAP (used only when a group in LDAP needs access to WebSphere Application Server)
+	Multiple LDAPs (uses a unique user ID through all the LDAP trees)
+
+3|'MQ'
+WAS provides 3 messaging systems
+	default messaging provider=>JMS 1.1 compliant system with queue implemented by SIB, which in turn can connect to MQ, Webservices.
+	MQ provider=>direct MQ 	implemented queues
+	3rd party providers=>for others
+4| 'DataPower'
+Dp boxes can be controlled by WAS admin console in 8.5	
+
+5|'DB2'
+normal JDBC datasources
+connect via high-performing IBM PureQuery
+datastore for scheduler jobs, session data, UDDI.
+can be configured as a SIB member
+
+6|'Tivoli Workload Scheduler TWS'
+helps you establish an enterprise workload automation backbone by driving composite workloads according to business policies.
+WSGrid workload connector connects WAS and TWS
+
+
+
+
+
 
 
 
