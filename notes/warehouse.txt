@@ -2,6 +2,10 @@
 #---------------------------------------------------------------------------------------------------------------
 
 'Overview':
+A data warehouse is a system that extracts, cleans, conforms, and delivers
+source data into a dimensional data store and then supports and implements
+querying and analysis for the purpose of decision making
+
 	
 	SALES-DB	|--|						|REPORT		
 	INVENTORY-DB|--|--ETL-->DATAWAREHOUSE-->|OLAP (star schema and data cubes)
@@ -15,9 +19,12 @@ to get data out of the source and load it into the data warehouse
 	Requirements & Reality=>Architecture=>System Implementation=>Test & Release
 	Extract=>Clean=>Conform=>Deliver
 
-#-----------------------------------------------------------------------------------------
-'Chap1: Requirements'
-**********************
+#--------------------------------------------------------------------------------------------------------
+'CHAPTER 1'
+***********
+
+'Requirements'
+**************
 1|Business needs=>
 	information required to make wise decisions,
 	lots of interviews with stakeholders 
@@ -46,8 +53,91 @@ to get data out of the source and load it into the data warehouse
 7|Archiving and staging=>
 	Staging must be done at every stage of Extract, Clean, Conform, Deliver
 	Conservartive approach is to also archive (store in permanent media for retrieval) at every stage.
-8| End User delivery interfaces=>
+8|End User delivery interfaces=>
 	must not leave a complicated normalised schema for the end-users
+9|Talent available
+	Decide to build in-house solution or buy a tool 
+
+'Architecture'
+**************
+ETL tools and Hand Coding have advantages/disadvantages but authors prefer tools.
+Batch (delay in sending data to end-users) vs streaming (care must be exercised)
+Horizontal (paralle jobs with no merging dimensions) vs Vertical task dependency.
+Scheduler vs manual jobs
+exception handling should be uniform
+Restart and recovery must be kept in mind from design start
+Security at every level.
+
+'Front room'=>end-users area, querying,reporting, analysis.
+'Back room'=>data sources, etl engines, dimensional tables.
+
+Back room offloads the ETL teams of the following duties whieh are required in the Front room.
+	Providing detailed security at a row, column, or applications level
+	Building query performance-enhancing indexes and aggregations
+	Providing continuous up-time under service-level agreements
+	Guaranteeing that all data sets are consistent with each other
+
+'4 stages of ETL':
+	'extract'=>
+		copy the data from source as-is without conversions, 
+		can be re-read multiple times in case of process failures downstream
+		can be discarded after end-users data is ready.
+	'cleaning'=>
+		validation and business rules applied, 
+		duplicate data removed
+		this cleaned data can be fed back into sources to improve their quality
+	'conforming'=>
+		merging labels and data types
+	'delivery'=>
+		final star schema, OLAP cubes
+
+'ODS: Operational Data Store'
+	transit data store fed from transactional sources that can act either as
+		DW datasource 
+		a ad-hoc querying system for end-users when DW data is in processing mode.
+	mostly assimilated inside modern DWs as they become more streaming.
+
+'Datamart':
+	belongs to Front Room,
+	a subset of dimensional tables belonging to a subject area
+	supports drilling data down to the lowest level.
+
+'EDW: enterprise data warehouse'
+	non-dimensional, normalised, custom-schema, data warehouse for a enterprise.
+
+#--------------------------------------------------------------------------------------------------------
+'CHAPTER 2'
+***********
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
