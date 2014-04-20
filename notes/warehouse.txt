@@ -7,3 +7,57 @@
 	INVENTORY-DB|--|--ETL-->DATAWAREHOUSE-->|OLAP (star schema and data cubes)
 	LOGISTICS-DB|--|						|DATA MINING 
 
+'ETL':
+******
+to get data out of the source and load it into the data warehouse
+
+2 parallel threads
+	Requirements & Reality=>Architecture=>System Implementation=>Test & Release
+	Extract=>Clean=>Conform=>Deliver
+
+#-----------------------------------------------------------------------------------------
+'Chap1: Requirements'
+**********************
+1|Business needs=>
+	information required to make wise decisions,
+	lots of interviews with stakeholders 
+	a moving target that must be revisited often
+2|Compliance=>
+	Archived copies of data sources and subsequent stagings of data
+	Proof of the complete transaction flow that changed any data
+	Fully documented algorithms for allocations and adjustments
+	Proof of security of the data copies over time, both on-line and off-line
+3|Data Profiling=>
+	systematic examination of the quality, scope, and context of a data source to allow an ETL system to be built.
+	Corrective steps for bad data source:
+		Elimination of some input fields completely
+		Flagging of missing data and generation of special surrogate keys
+		Best-guess automatic replacement of corrupted values
+		Human intervention at the record level
+		Development of a full-blown normalized representation of the data
+4|Security=>
+	best to use LDAP roles that GRANT privileges on table for end-users
+	ETL team will have read-write privileges but in a secure firewalled environment.
+5|Data Integration=>
+	dimensions and fact must be agreed upon for the entire enterprise across systems
+6|Data Latency=>
+	time taken for final data to reach end end-users
+	if urgent, the architecture of the ETL system must convert from batch oriented to streaming oriented
+7|Archiving and staging=>
+	Staging must be done at every stage of Extract, Clean, Conform, Deliver
+	Conservartive approach is to also archive (store in permanent media for retrieval) at every stage.
+8| End User delivery interfaces=>
+	must not leave a complicated normalised schema for the end-users
+
+
+
+
+
+
+
+
+
+
+
+
+
