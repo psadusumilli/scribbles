@@ -128,6 +128,10 @@ volumetric tracking system must be enabled for each staging area, gives table gr
 'dimensional schema'
 	'fact table' aka measurement table(sale) with keys of 'dimensional tables'(time, person, product)
 	each 'dimensional table' has a surrogate key(PK mostly integer) that is related to fact table via foreign key
+	fact tables can be atomic or aggregate based on need
+	data cubes are formed using the fact and dimensions.
+	'surrogate key mapping tables' contains the mapping of surrogate key to the original key from data sources.
+	
 
 
 
