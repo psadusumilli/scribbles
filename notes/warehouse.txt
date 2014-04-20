@@ -108,6 +108,30 @@ Back room offloads the ETL teams of the following duties whieh are required in t
 #--------------------------------------------------------------------------------------------------------
 'CHAPTER 2'
 ***********
+'Staging':
+its upto architect to decide whether to persist or do everything in memory to avoid IO cost.
+provides means of backup and restore.
+helps in auditing
+belongs to the ETL team only 
+volumetric tracking system must be enabled for each staging area, gives table growth estimates, sizes, etl jobs to DBAs.
+	'flat files'=>
+		data is stored as pure text files in tabular form
+		faster since no database overhead, 
+		use os utilities like 'grep, sort, tr' to act on data 
+		no index
+	'xml'=>
+		best for data transfer than storage
+	"rdbms"=>
+		database features like schema, index, sql
+		keep it simple, no relations to any existing data sources.
+
+'dimensional schema'
+	'fact table' aka measurement table(sale) with keys of 'dimensional tables'(time, person, product)
+	each 'dimensional table' has a surrogate key(PK mostly integer) that is related to fact table via foreign key
+
+
+
+
 
 
 
