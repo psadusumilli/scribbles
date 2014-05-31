@@ -133,6 +133,73 @@ volumetric tracking system must be enabled for each staging area, gives table gr
 	'surrogate key mapping tables' contains the mapping of surrogate key to the original key from data sources.
 	
 'planning and design standards'	
+'Design and planning'
+staging tables must be in the control of architects not developers.
+metadata should be documented properly which is always best done by ETL tool. Examples of metadata are
+	technical: schema details, data types
+	process: staging loading times and statistics
+	functional: data lineage(origins), business definition
+proper naming conventions should be followed for the staging tables.
+auditing of every transformation is required.
+#--------------------------------------------------------------------------------------------------------
+'CHAPTER 3'
+***********
+'Extraction':
+Pull data from physically and locgically incompatible sources.
+Identify sources, profile them for sanity, draw out a plan and give it to ETL team
+
+'Logical data mapping'=>
+	relations between the extreme sources and end results in a blueprint, usually a big table.
+	contains source database/table/column/
+			 target database/table/column/
+			 transformation
+			 slow changing dimesion types (1,2,3). Only the architect can change this.
+
+'source tracking'=>
+	contains details of all source systems
+	contains dept, dba, db (software, server, size, transactions, complexity), priority
+
+'system of record'=> 
+originating source of data, important to Identify because data is copied reduntantly often in an enterprise 
+capturing at intermediate points makes the ETL dependeny on that intermediate systems.
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 48cd2c7cf25e49a8e65be481db80cb225674d081
 
 
 
