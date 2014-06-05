@@ -188,7 +188,7 @@ CHAPTER 2: Building blocks of TCP/IP
 	• Initial congestion window: 4 segments (RFC 2581) (now 10 segments-RFC 6928-Apr 2013)
 	• Roundtrip time: 56 ms (London to New York)
 
-	65, 535 bytes/1, 460 bytes ≈ 45 segments
+	65,535 bytes/1, 460 bytes ≈ 45 segments
 	Time to reach congestion window of 45 segments = 56 ms × log2(45/4 ) = 224 ms
 
 	4RTT & 224ms to reach 64 KB of throughput between the client and server! 
@@ -323,13 +323,17 @@ Integrity
 
 TLS Handshake:
 *****************
- Regular TCP SYN,SYN-ACK,ACK
- Server gives public certificate , an optional 32 byte sessionid
- Client makes symmetric key based on Server Public certificate, stores the server sessionid if given
- Server receives Client symmetric key
- Data encrypted based on symmetric key.
- The shared sessionid can make the symmetric key generation a onetime action for subsequent page requests.
- Session Keys can help if the server cannot handle huge loads of unique sessionids, the data now is stored on the client side.	
+1| Regular TCP SYN,SYN-ACK,ACK
+2| The client sends the server the client SSL version number, cipher settings, session-specific data, and other information that the server needs to communicate with the client using SSL.
+3| The server sends the client the server SSL version number, cipher settings, session-specific data, and other information that the client needs to communicate with the server over SSL. The server also sends its own certificate, and if the client is requesting a server resource that requires client authentication, the server requests the client certificate.
+4| The client uses the information sent by the server to authenticate the server—e.g., in the case of a web browser connecting to a web server, the browser checks whether the received certificate subject name actually matches the name of the server being contacted, whether the issuer of the certificate is a trusted certificate authority, whether the certificate has expired, and, ideally, whether the certificate has been revoked.[7] If the server cannot be authenticated, the user is warned of the problem and informed that an encrypted and authenticated connection cannot be established. If the server can be successfully authenticated, the client proceeds to the next step.
+5| Using all data generated in the handshake thus far, the client (with the cooperation of the server, depending on the cipher in use) creates the pre-master secret for the session, encrypts it with the server public key (obtained from the server certificate, sent in step 2), and then sends the encrypted pre-master secret to the server.
+6| If the server has requested client authentication (an optional step in the handshake), the client also signs another piece of data that is unique to this handshake and known by both the client and server. In this case, the client sends both the signed data and the client own certificate to the server along with the encrypted pre-master secret.
+7| If the server has requested client authentication, the server attempts to authenticate the client. If the client cannot be authenticated, the session ends. If the client can be successfully authenticated, the server uses its private key to decrypt the pre-master secret, and then performs a series of steps (which the client also performs, starting from the same pre-master secret) to generate the master secret.
+8| Both the client and the server use the master secret to generate the session keys, which are symmetric keys used to encrypt and decrypt information exchanged during the SSL session and to verify its integrity (that is, to detect any changes in the data between the time it was sent and the time it is received over the SSL connection).
+9| The client sends a message to the server informing it that future messages from the client will be encrypted with the session key. It then sends a separate (encrypted) message indicating that the client portion of the handshake is finished.
+10| The server sends a message to the client informing it that future messages from the server will be encrypted with the session key. It then sends a separate (encrypted) message indicating that the server portion of the handshake is finished.
+11| Session Keys can help if the server cannot handle huge loads of unique sessionids, the data now is stored on the client side.	
 
 ALPN:
 *******
