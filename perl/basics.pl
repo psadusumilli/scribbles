@@ -36,9 +36,29 @@ my $a = 0 || 1;
 my $b = 0 or 1;
 print "$a $b\n"; # a=1, since || has higher precedence than =
 
+#ternary operator
 my $c = $a==0? "hey": $b==0? "dude":"bum";
 print $c."\n"; 
+my $d = \$c;
+print "reference of c=$d\n";
 
 #file----------------------------------------------------------------------------------
-open(my $myfile,'file.txt') or print "cannot open file";
+open(my $myfile,'>file.txt') or print "cannot open file";
+print $myfile "respect ma authorita\n";
+close($myfile);
+
+#arrays -------------------------------------------------------------------------------
+my @arr = qw("abc", 1, 3.14);
+print "array=$arr[0] $arr[-1]\n";
+
+push(@arr,qw(4, 5));#add to end of array
+foreach my $i (@arr){
+   print "$i,";	
+}
+my $popped = pop(@arr); #pop from end of array
+print "\npopped=$popped\n";
+
+unshift(@arr,qw(11,12)); #add to start of array
+my $shifted = shift(@arr); #take from start of array
+print "shifted=$shifted"; 
 
