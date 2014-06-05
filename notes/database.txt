@@ -11,7 +11,7 @@ object-relational model - mix
 
 'types'
 1| transactional - small crud in transactions
-	client-server => smaller	scala, within intranet for a company
+	client-server => smaller scale, within intranet for a company
  	oltp => online transaction processing, large scala, public e-commerce websites.
 2| decision support
 	data warehouse => historical data archived from transactional dbs, used for forecasting

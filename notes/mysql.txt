@@ -105,7 +105,7 @@ ACID:
 -----*
 transactions=> start <sqls> commit|rollback
 Atomicity=> all or nothing
-Consistency=> db moves from one consistent state to another
+ 	Consistency=> db moves from one consistent state to another
 Isolation=> transactions effects visibility 
 Durability=> once committed, its not lost.
 
@@ -189,7 +189,7 @@ supports full-text indexes, which index individual words for complex search oper
 6|'federated':  just a proxy to a remote server, executes sqls there and then returns results here.
 
 7|'memory':
-formerly called HEAP tables)
+formerly called HEAP tables
 are useful when you need fast access to data that either never changes or doesn’t need to persist after a restart. 
 can be up to an order of magnitude faster than MyISAM tables. 
 stored in memory, so queries don’t have to wait for disk I/O. 
@@ -217,7 +217,7 @@ sysbench=> tool for benchmarking
 just general guidelines, nothing specific
 'profiling:'
 -----------*
-measure of sql query occurrences with response times over a fixed observatopn period.
+measure of sql query occurrences with response times over a fixed observation period.
 execution-time profing=>sqls that take more cpu time
 wait-analysis=>sqls blocked waiting for other sqls
 'show status' was the only instrumentation data before 5.1, now 'performance schema' is available.
