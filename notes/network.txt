@@ -538,7 +538,7 @@ Stream, Messages and Frames
 • The frame is the smallest unit of communication, which carries a specific type of data—e.g., HTTP headers, payload, and so on.
 • Interleave multiple requests in parallel without blocking on any one
 • Interleave multiple responses in parallel without blocking on any one
-• Use a single single connection to deliver multiple requests and responses in parallel
+• Use a single  connection to deliver multiple requests and responses in parallel
 • Deliver lower page load times by eliminating unnecessary latency
 • Remove unnecessary HTTP 1.x workarounds from our application code
 • Avoid Head of Line Blocking.
