@@ -56,7 +56,21 @@ Infrastructure is heavily based on 'Debian' and open source software in general.
 PINTEREST
 #########
 
+We use 'python' + heavily-modified 'Django' at the application layer. 
+'Tornado and (very selectively) node.js' as web-servers. 
+'Memcached' and membase / redis for object- and logical-caching, respectively.  
+'RabbitMQ' as a message queue.  
+'Nginx, HAproxy and Varnish' for 'static'-delivery and load-balancing.  
+Persistent data storage using 'MySQL'.  70 master databases with a parallel set of backup databases in different regions around the world for redundancy.
+'MrJob' on EMR for map-reduce.
 
+EC2:
+	150 EC2 instances in the web tier.
+	90 instances for in-memory caching, which removes database load.
+	35 instances used for internal purposes.
+
+
+	
 
 
 
