@@ -75,7 +75,9 @@ my @scores = ( 1000, 13, 27, 200, 76, 150 );
 my @sorted_array = sort {$x1<=>$x2} (@scores);
 print "\n".Dumper \@sorted_array ;
 
-
+my @greets = qw ( hello there );
+splice(@greets, 1, 0, 'out');
+print join(" ", @greets );
 
 
 
