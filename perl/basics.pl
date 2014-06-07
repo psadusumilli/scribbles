@@ -1,6 +1,7 @@
 #!/bin/perl
 use warnings;
 use strict;
+use Data::Dumper;
 
 print "hello world\n";
 
@@ -53,12 +54,34 @@ print "array=$arr[0] $arr[-1]\n";
 
 push(@arr,qw(4, 5));#add to end of array
 foreach my $i (@arr){
-   print "$i,";	
+   print "$i,";
 }
 my $popped = pop(@arr); #pop from end of array
 print "\npopped=$popped\n";
 
 unshift(@arr,qw(11,12)); #add to start of array
 my $shifted = shift(@arr); #take from start of array
-print "shifted=$shifted"; 
+print "shifted=$shifted";
+
+my @sorted = sort(@arr);
+print "\nsorted=";
+foreach my $j (@sorted){
+   print "$j,";
+}
+
+my $x1 = 0;
+my $x2 = 0;
+my @scores = ( 1000, 13, 27, 200, 76, 150 );
+my @sorted_array = sort {$x1<=>$x2} (@scores);
+print "\n".Dumper \@sorted_array ;
+
+
+
+
+
+
+
+
+
+
 
