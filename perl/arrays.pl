@@ -1,3 +1,7 @@
+#!/bin/perl
+use warnings;
+use strict;
+use Data::Dumper;
 
 #arrays -------------------------------------------------------------------------------
 my @arr = qw("abc", 1, 3.14);
@@ -43,4 +47,14 @@ $matrix[0][0] = 'zero-zero';
 $matrix[1][1] = 'one-one';
 $matrix[1][2] = 'one-two';
 print "\n".Dumper \@matrix;
+
+
+
+
+
+
+
+
+
+
 
