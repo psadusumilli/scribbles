@@ -1,6 +1,7 @@
 #!/bin/perl
 use warnings;
 use strict;
+use Data::Dumper;
 
 print "hello world\n";
 
@@ -46,19 +47,4 @@ print "reference of c=$d\n";
 open(my $myfile,'>file.txt') or print "cannot open file";
 print $myfile "respect ma authorita\n";
 close($myfile);
-
-#arrays -------------------------------------------------------------------------------
-my @arr = qw("abc", 1, 3.14);
-print "array=$arr[0] $arr[-1]\n";
-
-push(@arr,qw(4, 5));#add to end of array
-foreach my $i (@arr){
-   print "$i,";	
-}
-my $popped = pop(@arr); #pop from end of array
-print "\npopped=$popped\n";
-
-unshift(@arr,qw(11,12)); #add to start of array
-my $shifted = shift(@arr); #take from start of array
-print "shifted=$shifted"; 
 
