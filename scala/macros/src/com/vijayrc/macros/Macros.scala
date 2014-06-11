@@ -1,6 +1,7 @@
 package com.vijayrc.macros
 
 import scala.reflect.macros.Context
+import scala.language.experimental.macros;
 
 object Macros {
   sealed trait Flow

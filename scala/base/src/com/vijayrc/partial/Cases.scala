@@ -21,7 +21,7 @@ object Cases extends App{
   }
   println(x)
 
-  /*2 - cases in partial functions/execeptions.
+  /*2 - cases in partial functions/exceptions.
   Partial function unlike a total function, can apply to subset of arguments*/
   val list: List[Any] = List(41, "cat", 32f)
   try{
