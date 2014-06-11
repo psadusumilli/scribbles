@@ -10,11 +10,9 @@ sub ping{
   print Dumper \@args;
   print "left=$left|right=$right";		
 }
-
 my $a1 = "cartman";
 my $a2 = "kenny";
 my $a3 = "kyle";
-
 ping($a1,$a2,$a3);
 
 #args passed by COPY, so changes are NOT reflected -BOOK NOT RIGHT--------------
@@ -41,7 +39,6 @@ sub m2 {
 sub m1 {
   &m2; #using '&' sigil will pass @_ implicitly.
   m2; #not passed implcitly
-    
 }
 m1(1,2,3);
 #returning values---------------------------------------------------------------
@@ -53,7 +50,15 @@ sub ret_arr {return (1,2,3);}
 my @arr_var =ret_arr;
 print Dumper \@arr_var;
 
-
+#closure:using $cnt declared outside functions----------------------------------
+{
+  my $cnt=0;
+  sub inc{$cnt++; print "inc:cnt=$cnt\n";}
+  sub dec{$cnt--; print "dec:cnt=$cnt\n";}
+}
+inc;inc;inc;
+dec;dec;
+inc;
 
 
 
