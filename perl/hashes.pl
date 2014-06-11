@@ -1,4 +1,6 @@
 #!/bin/perl
+package hashes;
+
 use warnings;
 use strict;
 use Data::Dumper;
