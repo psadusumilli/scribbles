@@ -1,4 +1,6 @@
 #!/bin/perl
+package arrays;
+
 use warnings;
 use strict;
 use Data::Dumper;

@@ -1,4 +1,6 @@
 #!/bin/perl
+package basics;
+
 use warnings;
 use strict;
 use Data::Dumper;
