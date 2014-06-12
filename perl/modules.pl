@@ -6,3 +6,8 @@ use lib '/home/vijayrc/projs/VRC5/scribbles/perl/modules'; #or use PERLLIB env v
 use dog;
 
 dog::speak;
+dog->speak; #method call
+
+use sheppard;
+sheppard->speak(3);
+sheppard->track;
