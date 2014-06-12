@@ -1,8 +1,0 @@
-package Dog;
-#!/bin/perl
-use warnings;
-use strict;
-
-sub Speak { print "Woof!\n"; }
-1; # MUST BE LAST STATEMENT IN FILE
-
