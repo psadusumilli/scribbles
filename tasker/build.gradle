@@ -1,12 +1,39 @@
-apply plugin: 'java'
+subprojects{
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    version = '1.0'
+    sourceCompatibility = '1.8'
 
-sourceCompatibility = 1.8
+    repositories {
+        mavenCentral()
+        mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
+    }
+    dependencies {
+        compile 'commons-lang:commons-lang:2.5'
+        compile 'org.apache.logging.log4j:log4j-api:2.0-rc2'
+        compile 'org.apache.logging.log4j:log4j-core:2.0-rc2'
+        testCompile 'junit:junit:4.1'
+        testCompile 'org.mockito:mockito-all:1.9.5'
+    }
+}
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+httpPort = 9090
 version = '1.0'
+sourceCompatibility = '1.8'
 
 repositories {
     mavenCentral()
+    mavenRepo name:'maven-repo', url:'http://mvnraepository.com/artifact'
+}
+dependencies{
+    compile project(':rest')
+    compile 'org.apache.logging.log4j:log4j-api:2.0-rc2'
+    compile 'org.apache.logging.log4j:log4j-core:2.0-rc2'
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    testCompile 'junit:junit:4.1'
+    testCompile 'org.mockito:mockito-all:1.9.5'
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-}
+
