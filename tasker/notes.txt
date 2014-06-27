@@ -1,0 +1,6 @@
+Create a gradle project tasker
+Add web.xml and web dependencies to its gradle file
+Add modules rest and domain to tasker
+Add ServletContainer to web.xml
+gradle build
+gradle jettyRunWar - > http://localhost:9090/tasker/rest/tasks
