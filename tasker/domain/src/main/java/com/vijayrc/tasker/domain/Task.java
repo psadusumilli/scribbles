@@ -1,9 +1,7 @@
 package com.vijayrc.tasker.domain;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
-@XmlRootElement
 public class Task {
     private String title;
     private String summary;
@@ -17,5 +15,17 @@ public class Task {
         task.startBy = startBy;
         task.endBy = endBy;
         return task;
+    }
+    public String title() {
+        return title;
+    }
+    public String startBy(){
+        return startBy != null ? startBy.toString():"";
+    }
+    public String endBy(){
+        return endBy != null ? endBy.toString():"";
+    }
+    public String summary(){
+        return summary;
     }
 }

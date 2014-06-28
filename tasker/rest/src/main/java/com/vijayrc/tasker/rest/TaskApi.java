@@ -1,7 +1,7 @@
 package com.vijayrc.tasker.rest;
 
-import com.vijayrc.tasker.domain.Task;
-import com.vijayrc.tasker.repository.AllTasks;
+import com.vijayrc.tasker.service.TaskService;
+import com.vijayrc.tasker.view.TaskView;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -10,9 +10,8 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("tasks")
-public class TaskResource {
-
-    private AllTasks allTasks = new AllTasks();
+public class TaskApi {
+    private TaskService service = new TaskService();
 
     @GET
     @Path("explain")
@@ -22,9 +21,9 @@ public class TaskResource {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<Task> all(){
-        return allTasks.all();
+    @Produces(MediaType.APPLICATION_XML)
+    public List<TaskView> all(){
+        return service.getAll();
     }
 
 }
