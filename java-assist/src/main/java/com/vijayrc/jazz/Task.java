@@ -6,7 +6,7 @@ import java.util.Date;
 
 @View
 public class Task {
-    private Long id;
+    public Long id;
     private String title;
     private String summary;
     private Date startBy;

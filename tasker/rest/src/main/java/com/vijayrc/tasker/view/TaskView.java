@@ -6,7 +6,6 @@ import javax.ws.rs.BeanParam;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-@BeanParam
 public class TaskView {
     private String title;
     private String summary;

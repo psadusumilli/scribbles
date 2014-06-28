@@ -74,13 +74,31 @@ public class AllTests {
     @Test
     public void shouldGenerateGettersSetters() throws Exception {
         ClassPool pool = ClassPool.getDefault();
+        CtClass ctClass1 = pool.get("java.lang.String");
+        CtClass ctClass2 = pool.get("java.lang.Long");
+
+
         Reflections reflections = new Reflections("com.vijayrc");
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(View.class);
         for (Class<?> aClass : classes) {
             CtClass ctClass = pool.get(aClass.getName());
-            
+            for (Field field : aClass.getDeclaredFields()) {
+                String fieldName = field.getName();
+                CtMethod getter  = new CtMethod(pool.get(field.getGenericType().getTypeName()),"get"+fieldName,null,ctClass);
+                getter.setBody("return " + fieldName + ";");
+                ctClass.addMethod(getter);
+            }
+            print(aClass.getResource("/").getFile());
+            ctClass.writeFile(aClass.getResource("/").getFile());
         }
+    }
 
+    @Test
+    public void shouldCheckOnFile() throws Exception {
+        Task t = Task.class.newInstance();
+        for (Method method : t.getClass().getMethods()) {
+            print(method);
+        }
     }
 
 }
