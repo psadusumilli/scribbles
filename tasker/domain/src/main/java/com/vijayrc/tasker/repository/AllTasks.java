@@ -19,10 +19,13 @@ public class AllTasks {
             now = now.plusDays(i);
         }
     }
-
     public List<Task> all(){
-       log.info("return tasks size:"+tasks.size());
-        System.out.println(tasks.size());
+       log.info("tasks size:" + tasks.size());
        return tasks;
+    }
+    public Task getFor(String id) {
+        Task task = tasks.stream().filter(t -> t.hasId(id)).findFirst().get();
+        log.info("task:"+task);
+        return task;
     }
 }

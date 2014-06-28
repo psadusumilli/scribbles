@@ -14,4 +14,8 @@ public class TaskService {
         allTasks.all().forEach(t -> views.add(TaskView.createFrom(t)));
         return views;
     }
+
+    public TaskView getFor(String id) {
+        return TaskView.createFrom(allTasks.getFor(id));
+    }
 }

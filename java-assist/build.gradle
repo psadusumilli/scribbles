@@ -8,5 +8,6 @@ repositories {
 }
 dependencies {
     compile 'org.javassist:javassist:3.18.0-GA'
+    compile 'org.reflections:reflections:0.9.9-RC1'
     testCompile 'junit:junit:4.11'
 }

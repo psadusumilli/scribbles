@@ -1,9 +1,12 @@
 package com.vijayrc.tasker.view;
 
 import com.vijayrc.tasker.domain.Task;
+
+import javax.ws.rs.BeanParam;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
+@BeanParam
 public class TaskView {
     private String title;
     private String summary;
@@ -12,10 +15,12 @@ public class TaskView {
 
     public static TaskView createFrom(Task task){
         TaskView taskView = new TaskView();
-        taskView.title = task.title();
-        taskView.summary = task.summary();
-        taskView.startBy = task.startBy();
-        taskView.endBy = task.endBy();
+        if(task != null){
+            taskView.title = task.title();
+            taskView.summary = task.summary();
+            taskView.startBy = task.startBy();
+            taskView.endBy = task.endBy();
+        }
         return taskView;
     }
 

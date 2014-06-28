@@ -1,10 +1,15 @@
 package com.vijayrc.jazz;
 
+import com.vijayrc.bean.View;
 import javassist.*;
 import org.junit.Test;
+import org.reflections.Reflections;
+import sun.reflect.Reflection;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import static com.vijayrc.jazz.Log.print;
 import static org.junit.Assert.assertEquals;
@@ -64,6 +69,18 @@ public class AllTests {
         cc.addField(f);
         cc.writeFile(".");
         print(String.class.getField("hiddenValue").getName());
+    }
+
+    @Test
+    public void shouldGenerateGettersSetters() throws Exception {
+        ClassPool pool = ClassPool.getDefault();
+        Reflections reflections = new Reflections("com.vijayrc");
+        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(View.class);
+        for (Class<?> aClass : classes) {
+            CtClass ctClass = pool.get(aClass.getName());
+            
+        }
+
     }
 
 }
