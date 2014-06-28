@@ -2,6 +2,7 @@ package com.vijayrc.jazz;
 
 import com.vijayrc.bean.View;
 import javassist.*;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.reflections.Reflections;
 import sun.reflect.Reflection;
@@ -12,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import static com.vijayrc.jazz.Log.print;
+import static org.apache.commons.lang.StringUtils.capitalize;
 import static org.junit.Assert.assertEquals;
 
 public class AllTests {
@@ -74,19 +76,21 @@ public class AllTests {
     @Test
     public void shouldGenerateGettersSetters() throws Exception {
         ClassPool pool = ClassPool.getDefault();
-        CtClass ctClass1 = pool.get("java.lang.String");
-        CtClass ctClass2 = pool.get("java.lang.Long");
-
-
         Reflections reflections = new Reflections("com.vijayrc");
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(View.class);
         for (Class<?> aClass : classes) {
             CtClass ctClass = pool.get(aClass.getName());
             for (Field field : aClass.getDeclaredFields()) {
                 String fieldName = field.getName();
-                CtMethod getter  = new CtMethod(pool.get(field.getGenericType().getTypeName()),"get"+fieldName,null,ctClass);
+                CtClass fieldType = pool.get(field.getGenericType().getTypeName());
+
+                CtMethod getter  = new CtMethod(fieldType,"get"+ capitalize(fieldName), null, ctClass);
                 getter.setBody("return " + fieldName + ";");
                 ctClass.addMethod(getter);
+
+                CtMethod setter  = new CtMethod(CtClass.voidType, "set"+ capitalize(fieldName), new CtClass[]{fieldType},ctClass);
+                setter.setBody("this." + fieldName + " = $1;");
+                ctClass.addMethod(setter);
             }
             print(aClass.getResource("/").getFile());
             ctClass.writeFile(aClass.getResource("/").getFile());
@@ -95,10 +99,16 @@ public class AllTests {
 
     @Test
     public void shouldCheckOnFile() throws Exception {
-        Task t = Task.class.newInstance();
-        for (Method method : t.getClass().getMethods()) {
+        Task t = new Task();
+        t.id = 1l;
+        for (Method method : t.getClass().getDeclaredMethods()) {
             print(method);
         }
+        Method getId = t.getClass().getDeclaredMethod("getId");
+        Method setId = t.getClass().getDeclaredMethod("setId");
+        setId.invoke(t,100l);
+        print(getId.invoke(t));
+
     }
 
 }
