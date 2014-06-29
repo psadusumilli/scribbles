@@ -19,6 +19,9 @@ public class Task {
         task.endBy = endBy;
         return task;
     }
+    public String id() {
+        return id.toString();
+    }
     public String title() {
         return title;
     }
