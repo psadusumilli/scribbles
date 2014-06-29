@@ -3,7 +3,6 @@ package com.vijayrc.bean;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import javassist.NotFoundException;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
@@ -15,7 +14,7 @@ public class Enhance {
     public static void main(String[] args) throws Exception {
         print("start:.....");
         ClassPool pool = ClassPool.getDefault();
-        Reflections reflections = new Reflections("com.vijayrc");
+        Reflections reflections = new Reflections(args[0]);
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(View.class);
         for (Class<?> aClass : classes) {
             CtClass ctClass = pool.get(aClass.getName());

@@ -16,5 +16,6 @@ dependencies {
 task ( enhance, type: JavaExec ) {
     print "enhancing byte codes.."
     main = 'com.vijayrc.bean.Enhance'
+    args("com.vijayrc")
     classpath = sourceSets.main.runtimeClasspath
 }
