@@ -92,7 +92,6 @@ public class AllTests {
                 setter.setBody("this." + fieldName + " = $1;");
                 ctClass.addMethod(setter);
             }
-            print(aClass.getResource("/").getFile());
             ctClass.writeFile(aClass.getResource("/").getFile());
         }
     }
@@ -103,12 +102,15 @@ public class AllTests {
         t.id = 1l;
         for (Method method : t.getClass().getDeclaredMethods()) {
             print(method);
+            if(method.getName().equals("setTitle")){
+                method.invoke(t,"ttt");
+            }
+            method.setAccessible(true);
         }
         Method getId = t.getClass().getDeclaredMethod("getId");
-        Method setId = t.getClass().getDeclaredMethod("setId");
-        setId.invoke(t,100l);
+        Method getTitle= t.getClass().getDeclaredMethod("getTitle");
         print(getId.invoke(t));
-
+        print(getTitle.invoke(t));
     }
 
 }
