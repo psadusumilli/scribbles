@@ -35,10 +35,11 @@ public class Task {
         return summary;
     }
     public boolean hasId(String id){
-        return this.id.toString().endsWith(id);
+        return this.id.toString().equals(id);
     }
     @Override
     public String toString() {
         return "Task["+id+"|"+title+"]";
     }
+
 }

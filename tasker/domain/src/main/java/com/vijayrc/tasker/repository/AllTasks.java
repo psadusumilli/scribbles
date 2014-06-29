@@ -24,8 +24,9 @@ public class AllTasks {
        return tasks;
     }
     public Task getFor(String id) {
+        log.info("fetching for: "+id);
         Task task = tasks.stream().filter(t -> t.hasId(id)).findFirst().get();
-        log.info("task:"+task);
+        log.info("task: "+task);
         return task;
     }
 }

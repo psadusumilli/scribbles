@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="filename">tasker.log</Property>
+    </Properties>
+    <Filter type="ThresholdFilter" level="debug"/>
+    <Appenders>
+        <Console name="ca">
+            <PatternLayout pattern="%C{1}.%M %m %ex%n"/>
+        </Console>
+        <File name="fa" fileName="${filename}">
+            <PatternLayout>
+                <pattern>%d %p %C{1.} [%t] %m%n</pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="ca"/>
+            <AppenderRef ref="fa"/>
+        </Root>
+    </Loggers>
+</Configuration>

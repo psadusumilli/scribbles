@@ -2,5 +2,7 @@ Create a gradle project tasker
 Add web.xml and web dependencies to its gradle file
 Add modules rest and domain to tasker
 Add ServletContainer to web.xml
-gradle enhance -> add java bytes
+
+gradle clean -> clean
+gradle enhance -> will compile and add java bytes
 gradle jettyRunWar - > http://localhost:9090/tasker/rest/tasks
