@@ -1,7 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
+apply plugin: 'maven'
 
 version = '1.0'
+group = 'com.vijayrc.enhancer'
 
 repositories {
     mavenCentral()
@@ -21,4 +23,11 @@ task ( enhance, type: JavaExec ) {
     args("com.vijayrc")
     classpath = sourceSets.main.runtimeClasspath
     print "end: enhancing classes"
+}
+sourceSets {
+    main {
+        resources {
+            exclude 'log4j2.xml'
+        }
+    }
 }

@@ -4,6 +4,7 @@ subprojects{
     version = '1.0'
 
     repositories {
+        mavenLocal()
         mavenCentral()
         mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
     }
@@ -11,6 +12,7 @@ subprojects{
         compile 'commons-lang:commons-lang:2.5'
         compile 'org.apache.logging.log4j:log4j-api:2.0-rc2'
         compile 'org.apache.logging.log4j:log4j-core:2.0-rc2'
+        compile 'com.vijayrc.enhancer:enhancer:1.0'
         testCompile 'junit:junit:4.1'
         testCompile 'org.mockito:mockito-all:1.9.5'
     }
@@ -22,6 +24,7 @@ httpPort = 9090
 version = '1.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
     mavenRepo name:'maven-repo', url:'http://mvnraepository.com/artifact'
 }
@@ -34,4 +37,10 @@ dependencies{
     testCompile 'org.mockito:mockito-all:1.9.5'
 }
 
-
+task ( enhance, type: JavaExec ) {
+    print "start: enhancing classes.."
+    main = 'com.vijayrc.repo.AllEnhancers'
+    args("com.vijayrc.tasker")
+    classpath = sourceSets.main.runtimeClasspath
+    print "end: enhancing classes"
+}

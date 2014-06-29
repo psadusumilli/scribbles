@@ -19,13 +19,18 @@ public class AllEnhancers {
     }
     public void run(String packageName) throws Exception{
         for (Enhancer enhancer : enhancers){
-            log.info(enhancer.name()+"--------------------#start");
+            log.info(enhancer.name() + "--------------------#start");
             enhancer.run(packageName);
-            log.info(enhancer.name()+"--------------------#end");
+            log.info(enhancer.name() + "--------------------#end");
         }
     }
     public static void main(String[] args) throws Exception {
-        new AllEnhancers().run("com.vijayrc");
+        try {
+            new AllEnhancers().run("com.vijayrc");
+        } catch (Exception e) {
+            log.error(e);
+            e.printStackTrace();
+        }
     }
 }
 
