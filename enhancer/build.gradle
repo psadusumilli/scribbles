@@ -1,0 +1,24 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile 'org.javassist:javassist:3.18.0-GA'
+    compile 'org.reflections:reflections:0.9.9-RC1'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'org.apache.logging.log4j:log4j-api:2.0-rc2'
+    compile 'org.apache.logging.log4j:log4j-core:2.0-rc2'
+
+    testCompile 'junit:junit:4.11'
+}
+task ( enhance, type: JavaExec ) {
+    print "start: enhancing classes.."
+    main = 'com.vijayrc.repo.AllEnhancers'
+    args("com.vijayrc")
+    classpath = sourceSets.main.runtimeClasspath
+    print "end: enhancing classes"
+}
