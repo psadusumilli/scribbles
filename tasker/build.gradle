@@ -38,9 +38,7 @@ dependencies{
 }
 
 task ( enhance, type: JavaExec ) {
-    print "start: enhancing classes.."
     main = 'com.vijayrc.repo.AllEnhancers'
     args("com.vijayrc.tasker")
     classpath = sourceSets.main.runtimeClasspath
-    print "end: enhancing classes"
 }
