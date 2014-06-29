@@ -31,6 +31,12 @@ public class BeanEnhancer implements Enhancer{
             ctClass.writeFile(aClass.getResource("/").getFile());
         }
     }
+
+    @Override
+    public String name() {
+        return "BeanEnhancer";
+    }
+
     private void setter(CtClass ctClass, String fieldName, CtClass fieldType) throws CannotCompileException {
         CtMethod setter  = new CtMethod(CtClass.voidType, "set"+ capitalize(fieldName), new CtClass[]{fieldType}, ctClass);
         setter.setBody("this." + fieldName + " = $1;");
