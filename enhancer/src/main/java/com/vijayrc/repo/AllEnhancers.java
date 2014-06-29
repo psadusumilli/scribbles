@@ -15,16 +15,16 @@ public class AllEnhancers {
     public AllEnhancers() throws Exception {
         Reflections reflections = new Reflections("com.vijayrc.enhancer");
         for (Class<? extends Enhancer> aClass : reflections.getSubTypesOf(Enhancer.class))
-            this.enhancers.add(aClass.newInstance());
+            enhancers.add(aClass.newInstance());
     }
-
+    public void run(String packageName) throws Exception{
+        for (Enhancer enhancer : enhancers)
+            enhancer.run(packageName);
+    }
     public static void main(String[] args) throws Exception {
         log.info("start:...");
-        AllEnhancers allEnhancers = new AllEnhancers();
-        log.info(allEnhancers.enhancers.size());
+        new AllEnhancers().run(args[0]);
         log.info("end:...");
     }
-
-
 }
 
