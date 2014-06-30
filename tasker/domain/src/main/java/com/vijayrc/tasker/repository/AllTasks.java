@@ -26,7 +26,6 @@ public class AllTasks {
     public AllTasks(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }
-
     public List<Task> all(){
         List<Task> tasks = template.query("select * from tasks", new TaskMapper());
         log.info("tasks size:" + tasks.size());
@@ -34,8 +33,9 @@ public class AllTasks {
     }
     public Task getFor(String id) {
         log.info("fetching for: "+id);
-        Task task = all().stream().filter(t -> t.hasId(id)).findFirst().get();
-        log.info("task: "+task);
+        List<Task> tasks = template.query("select * from tasks where id = ?", new Object[]{id}, new TaskMapper());
+        Task task = tasks.isEmpty()? null:tasks.get(0);
+        log.info(task);
         return task;
     }
 
