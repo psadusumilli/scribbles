@@ -18,8 +18,10 @@ subprojects{
         compile 'org.glassfish.jersey.ext:jersey-spring3:2.10'
         compile 'org.springframework:spring-jdbc:4.0.5.RELEASE'
 
-        testCompile 'junit:junit:4.1'
+        testCompile 'junit:junit:4.11'
         testCompile 'org.mockito:mockito-all:1.9.5'
+        testCompile 'org.springframework:spring-test:4.0.5.RELEASE'
+
     }
 }
 apply plugin: 'war'
@@ -42,8 +44,9 @@ dependencies{
     compile 'org.springframework:spring-jdbc:4.0.5.RELEASE'
 
     providedCompile 'javax.servlet:servlet-api:2.5'
-    testCompile 'junit:junit:4.1'
+    testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'org.springframework:spring-test:4.0.5.RELEASE'
 }
 
 task ( enhance, type: JavaExec ) {
