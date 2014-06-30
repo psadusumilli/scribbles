@@ -1,26 +1,27 @@
 package com.vijayrc.tasker.domain;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 public class Task {
-    private UUID id;
+    private String id;
     private String title;
     private String summary;
-    private LocalDateTime startBy;
-    private LocalDateTime endBy;
+    private Date startBy;
+    private Date endBy;
 
-    public static Task create(String title, String summary, LocalDateTime startBy, LocalDateTime endBy) {
-        Task task = new Task();
-        task.id = UUID.randomUUID();
-        task.title = title;
-        task.summary = summary;
-        task.startBy = startBy;
-        task.endBy = endBy;
-        return task;
+    public Task(String id, String title, String summary, Date startBy, Date endBy) {
+        this.id = id;
+        this.title = title;
+        this.summary = summary;
+        this.startBy = startBy;
+        this.endBy = endBy;
+    }
+    public static Task create(String title, String summary, Date startBy, Date endBy) {
+        return new Task(UUID.randomUUID().toString(),title,summary,startBy,endBy);
     }
     public String id() {
-        return id.toString();
+        return id;
     }
     public String title() {
         return title;
@@ -35,7 +36,7 @@ public class Task {
         return summary;
     }
     public boolean hasId(String id){
-        return this.id.toString().equals(id);
+        return this.id.equals(id);
     }
     @Override
     public String toString() {
