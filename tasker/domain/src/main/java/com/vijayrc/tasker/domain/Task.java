@@ -10,6 +10,9 @@ public class Task {
     private Date startBy;
     private Date endBy;
 
+    public Task() {
+    }
+
     public Task(String id, String title, String summary, Date startBy, Date endBy) {
         this.id = id;
         this.title = title;

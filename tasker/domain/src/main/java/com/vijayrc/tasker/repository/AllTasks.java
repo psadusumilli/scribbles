@@ -3,6 +3,7 @@ package com.vijayrc.tasker.repository;
 import com.vijayrc.tasker.domain.Task;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,6 +22,7 @@ public class AllTasks {
     private static Logger log = LogManager.getLogger(AllTasks.class);
     private JdbcTemplate template;
 
+    @Autowired
     public AllTasks(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }
