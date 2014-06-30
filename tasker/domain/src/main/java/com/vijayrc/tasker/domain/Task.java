@@ -1,17 +1,17 @@
 package com.vijayrc.tasker.domain;
 
+import com.vijayrc.meta.NoArgsConstr;
+
 import java.util.Date;
 import java.util.UUID;
 
+@NoArgsConstr
 public class Task {
     private String id;
     private String title;
     private String summary;
     private Date startBy;
     private Date endBy;
-
-    public Task() {
-    }
 
     public Task(String id, String title, String summary, Date startBy, Date endBy) {
         this.id = id;
