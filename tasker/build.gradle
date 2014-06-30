@@ -16,6 +16,8 @@ subprojects{
         compile 'com.h2database:h2:1.4.178'
         compile 'org.springframework:spring-context:4.0.5.RELEASE'
         compile 'org.glassfish.jersey.ext:jersey-spring3:2.10'
+        compile 'org.springframework:spring-jdbc:4.0.5.RELEASE'
+
         testCompile 'junit:junit:4.1'
         testCompile 'org.mockito:mockito-all:1.9.5'
     }
@@ -37,6 +39,8 @@ dependencies{
     compile 'org.apache.logging.log4j:log4j-core:2.0-rc2'
     compile 'org.glassfish.jersey.ext:jersey-spring3:2.10'
     compile 'org.springframework:spring-context:4.0.5.RELEASE'
+    compile 'org.springframework:spring-jdbc:4.0.5.RELEASE'
+
     providedCompile 'javax.servlet:servlet-api:2.5'
     testCompile 'junit:junit:4.1'
     testCompile 'org.mockito:mockito-all:1.9.5'
