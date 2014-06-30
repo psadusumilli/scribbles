@@ -6,3 +6,12 @@ Add ServletContainer to web.xml
 gradle clean -> clean
 gradle enhance -> will compile and add java bytes
 gradle jettyRunWar - > http://localhost:9090/tasker/rest/tasks
+
+-----------------------------------------------------------------------------------------------
+Jersey notes:
+--------------
+@Produces
+----------
+@Produces({"application/xml", "application/json"}) -> will send xml first by default
+@Produces({"application/xml; qs=0.9", "application/json"}) -> will send json as xml has a lower quality factor 0.9<1
+If client's Accept header is " Accept: text/plain;q=0.9, text/html" -> both are ok but html is preferred.

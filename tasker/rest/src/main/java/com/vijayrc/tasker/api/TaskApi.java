@@ -5,10 +5,7 @@ import com.vijayrc.tasker.view.TaskView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -25,15 +22,21 @@ public class TaskApi {
         return "resource to track all my tasks";
     }
     @GET
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({"application/xml", "application/json"})
     public List<TaskView> all(){
-        return service.getAll();
+        return service.getAll(); //TODO write a client to do accept header
     }
     @GET
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({"application/xml", "application/json"})
     public TaskView get(@PathParam("id") String id){
        return service.getFor(id);
+    }
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_XML)
+    public void delete(@PathParam("id") String id){
+        service.remove(id);
     }
 
 }

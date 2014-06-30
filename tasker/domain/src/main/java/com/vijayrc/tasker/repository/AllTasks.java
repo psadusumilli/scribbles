@@ -39,6 +39,11 @@ public class AllTasks {
         return task;
     }
 
+    public void remove(String id) {
+        template.update("delete from tasks where id = ?",id);
+        log.info("deleted: "+id);
+    }
+
     private static final class TaskMapper implements RowMapper<Task>{
         @Override
         public Task mapRow(ResultSet rs, int rowNum) throws SQLException {
