@@ -1,6 +1,7 @@
 package com.vijayrc.tasker.repository;
 
 import com.vijayrc.tasker.domain.Task;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ import java.util.List;
 
 @Repository
 @Scope("singleton")
+@Log4j2
 public class AllTasks {
-    private static Logger log = LogManager.getLogger(AllTasks.class);
     private JdbcTemplate template;
 
     @Autowired

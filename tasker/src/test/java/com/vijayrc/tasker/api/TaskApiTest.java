@@ -1,9 +1,11 @@
 package com.vijayrc.tasker.api;
 
 import com.vijayrc.tasker.view.TaskView;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
@@ -13,18 +15,18 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static com.vijayrc.tasker.config.TestConfig.baseUrl;
 import static org.junit.Assert.assertNotNull;
 
+@Log4j2
+@Ignore
 public class TaskApiTest {
-    private static Logger log = LogManager.getLogger(TaskApiTest.class);
     private Client client;
     private WebTarget target;
 
     @Before
     public void setup(){
         client = ClientBuilder.newClient();
-        target = client.target(baseUrl).path("tasks");
+        target = client.target("http://localhost:9090/tasker/rest/").path("tasks");
     }
     @Test
     public void shouldReturnAllTasksAsTypeFromXml(){

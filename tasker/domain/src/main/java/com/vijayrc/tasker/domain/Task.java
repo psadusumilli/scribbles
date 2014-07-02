@@ -1,12 +1,9 @@
 package com.vijayrc.tasker.domain;
 
-import com.vijayrc.meta.NoArgsConstr;
-import com.vijayrc.meta.ToString;
+import lombok.ToString;
 
 import java.util.Date;
-import java.util.UUID;
 
-@NoArgsConstr
 @ToString
 public class Task {
     private String id;
@@ -22,9 +19,7 @@ public class Task {
         this.startBy = startBy;
         this.endBy = endBy;
     }
-    public static Task create(String title, String summary, Date startBy, Date endBy) {
-        return new Task(UUID.randomUUID().toString(),title,summary,startBy,endBy);
-    }
+
     public String id() {
         return id;
     }
@@ -39,8 +34,5 @@ public class Task {
     }
     public String summary(){
         return summary;
-    }
-    public boolean hasId(String id){
-        return this.id.equals(id);
     }
 }

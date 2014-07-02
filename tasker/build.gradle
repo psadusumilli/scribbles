@@ -12,7 +12,7 @@ subprojects{
         compile 'commons-lang:commons-lang:2.5'
         compile 'org.apache.logging.log4j:log4j-api:2.0-rc2'
         compile 'org.apache.logging.log4j:log4j-core:2.0-rc2'
-        compile 'com.vijayrc.enhancer:enhancer:1.0'
+        compile 'org.projectlombok:lombok:1.14.2'
         compile 'com.h2database:h2:1.4.178'
         compile 'org.springframework:spring-context:4.0.5.RELEASE'
         compile 'org.glassfish.jersey.ext:jersey-spring3:2.10'
@@ -50,8 +50,3 @@ dependencies{
     testCompile 'org.reflections:reflections:0.9.9-RC1'
 }
 
-task ( enhance, type: JavaExec ) {
-    main = 'com.vijayrc.repo.AllEnhancers'
-    args("com.vijayrc.tasker")
-    classpath = sourceSets.main.runtimeClasspath
-}

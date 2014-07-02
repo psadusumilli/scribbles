@@ -1,12 +1,12 @@
 package com.vijayrc.tasker.view;
 
-import com.vijayrc.meta.Bean;
 import com.vijayrc.tasker.domain.Task;
+import lombok.Data;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-@Bean
+@Data
 public class TaskView {
     private String id;
     private String title;
