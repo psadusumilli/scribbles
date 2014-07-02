@@ -24,7 +24,7 @@ public class TaskApi {
     @GET
     @Produces({"application/xml", "application/json"})
     public List<TaskView> all(){
-        return service.getAll(); //TODO write a client to do accept header
+        return service.getAll();
     }
     @GET
     @Path("/{id}")

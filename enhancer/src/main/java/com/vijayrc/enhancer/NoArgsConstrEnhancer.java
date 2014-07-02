@@ -31,8 +31,4 @@ public class NoArgsConstrEnhancer implements Enhancer {
             }
         }
     }
-    @Override
-    public String name() {
-        return "NoArgsConstr";
-    }
 }
