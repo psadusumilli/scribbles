@@ -16,22 +16,31 @@ public class ToStringEnhancer implements Enhancer {
     @Override
     public void run(String packageName) throws Exception {
         ClassPool pool = ClassPool.getDefault();
-        Reflections reflections = new Reflections(packageName);
-        for (Class<?> aClass : reflections.getTypesAnnotatedWith(ToString.class)) {
-            if(aClass.getMethod("toString") != null)
+        for (Class<?> oldClass : new Reflections(packageName).getTypesAnnotatedWith(ToString.class)) {
+            String className = oldClass.getName();
+            if(oldClass.getMethod("toString") != null){
+                log.info("|-|" + className);
                 return;
-            CtClass ctClass = pool.get(aClass.getName());
-            CtMethod toString  = new CtMethod(pool.get("java.lang.String"),"toString",null,ctClass);
-            StringBuffer body = new StringBuffer("return \""+aClass.getSimpleName()+"[\"+");
-            for (Field field : aClass.getDeclaredFields()) {
+            }
+            CtClass newClass = pool.get(className);
+            CtMethod method  = new CtMethod(pool.get("java.lang.String"),"toString",null,newClass);
+
+            StringBuilder body = new StringBuilder("return \""+oldClass.getSimpleName()+"[\"+");
+            for (Field field : oldClass.getDeclaredFields()) {
                 String fieldName = field.getName();
-                body.append("\""+fieldName+"\"").append("+\"=\"+this.").append(fieldName).append("+\"|\"+");
+                body.append("\"")
+                    .append(fieldName)
+                    .append("\"")
+                    .append("+\"=\"+this.")
+                    .append(fieldName)
+                    .append("+\"|\"+");
             }
             body.append("\"]\";");
-            toString.setBody(body.toString());
-            ctClass.addMethod(toString);
-            ctClass.writeFile(aClass.getResource("/").getFile());
-            log.info("done:" + aClass.getName());
+
+            method.setBody(body.toString());
+            newClass.addMethod(method);
+            newClass.writeFile(oldClass.getResource("/").getFile());
+            log.info("|+|" + className);
         }
     }
 }

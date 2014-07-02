@@ -14,19 +14,20 @@ public class NoArgsConstrEnhancer implements Enhancer {
     @Override
     public void run(String packageName) throws Exception {
         ClassPool pool = ClassPool.getDefault();
-        Reflections reflections = new Reflections(packageName);
+        for (Class oldClass : new Reflections(packageName).getTypesAnnotatedWith(NoArgsConstr.class)) {
+            String className = oldClass.getName();
+            CtClass newClass = pool.get(className);
 
-        for (Class aClass : reflections.getTypesAnnotatedWith(NoArgsConstr.class)) {
-            CtClass ctClass = pool.get(aClass.getName());
             boolean hasNoArgsConstructor = false;
-            for (CtConstructor constructor : ctClass.getConstructors())
+            for (CtConstructor constructor : newClass.getConstructors())
                 if(constructor.getParameterTypes().length == 0) {
                     hasNoArgsConstructor = true;
+                    log.info("|-|" + className);
                     break;
                 }
             if(!hasNoArgsConstructor){
-                ctClass.addConstructor(new CtConstructor(new CtClass[]{},ctClass));
-                log.info("done: "+aClass.getName());
+                newClass.addConstructor(new CtConstructor(new CtClass[]{}, newClass));
+                log.info("|+|" + className);
             }
         }
     }

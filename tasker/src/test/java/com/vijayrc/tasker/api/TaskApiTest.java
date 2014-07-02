@@ -30,7 +30,6 @@ public class TaskApiTest {
     public void shouldReturnAllTasksAsTypeFromXml(){
         List<TaskView> taskViews = target.request().get(new GenericType<List<TaskView>>(){});
         assertNotNull(taskViews);
-        taskViews.forEach(log::info);
     }
     @Test
     public void shouldReturnAllTasksAsXMLAndJson(){

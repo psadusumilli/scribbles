@@ -16,41 +16,38 @@ public class BeanEnhancer implements Enhancer{
 
     public void run(String packageName) throws Exception {
         ClassPool pool = ClassPool.getDefault();
-        Reflections reflections = new Reflections(packageName);
-        for (Class<?> aClass : reflections.getTypesAnnotatedWith(Bean.class)) {
-            CtClass ctClass = pool.get(aClass.getName());
 
-            //~embed getter/setter
-            for (Field field : aClass.getDeclaredFields()) {
+        for (Class<?> oldClass : new Reflections(packageName).getTypesAnnotatedWith(Bean.class)) {
+            String className = oldClass.getName();
+            CtClass newClass = pool.get(className);
+
+            for (Field field : oldClass.getDeclaredFields()) {
                 String fieldName = field.getName();
-                CtClass fieldType = pool.get(field.getGenericType().getTypeName());
-                getter(ctClass, fieldName, fieldType);
-                setter(ctClass, fieldName, fieldType);
+                CtClass fieldClass = pool.get(field.getGenericType().getTypeName());
+                getter(newClass, fieldName, fieldClass);
+                setter(newClass, fieldName, fieldClass);
             }
-
-            //~embed default constructor
             boolean hasNoArgsConstructor = false;
-            for (CtConstructor constructor : ctClass.getConstructors())
+            for (CtConstructor constructor : newClass.getConstructors())
                 if(constructor.getParameterTypes().length == 0) {
                     hasNoArgsConstructor = true;
                     break;
                 }
             if(!hasNoArgsConstructor)
-                ctClass.addConstructor(new CtConstructor(new CtClass[]{},ctClass));
+                newClass.addConstructor(new CtConstructor(new CtClass[]{},newClass));
 
-            //~update class file
-            ctClass.writeFile(aClass.getResource("/").getFile());
-            log.info("done:" + aClass.getName());
+            newClass.writeFile(oldClass.getResource("/").getFile());
+            log.info("|+|" + className);
         }
     }
-    private void setter(CtClass ctClass, String fieldName, CtClass fieldType) throws CannotCompileException {
-        CtMethod setter  = new CtMethod(CtClass.voidType, "set"+ capitalize(fieldName), new CtClass[]{fieldType}, ctClass);
+    private void setter(CtClass newClass, String fieldName, CtClass fieldType) throws CannotCompileException {
+        CtMethod setter  = new CtMethod( CtClass.voidType, "set"+ capitalize(fieldName), new CtClass[]{fieldType}, newClass);
         setter.setBody("this." + fieldName + " = $1;");
-        ctClass.addMethod(setter);
+        newClass.addMethod(setter);
     }
-    private void getter(CtClass ctClass, String fieldName, CtClass fieldType) throws CannotCompileException {
-        CtMethod getter  = new CtMethod(fieldType,"get"+ capitalize(fieldName), null, ctClass);
+    private void getter(CtClass newClass, String fieldName, CtClass fieldType) throws CannotCompileException {
+        CtMethod getter  = new CtMethod(fieldType,"get"+ capitalize(fieldName), null, newClass);
         getter.setBody("return " + fieldName + ";");
-        ctClass.addMethod(getter);
+        newClass.addMethod(getter);
     }
 }

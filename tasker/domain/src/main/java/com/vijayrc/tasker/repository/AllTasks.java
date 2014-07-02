@@ -28,6 +28,7 @@ public class AllTasks {
     }
     public List<Task> all(){
         List<Task> tasks = template.query("select * from tasks", new TaskMapper());
+        tasks.forEach(log::info);
         log.info("tasks size:" + tasks.size());
        return tasks;
     }
