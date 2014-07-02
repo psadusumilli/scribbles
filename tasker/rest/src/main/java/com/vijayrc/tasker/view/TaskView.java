@@ -1,6 +1,7 @@
 package com.vijayrc.tasker.view;
 
 import com.vijayrc.meta.Bean;
+import com.vijayrc.meta.ToString;
 import com.vijayrc.tasker.domain.Task;
 
 import javax.ws.rs.BeanParam;
@@ -8,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @Bean
+@ToString
 public class TaskView {
     private String id;
     private String title;

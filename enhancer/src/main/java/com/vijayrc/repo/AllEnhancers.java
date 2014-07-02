@@ -18,11 +18,8 @@ public class AllEnhancers {
             enhancers.add(aClass.newInstance());
     }
     public void run(String packageName) throws Exception{
-        for (Enhancer enhancer : enhancers){
-            log.info(enhancer.name() + "--------------------#start");
+        for (Enhancer enhancer : enhancers)
             enhancer.run(packageName);
-            log.info(enhancer.name() + "--------------------#end");
-        }
     }
     public static void main(String[] args) throws Exception {
         try {

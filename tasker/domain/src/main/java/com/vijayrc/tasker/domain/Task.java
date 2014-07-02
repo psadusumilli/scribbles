@@ -1,11 +1,13 @@
 package com.vijayrc.tasker.domain;
 
 import com.vijayrc.meta.NoArgsConstr;
+import com.vijayrc.meta.ToString;
 
 import java.util.Date;
 import java.util.UUID;
 
 @NoArgsConstr
+@ToString
 public class Task {
     private String id;
     private String title;
@@ -41,9 +43,4 @@ public class Task {
     public boolean hasId(String id){
         return this.id.equals(id);
     }
-    @Override
-    public String toString() {
-        return "Task["+id+"|"+title+"]";
-    }
-
 }

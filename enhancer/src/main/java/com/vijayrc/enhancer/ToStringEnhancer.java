@@ -1,6 +1,5 @@
 package com.vijayrc.enhancer;
 
-import com.vijayrc.meta.Bean;
 import com.vijayrc.meta.ToString;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -20,7 +19,7 @@ public class ToStringEnhancer implements Enhancer {
         Reflections reflections = new Reflections(packageName);
         for (Class<?> aClass : reflections.getTypesAnnotatedWith(ToString.class)) {
             if(aClass.getMethod("toString") != null) {
-                log.info("exists already");
+                log.info("exists already:"+aClass.getName());
                 return;
             }
             CtClass ctClass = pool.get(aClass.getName());
@@ -36,9 +35,5 @@ public class ToStringEnhancer implements Enhancer {
             ctClass.writeFile(aClass.getResource("/").getFile());
             log.info("added toString:" + aClass.getName());
         }
-    }
-    @Override
-    public String name() {
-        return "ToStringEnhancer";
     }
 }

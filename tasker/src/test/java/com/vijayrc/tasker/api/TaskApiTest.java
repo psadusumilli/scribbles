@@ -19,23 +19,23 @@ import static org.junit.Assert.assertNotNull;
 public class TaskApiTest {
     private static Logger log = LogManager.getLogger(TaskApiTest.class);
     private Client client;
+    private WebTarget target;
 
     @Before
     public void setup(){
         client = ClientBuilder.newClient();
+        target = client.target(baseUrl).path("tasks");
     }
     @Test
-    public void shouldReturnAllTasksAsType(){
-        WebTarget target = client.target(baseUrl).path("tasks");
+    public void shouldReturnAllTasksAsTypeFromXml(){
         List<TaskView> taskViews = target.request().get(new GenericType<List<TaskView>>(){});
         assertNotNull(taskViews);
         taskViews.forEach(log::info);
     }
     @Test
     public void shouldReturnAllTasksAsXMLAndJson(){
-        WebTarget target = client.target(baseUrl).path("tasks");
-        Response xmlResponse = target.request().get();
-        log.info(xmlResponse.readEntity(String.class));
+        Response response = target.request().get();
+        log.info(response.readEntity(String.class));
 
         Response jsonResponse = target.request().accept("application/json").get();
         log.info(jsonResponse.readEntity(String.class));
