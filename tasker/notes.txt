@@ -9,9 +9,258 @@ gradle jettyRunWar - > http://localhost:9090/tasker/rest/tasks
 
 -----------------------------------------------------------------------------------------------
 Jersey notes:
---------------
+##############
+
 @Produces
-----------
+###########
 @Produces({"application/xml", "application/json"}) -> will send xml first by default
 @Produces({"application/xml; qs=0.9", "application/json"}) -> will send json as xml has a lower quality factor 0.9<1
-If client's Accept header is " Accept: text/plain;q=0.9, text/html" -> both are ok but html is preferred.
+If client Accept header is " Accept: text/plain;q=0.9, text/html" -> both are ok but html is preferred.
+
+@Consumes
+###########
+@POST
+@Consumes("text/plain")
+public void postClichedMessage(String message) {...work} -> receives and stores string.
+#------------------------------------------------------------------------------------------------------------------------------------------------
+@PathParam
+###########
+@Path("/users/{username}")
+public class UserResource { 
+    @GET
+    @Produces("text/xml")
+    public String getUser(@PathParam("username") String userName) {
+        ...
+    }
+}
+#------------------------------------------------------------------------------------------------------------------------------------------------
+@QueryParam
+###########
+@Path("smooth")
+@GET
+public Response smooth(
+    @DefaultValue("2") @QueryParam("step") int step,
+    @DefaultValue("true") @QueryParam("min-m") boolean hasMin,
+    @DefaultValue("true") @QueryParam("max-m") boolean hasMax,
+    @DefaultValue("true") @QueryParam("last-m") boolean hasLast,
+    @DefaultValue("blue") @QueryParam("min-color") ColorParam minColor,
+    @DefaultValue("green") @QueryParam("max-color") ColorParam maxColor,
+    @DefaultValue("red") @QueryParam("last-color") ColorParam lastColor) {
+    ...
+}
+404 is returned in case of parsing failures.
+ColorParam is a user defined param extending 'Color'
+Any UDT can be a custom param as long as it can satisfy one of the rules below
+#1 Be a primitive type;
+#2 Have a constructor that accepts a single String argument;
+#3 Have a static method named valueOf or fromString that accepts a single String argument (see, for example, Integer.valueOf(String) and java.util.UUID.fromString(String));
+#------------------------------------------------------------------------------------------------------------------------------------------------
+ @MatrixParam, @HeaderParam, @CookieParam, @FormParam 
+#######################################################
+ All obey the same rules as @QueryParam.
+@MatrixParam extracts information from URL path segments. 
+@HeaderParam extracts information from the HTTP headers.
+@CookieParam extracts information from the cookies declared in cookie related HTTP headers.
+@FormParam is slightly special because it extracts information from a request representation that is of the MIME media type "application/x-www-form-urlencoded" and conforms to the encoding specified by HTML forms, as described here. This parameter is very useful for extracting information that is POSTed by HTML forms, for example the following extracts the form parameter named "name" from the POSTed form data:
+
+@POST
+@Consumes("application/x-www-form-urlencoded")
+public void post(@FormParam("name") String name) {
+    // Store the message
+}
+#------------------------------------------------------------------------------------------------------------------------------------------------
+@Context
+###########
+Request objects [HttpHeaders, Request, UriInfo, SecurityContext] proxies can be injected using the @Context annotation
+ServletConfig, ServletContext, HttpServletRequest and HttpServletResponse are available using @Context.
+
+@GET
+public String get(@Context UriInfo ui) {
+    MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
+    MultivaluedMap<String, String> pathParams = ui.getPathParameters();
+}
+@GET
+public String get(@Context HttpHeaders hh) {
+    MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
+    Map<String, Cookie> pathParams = hh.getCookies();
+}
+@POST
+@Consumes("application/x-www-form-urlencoded")
+public void post(MultivaluedMap<String, String> formParams) {
+    // Store the message
+}
+#------------------------------------------------------------------------------------------------------------------------------------------------
+@BeanParam
+###########
+public class MyBeanParam {
+    @PathParam("p")
+    private String pathParam;
+ 
+    @MatrixParam("m")
+    @Encoded
+    @DefaultValue("default")
+    private String matrixParam;
+ 
+    @HeaderParam("header")
+    private String headerParam;
+ 
+    private String queryParam;
+ 
+    public MyBeanParam(@QueryParam("q") String queryParam) {
+        this.queryParam = queryParam;
+    }
+ 
+    public String getPathParam() {
+        return pathParam;
+    }
+    ...
+}
+@POST
+public void post(@BeanParam MyBeanParam beanParam, String entity) {
+    final String pathParam = beanParam.getPathParam(); // contains injected path parameter "p"
+    ...
+}
+#------------------------------------------------------------------------------------------------------------------------------------------------
+SubResource
+###########
+Path("/item")
+public class ItemResource {
+    @Context UriInfo uriInfo;
+ 
+    @Path("content")
+    public ItemContentResource getItemContentResource() {
+        return new ItemContentResource();
+    }
+    @GET
+    @Produces("application/xml")
+        public Item get() { ... }
+    }
+}
+public class ItemContentResource {
+    @GET
+    public Response get() { ... }
+ 
+    @PUT
+    @Path("{version}")
+    public void put(@PathParam("version") int version,
+                    @Context HttpHeaders headers,
+                    byte[] in) {
+        ...
+    }
+}
+#------------------------------------------------------------------------------------------------------------------------------------------------
+lifecycle:
+##########
+JAX-RS resources are managed in per-request scope by default which means that new resource is created for each request
+Class construction and garbage collection of JVMs has vastly improved over the years and many objects will be created and discarded to serve and process the HTTP request and return the HTTP response.
+Instances of singleton root resource classes can be declared by an instance of Application.
+
+@RequestScoped - default -> instance created for every http request
+@Lookup - instance created for every call to a method even within the same request.
+@Singleton - one instance for the entire application ?(jvm)
+
+injections
+###########
+@Path("{id:\\d+}")
+public class InjectedResource {
+    #Injection onto field
+    @DefaultValue("q") @QueryParam("p")
+    private String p;
+ 
+    #Injection onto constructor parameter
+    public InjectedResource(@PathParam("id") int id) { ... }
+ 
+    #Injection onto resource method parameter
+    @GET
+    public String get(@Context UriInfo ui) { ... }
+ 
+    #Injection onto sub-resource resource method parameter
+    @Path("sub-id")
+    @GET
+    public String get(@PathParam("sub-id") String id) { ... }
+ 
+    #Injection onto sub-resource locator method parameter
+    @Path("sub-id")
+    public SubResource getSubResource(@PathParam("sub-id") String id) { ... }
+ 
+    #Injection using bean setter method
+    @HeaderParam("X-header")
+    public void setHeader(String header) { ... }
+}
+Class fields
+###########
+Inject value directly into the field of the class. 
+The field can be private and must not be final.
+Cannot be used in Singleton scope except proxiable types mentioned above.
+
+Constructor parameters   
+######################
+The constructor will be invoked with injected values. 
+If more constructors exists the one with the most injectable parameters will be invoked. 
+Cannot be used in Singleton scope except proxiable types mentioned above.
+
+Resource methods 
+#################
+The resource methods (these annotated with @GET, @POST, ...) can contain parameters that can be injected when the resource method is executed. 
+Can be used in any scope.
+
+Sub resource locators    
+######################
+The sub resource locators (methods annotated with @Path but not @GET, @POST, ...) can contain parameters that can be injected when the resource method is executed. 
+Can be used in any scope.
+
+Setter methods
+###############
+Instead of injecting values directly into field the value can be injected into the setter method which will initialize the field. 
+This injection can be used only with @Context annotation. 
+This means it cannot be used for example for injecting of query params but it can be used for injections of request. 
+The setters will be called after the object creation and only once. 
+The name of the method does not necessary have a setter pattern. 
+Cannot be used in Singleton scope except proxiable types mentioned above.
+
+#------------------------------------------------------------------------------------------------------------------------------------------------
+Ways to start Jersey
+#####################
+
+Non Servlet Ways:
+##################
+public class MyApplication extends Application {
+    @Override
+    public Set<Class<?>> getClasses() {
+        Set<Class<?>> s = new HashSet<Class<?>>();
+        s.add(HelloWorldResource.class);
+        return s;
+    }
+}
+
+public class MyApplication extends ResourceConfig {
+    public MyApplication() {
+        packages("org.foo.rest;org.bar.rest");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
