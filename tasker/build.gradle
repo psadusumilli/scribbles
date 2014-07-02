@@ -42,6 +42,7 @@ dependencies{
     compile 'org.glassfish.jersey.ext:jersey-spring3:2.10'
     compile 'org.springframework:spring-context:4.0.5.RELEASE'
     compile 'org.springframework:spring-jdbc:4.0.5.RELEASE'
+    compile 'org.projectlombok:lombok:1.14.2'
 
     providedCompile 'javax.servlet:servlet-api:2.5'
     testCompile 'junit:junit:4.11'

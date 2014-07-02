@@ -18,7 +18,6 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 
 @Log4j2
-@Ignore
 public class TaskApiTest {
     private Client client;
     private WebTarget target;
