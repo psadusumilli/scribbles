@@ -23,7 +23,7 @@ public class AllEnhancers {
     }
     public static void main(String[] args) throws Exception {
         try {
-            new AllEnhancers().run("com.vijayrc");
+            new AllEnhancers().run(args[0]);
         } catch (Exception e) {
             log.error(e);
             e.printStackTrace();

@@ -22,12 +22,11 @@ public class NoArgsConstrEnhancer implements Enhancer {
             for (CtConstructor constructor : ctClass.getConstructors())
                 if(constructor.getParameterTypes().length == 0) {
                     hasNoArgsConstructor = true;
-                    log.info("no args constructor already present");
                     break;
                 }
             if(!hasNoArgsConstructor){
                 ctClass.addConstructor(new CtConstructor(new CtClass[]{},ctClass));
-                log.info("added for: "+aClass.getName());
+                log.info("done: "+aClass.getName());
             }
         }
     }

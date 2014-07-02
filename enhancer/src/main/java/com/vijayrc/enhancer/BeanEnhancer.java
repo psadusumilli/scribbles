@@ -26,7 +26,6 @@ public class BeanEnhancer implements Enhancer{
                 CtClass fieldType = pool.get(field.getGenericType().getTypeName());
                 getter(ctClass, fieldName, fieldType);
                 setter(ctClass, fieldName, fieldType);
-                log.info("done getter|setter:"+fieldName);
             }
 
             //~embed default constructor
@@ -34,7 +33,6 @@ public class BeanEnhancer implements Enhancer{
             for (CtConstructor constructor : ctClass.getConstructors())
                 if(constructor.getParameterTypes().length == 0) {
                     hasNoArgsConstructor = true;
-                    log.info("no args constructor already present");
                     break;
                 }
             if(!hasNoArgsConstructor)
@@ -42,6 +40,7 @@ public class BeanEnhancer implements Enhancer{
 
             //~update class file
             ctClass.writeFile(aClass.getResource("/").getFile());
+            log.info("done:" + aClass.getName());
         }
     }
     private void setter(CtClass ctClass, String fieldName, CtClass fieldType) throws CannotCompileException {

@@ -38,7 +38,6 @@ public class AllTasks {
         log.info(task);
         return task;
     }
-
     public void remove(String id) {
         template.update("delete from tasks where id = ?",id);
         log.info("deleted: "+id);
