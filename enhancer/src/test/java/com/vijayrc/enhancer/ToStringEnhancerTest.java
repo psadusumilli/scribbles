@@ -22,4 +22,5 @@ public class ToStringEnhancerTest {
         Employee e = new Employee(11l,"Paul Walker","Actor",new Date());
         log.info(e);
     }
+
 }

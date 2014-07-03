@@ -20,6 +20,7 @@ public class BeanEnhancer implements Enhancer{
         for (Class<?> oldClass : new Reflections(packageName).getTypesAnnotatedWith(Bean.class)) {
             String className = oldClass.getName();
             CtClass newClass = pool.get(className);
+            if (newClass.isFrozen()) newClass.defrost();
 
             for (Field field : oldClass.getDeclaredFields()) {
                 String fieldName = field.getName();

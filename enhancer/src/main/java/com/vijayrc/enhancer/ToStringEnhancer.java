@@ -4,6 +4,7 @@ import com.vijayrc.meta.ToString;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
@@ -19,14 +20,17 @@ public class ToStringEnhancer implements Enhancer {
         ClassPool pool = ClassPool.getDefault();
         for (Class<?> oldClass : new Reflections(packageName).getTypesAnnotatedWith(ToString.class)) {
             String className = oldClass.getName();
-
-            Method oldMethod = oldClass.getMethod("toString");
-            if(oldMethod != null){
-                log.info("|-|" + className);
-                continue;
-            }
             CtClass newClass = pool.get(className);
-            CtMethod method  = new CtMethod(pool.get("java.lang.String"),"toString",null,newClass);
+            if (newClass.isFrozen()) newClass.defrost();
+
+            CtMethod oldMethod = null;
+            try {
+                oldMethod = newClass.getDeclaredMethod("toString");
+            } catch (NotFoundException e) {
+                //do nothing
+            }
+            CtMethod newMethod = oldMethod != null? oldMethod:
+                    new CtMethod(pool.get("java.lang.String"),"toString",new CtClass[]{},newClass);
 
             StringBuilder body = new StringBuilder("return \""+oldClass.getSimpleName()+"[\"+");
             for (Field field : oldClass.getDeclaredFields()) {
@@ -39,11 +43,11 @@ public class ToStringEnhancer implements Enhancer {
                     .append("+\"|\"+");
             }
             body.append("\"]\";");
-
-            method.setBody(body.toString());
-            newClass.addMethod(method);
-            newClass.writeFile(oldClass.getResource("/").getFile());
+            newMethod.setBody(body.toString());
+            if(oldMethod == null)
+                newClass.addMethod(newMethod);
             log.info("|+|" + className);
+            newClass.writeFile(oldClass.getResource("/").getFile());
         }
     }
 }

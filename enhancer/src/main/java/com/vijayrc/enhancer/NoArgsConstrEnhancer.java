@@ -17,6 +17,7 @@ public class NoArgsConstrEnhancer implements Enhancer {
         for (Class oldClass : new Reflections(packageName).getTypesAnnotatedWith(NoArgsConstr.class)) {
             String className = oldClass.getName();
             CtClass newClass = pool.get(className);
+            if (newClass.isFrozen()) newClass.defrost();
 
             boolean hasNoArgsConstructor = false;
             for (CtConstructor constructor : newClass.getConstructors())
