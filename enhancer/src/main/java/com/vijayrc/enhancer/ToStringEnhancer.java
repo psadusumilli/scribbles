@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class ToStringEnhancer implements Enhancer {
     private static Logger log = LogManager.getLogger(ToStringEnhancer.class);
@@ -18,9 +19,11 @@ public class ToStringEnhancer implements Enhancer {
         ClassPool pool = ClassPool.getDefault();
         for (Class<?> oldClass : new Reflections(packageName).getTypesAnnotatedWith(ToString.class)) {
             String className = oldClass.getName();
-            if(oldClass.getMethod("toString") != null){
+
+            Method oldMethod = oldClass.getMethod("toString");
+            if(oldMethod != null){
                 log.info("|-|" + className);
-                return;
+                continue;
             }
             CtClass newClass = pool.get(className);
             CtMethod method  = new CtMethod(pool.get("java.lang.String"),"toString",null,newClass);
