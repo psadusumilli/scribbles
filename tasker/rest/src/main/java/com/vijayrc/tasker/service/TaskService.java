@@ -18,4 +18,8 @@ import java.util.List;
         allTasks.getForCard(card).forEach(t -> views.add(TaskView.createFrom(t)));
         return views;
     }
+
+    public TaskView getFor(String card, String id) {
+        return TaskView.createFrom(allTasks.getForCardAndId(card,id));
+    }
 }

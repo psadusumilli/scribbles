@@ -21,4 +21,10 @@ public class TaskApi {
     public List<TaskView> allFor(@PathParam("card") String card){
         return service.getFor(card);
     }
+    @GET
+    @Path("{id}")
+    @Produces({"application/xml", "application/json"})
+    public TaskView getFor(@PathParam("card") String card,@PathParam("card") String id){
+        return service.getFor(card,id);
+    }
 }

@@ -29,6 +29,11 @@ public class AllTasks {
         tasks.forEach(log::info);
         return tasks;
     }
+    public Task getForCardAndId(String card, String id) {
+        List<Task> tasks = template.query("select * from tasks where id = ? and card = ?", new Object[]{id,card}, new TaskMapper());
+        tasks.forEach(log::info);
+        return tasks.get(0);
+    }
     private static class TaskMapper implements RowMapper<Task>{
         @Override
         public Task mapRow(ResultSet rs, int rowNum) throws SQLException {
