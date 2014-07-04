@@ -14,12 +14,14 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Component
-@Path("tasks")
+@Path("cards")
 public class CardApi {
     private static Logger log = LogManager.getLogger(CardApi.class);
 
     @Autowired
     private CardService service;
+    @Autowired
+    private TaskApi taskApi;
 
     @GET
     @Path("explain")
@@ -45,12 +47,15 @@ public class CardApi {
         log.info(cardParam);
         return Response.ok(service.getFor("1")).build();
     }
-
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_XML)
     public void delete(@PathParam("id") String id){
         service.remove(id);
+    }
+    @Path("task")
+    public TaskApi task(){
+        return taskApi;
     }
 
 }

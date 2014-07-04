@@ -24,7 +24,7 @@ public class CardApiTest {
     @Before
     public void setup(){
         client = ClientBuilder.newClient();
-        target = client.target(baseUrl).path("tasks");
+        target = client.target(baseUrl).path("cards");
     }
     @Test
     public void shouldReturnAllTasksAsTypeFromXml(){
@@ -41,7 +41,7 @@ public class CardApiTest {
     }
     @Test
     public void shouldUseABeanParam(){
-        target = client.target(baseUrl).path("tasks/filter/title").queryParam("format","json");
+        target = client.target(baseUrl).path("cards/filter/title").queryParam("format","json");
         Response response = target.request().get();
         log.info(response.readEntity(String.class));
     }
