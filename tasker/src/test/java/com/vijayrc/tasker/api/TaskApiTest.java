@@ -33,11 +33,17 @@ public class TaskApiTest {
     }
     @Test
     public void shouldReturnAllTasksAsXMLAndJson(){
-        Response response = target.request().get();
-        log.info(response.readEntity(String.class));
+        Response xmlResponse = target.request().get();
+        log.info(xmlResponse.readEntity(String.class));
 
         Response jsonResponse = target.request().accept("application/json").get();
         log.info(jsonResponse.readEntity(String.class));
+    }
+    @Test
+    public void shouldUseABeanParam(){
+        target = client.target(baseUrl).path("tasks/filter/title").queryParam("format","json");
+        Response response = target.request().get();
+        log.info(response.readEntity(String.class));
     }
 
     @Test
