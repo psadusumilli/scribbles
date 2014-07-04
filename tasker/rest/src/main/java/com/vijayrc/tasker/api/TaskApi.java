@@ -17,7 +17,6 @@ public class TaskApi {
     private TaskService service;
 
     @GET
-    @Path("/{card}")
     @Produces({"application/xml", "application/json"})
     public List<TaskView> allFor(@PathParam("card") String card){
         return service.getFor(card);

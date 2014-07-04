@@ -53,7 +53,7 @@ public class CardApi {
     public void delete(@PathParam("id") String id){
         service.remove(id);
     }
-    @Path("task")
+    @Path("{card}/task")
     public TaskApi task(){
         return taskApi;
     }
