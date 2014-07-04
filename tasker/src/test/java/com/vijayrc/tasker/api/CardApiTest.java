@@ -1,6 +1,6 @@
 package com.vijayrc.tasker.api;
 
-import com.vijayrc.tasker.view.TaskView;
+import com.vijayrc.tasker.view.CardView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Before;
@@ -16,8 +16,8 @@ import java.util.List;
 import static com.vijayrc.tasker.config.TestConfig.baseUrl;
 import static org.junit.Assert.assertNotNull;
 
-public class TaskApiTest {
-    private static Logger log = LogManager.getLogger(TaskApiTest.class);
+public class CardApiTest {
+    private static Logger log = LogManager.getLogger(CardApiTest.class);
     private Client client;
     private WebTarget target;
 
@@ -28,8 +28,8 @@ public class TaskApiTest {
     }
     @Test
     public void shouldReturnAllTasksAsTypeFromXml(){
-        List<TaskView> taskViews = target.request().get(new GenericType<List<TaskView>>(){});
-        assertNotNull(taskViews);
+        List<CardView> cardViews = target.request().get(new GenericType<List<CardView>>(){});
+        assertNotNull(cardViews);
     }
     @Test
     public void shouldReturnAllTasksAsXMLAndJson(){

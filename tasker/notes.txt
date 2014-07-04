@@ -5,7 +5,7 @@ Add ServletContainer to web.xml
 
 gradle clean -> clean
 gradle enhance -> will compile and add java bytes
-gradle jettyRunWar - > http://localhost:9090/tasker/rest/tasks
+gradle jettyRunWar - > http://localhost:9090/tasker/rest/cards
 
 -----------------------------------------------------------------------------------------------
 Jersey notes:

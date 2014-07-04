@@ -7,14 +7,14 @@ import java.util.Date;
 
 @ToString
 @NoArgsConstr
-public class Task {
+public class Card {
     private String id;
     private String title;
     private String summary;
     private Date startBy;
     private Date endBy;
 
-    public Task(String id, String title, String summary, Date startBy, Date endBy) {
+    public Card(String id, String title, String summary, Date startBy, Date endBy) {
         this.id = id;
         this.title = title;
         this.summary = summary;
