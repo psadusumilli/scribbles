@@ -41,7 +41,7 @@ public class CardApiTest {
     }
     @Test
     public void shouldUseABeanParam(){
-        target = client.target(baseUrl).path("cards/filter/title").queryParam("format","json");
+        target = client.target(baseUrl).path("cards/filter/title;key=tech").queryParam("format","json");
         Response response = target.request().get();
         log.info(response.readEntity(String.class));
     }
@@ -64,6 +64,7 @@ public class CardApiTest {
     }
     @Test
     public void shouldDeleteTask(){
-
+        Response response = target.path("/5").request().delete();
+        log.info(response);
     }
 }

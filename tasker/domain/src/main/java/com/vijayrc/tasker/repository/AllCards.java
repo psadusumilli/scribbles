@@ -27,19 +27,19 @@ public class AllCards {
     public List<Card> all(){
         List<Card> cards = template.query("select * from cards", new CardMapper());
         cards.forEach(log::info);
-        log.info("cards size:" + cards.size());
+        log.info("|size=" + cards.size());
        return cards;
     }
     public Card getFor(String id) {
-        log.info("fetching for: "+id);
+        log.info("|id="+id);
         List<Card> cards = template.query("select * from cards where id = ?", new Object[]{id}, new CardMapper());
         Card card = cards.isEmpty()? null: cards.get(0);
         log.info(card);
         return card;
     }
     public void remove(String id) {
-        template.update("delete from tasks where id = ?",id);
-        log.info("deleted: "+id);
+        template.execute("delete from cards where id = "+id);
+        log.info("|deleted: "+id);
     }
 
     private static final class CardMapper implements RowMapper<Card>{

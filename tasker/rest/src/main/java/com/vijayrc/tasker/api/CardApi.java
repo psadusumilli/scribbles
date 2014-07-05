@@ -24,12 +24,6 @@ public class CardApi {
     private TaskApi taskApi;
 
     @GET
-    @Path("explain")
-    @Produces("text/plain")
-    public String explain(){
-        return "resource to track all my tasks";
-    }
-    @GET
     @Produces({"application/xml", "application/json"})
     public List<CardView> all(){
         return service.getAll();
@@ -49,11 +43,11 @@ public class CardApi {
     }
     @DELETE
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_XML)
-    public void delete(@PathParam("id") String id){
+    public Response delete(@PathParam("id") String id){
         service.remove(id);
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
-    @Path("{card}/task")
+    @Path("{card}/tasks")
     public TaskApi task(){
         return taskApi;
     }
