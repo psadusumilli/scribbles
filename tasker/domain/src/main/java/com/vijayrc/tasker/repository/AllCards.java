@@ -36,9 +36,10 @@ public class AllCards {
        return cards;
     }
 
-    public Card fetch(String id) {
+    public Card fetch(String id) throws CardNotFound {
         List<Card> cards = template.query("select * from cards where id = ?", new Object[]{id}, new CardMapper());
-        Card card = cards.isEmpty()? null: cards.get(0);
+        if(cards == null || cards.isEmpty()) throw new CardNotFound();
+        Card card = cards.get(0);
         log.info("|fetch|"+card);
         return card;
     }

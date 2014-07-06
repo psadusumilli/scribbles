@@ -15,6 +15,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.ok;
+import static javax.ws.rs.core.Response.serverError;
+import static javax.ws.rs.core.Response.status;
+
 @Component
 @Path("cards")
 public class CardApi {
@@ -33,21 +38,31 @@ public class CardApi {
     @GET
     @Path("/{id}")
     @Produces({"application/xml", "application/json"})
-    public CardView get(@PathParam("id") String id){
-       return service.getFor(id);
+    public Response get(@PathParam("id") String id){
+        try {
+            return ok(service.getFor(id)).build();
+        } catch (CardNotFound e) {
+            log.warn("not found|"+id);
+            return status(NOT_FOUND).build();
+        }
     }
     @GET
     @Path("/filter/{field}")
     @Produces({"application/xml", "application/json"})
     public Response filter(@BeanParam CardParam cardParam){
         log.info(cardParam);
-        return Response.ok(service.getFor("1")).build();
+        try {
+            return ok(service.getFor("1")).build();
+        } catch (CardNotFound e) {
+            log.warn("not found|"+cardParam);
+            return status(NOT_FOUND).build();
+        }
     }
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") String id){
         service.remove(id);
-        return Response.status(Response.Status.NO_CONTENT).build();
+        return status(NO_CONTENT).build();
     }
     @POST
     @Produces({"application/xml", "application/json"})
@@ -55,10 +70,10 @@ public class CardApi {
     public Response create(CardView cardView){
         try {
             log.info("received|"+cardView);
-            return Response.ok(service.create(cardView)).build();
+            return ok(service.create(cardView)).build();
         } catch (Exception e) {
             log.error(e);
-            return Response.serverError().build();
+            return serverError().build();
         }
     }
     @PUT
@@ -67,12 +82,13 @@ public class CardApi {
     public Response update(CardView cardView){
         try {
             log.info("received|"+cardView);
-            return Response.ok(service.update(cardView)).build();
+            return ok(service.update(cardView)).build();
         } catch (CardNotFound e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            log.warn("not found|"+cardView);
+            return status(NOT_FOUND).build();
         } catch (Exception e) {
             log.error(e);
-            return Response.serverError().build();
+            return serverError().build();
         }
     }
     @Path("{card}/tasks")

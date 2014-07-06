@@ -19,7 +19,7 @@ public class CardService {
         allCards.all().forEach(t -> views.add(CardView.map(t)));
         return views;
     }
-    public CardView getFor(String id) {
+    public CardView getFor(String id) throws CardNotFound {
         return CardView.map(allCards.fetch(id));
     }
     public void remove(String id) {
