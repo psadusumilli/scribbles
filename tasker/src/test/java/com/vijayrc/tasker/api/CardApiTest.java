@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.vijayrc.tasker.config.TestConfig.baseUrl;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class CardApiTest {
@@ -53,14 +54,16 @@ public class CardApiTest {
     }
 
     @Test
-    public void shouldReturn404ForCardNotFound(){
-
+    public void shouldUpdateACard(){
+        CardView cardView = new CardView().title("card-y").id("2");
+        CardView cardViewUpdated = target.request().put(Entity.entity(cardView, "application/json"), CardView.class);
+        assertEquals("card-y",cardViewUpdated.getTitle());
     }
     @Test
     public void shouldCreateACard(){
         CardView cardView = new CardView().title("card-x").summary("summary-x").startBy(new Date()).endBy(new Date());
         CardView cardViewSaved = target.request().post(Entity.entity(cardView, "application/json"), CardView.class);
-        log.info(cardViewSaved);
+        assertNotNull(cardViewSaved.getId());
     }
     @Test
     public void shouldDeleteACard(){

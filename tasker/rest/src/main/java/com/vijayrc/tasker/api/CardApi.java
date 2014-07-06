@@ -1,5 +1,6 @@
 package com.vijayrc.tasker.api;
 
+import com.vijayrc.tasker.error.CardNotFound;
 import com.vijayrc.tasker.param.CardParam;
 import com.vijayrc.tasker.service.CardService;
 import com.vijayrc.tasker.view.CardView;
@@ -60,7 +61,20 @@ public class CardApi {
             return Response.serverError().build();
         }
     }
-
+    @PUT
+    @Produces({"application/xml", "application/json"})
+    @Consumes("application/json")
+    public Response update(CardView cardView){
+        try {
+            log.info("received|"+cardView);
+            return Response.ok(service.update(cardView)).build();
+        } catch (CardNotFound e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error(e);
+            return Response.serverError().build();
+        }
+    }
     @Path("{card}/tasks")
     public TaskApi task(){
         return taskApi;

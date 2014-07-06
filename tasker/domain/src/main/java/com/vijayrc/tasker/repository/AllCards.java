@@ -1,15 +1,19 @@
 package com.vijayrc.tasker.repository;
 
 import com.vijayrc.tasker.domain.Card;
+import com.vijayrc.tasker.error.CardNotFound;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,7 +36,7 @@ public class AllCards {
        return cards;
     }
 
-    public Card getFor(String id) {
+    public Card fetch(String id) {
         List<Card> cards = template.query("select * from cards where id = ?", new Object[]{id}, new CardMapper());
         Card card = cards.isEmpty()? null: cards.get(0);
         log.info("|fetch|"+card);
@@ -50,6 +54,15 @@ public class AllCards {
         Integer id = template.queryForObject("select max(id) from cards", Integer.class);
         Card cardDb = template.query("select * from cards where id = ?", new Object[]{id}, new CardMapper()).get(0);
         log.info("|create|"+cardDb);
+        return cardDb;
+    }
+
+    public Card update(Card card) throws CardNotFound {
+        Card cardDb = fetch(card.id());
+        cardDb.merge(card);
+        template.update("update cards set title = ?, summary = ?, startBy = ?, endBy = ? where id = ?",
+                cardDb.title(), cardDb.summary(), cardDb.startBy(), cardDb.endBy(), cardDb.id());
+        log.info("|update|" + cardDb);
         return cardDb;
     }
 

@@ -2,8 +2,11 @@ package com.vijayrc.tasker.domain;
 
 import com.vijayrc.meta.NoArgsConstr;
 import com.vijayrc.meta.ToString;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @ToString
 @NoArgsConstr
@@ -39,5 +42,10 @@ public class Card {
     public String summary(){
         return summary;
     }
-
+    public void merge(Card card) {
+        if(isNotBlank(card.title)) title = card.title;
+        if(isNotBlank(card.summary)) summary = card.summary;
+        if(card.startBy != null) startBy = card.startBy;
+        if(card.endBy != null) endBy = card.endBy;
+    }
 }

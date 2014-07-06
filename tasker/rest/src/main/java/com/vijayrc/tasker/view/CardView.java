@@ -27,7 +27,11 @@ public class CardView {
         return cardView;
     }
     public Card toCard() {
-        return new Card(title,summary,startBy,endBy);
+        return new Card(id,title,summary,startBy,endBy);
+    }
+    public CardView id(String id) {
+        this.id = id;
+        return this;
     }
     public CardView title(String title) {
         this.title = title;
