@@ -1,6 +1,7 @@
 package com.vijayrc.tasker.api;
 
 import com.vijayrc.tasker.error.TaskNotFound;
+import com.vijayrc.tasker.error.TaskNotFoundWebError;
 import com.vijayrc.tasker.service.TaskService;
 import com.vijayrc.tasker.view.TaskView;
 import org.apache.logging.log4j.LogManager;
@@ -33,8 +34,7 @@ public class TaskApi {
         try {
             return ok(service.getFor(card)).build();
         } catch (TaskNotFound e) {
-            log.warn("not found|"+card);
-            return status(NOT_FOUND).build();
+            throw new TaskNotFoundWebError(card);
         }
     }
     @GET
@@ -44,8 +44,7 @@ public class TaskApi {
         try {
             return ok(service.getFor(card, id)).build();
         } catch (TaskNotFound taskNotFound) {
-            log.warn("not found|card="+card+"|id="+id);
-            return status(NOT_FOUND).build();
+            throw new TaskNotFoundWebError("card="+card+"|id="+id);
         }
     }
 }

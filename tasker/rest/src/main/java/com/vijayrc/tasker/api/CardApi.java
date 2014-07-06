@@ -1,6 +1,8 @@
 package com.vijayrc.tasker.api;
 
 import com.vijayrc.tasker.error.CardNotFound;
+import com.vijayrc.tasker.error.CardNotFoundWebError;
+import com.vijayrc.tasker.error.WebError;
 import com.vijayrc.tasker.param.CardParam;
 import com.vijayrc.tasker.service.CardService;
 import com.vijayrc.tasker.view.CardView;
@@ -42,8 +44,7 @@ public class CardApi {
         try {
             return ok(service.getFor(id)).build();
         } catch (CardNotFound e) {
-            log.warn("not found|"+id);
-            return status(NOT_FOUND).build();
+            throw new CardNotFoundWebError(id);
         }
     }
     @GET
@@ -54,8 +55,7 @@ public class CardApi {
         try {
             return ok(service.getFor("1")).build();
         } catch (CardNotFound e) {
-            log.warn("not found|"+cardParam);
-            return status(NOT_FOUND).build();
+            throw new CardNotFoundWebError("1");
         }
     }
     @DELETE
@@ -73,7 +73,7 @@ public class CardApi {
             return ok(service.create(cardView)).build();
         } catch (Exception e) {
             log.error(e);
-            return serverError().build();
+            throw new WebError(e);
         }
     }
     @PUT
@@ -84,11 +84,10 @@ public class CardApi {
             log.info("received|"+cardView);
             return ok(service.update(cardView)).build();
         } catch (CardNotFound e) {
-            log.warn("not found|"+cardView);
-            return status(NOT_FOUND).build();
+            throw new CardNotFoundWebError(cardView.getId());
         } catch (Exception e) {
             log.error(e);
-            return serverError().build();
+            throw new WebError(e);
         }
     }
     @Path("{card}/tasks")
