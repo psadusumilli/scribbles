@@ -3,14 +3,20 @@ package com.vijayrc.tasker.api;
 import com.vijayrc.tasker.view.CardView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import static com.vijayrc.tasker.config.TestConfig.baseUrl;
@@ -47,23 +53,21 @@ public class CardApiTest {
     }
 
     @Test
-    public void shouldReturn500ForExceptionInAllTasks(){
+    public void shouldReturn500ForException(){
 
     }
     @Test
-    public void shouldReturn404ForTaskNotFound(){
+    public void shouldReturn404ForCardNotFound(){
 
     }
     @Test
-    public void shouldReturnATaskInXMLAndJson(){
-
+    public void shouldCreateACard(){
+        CardView cardView = new CardView().title("card-x").summary("summary-x").startBy(new Date()).endBy(new Date());
+        CardView cardViewSaved = target.request().post(Entity.entity(cardView, "application/json"), CardView.class);
+        log.info(cardViewSaved);
     }
     @Test
-    public void shouldUpdateTask(){
-
-    }
-    @Test
-    public void shouldDeleteTask(){
+    public void shouldDeleteACard(){
         Response response = target.path("/5").request().delete();
         log.info(response);
     }

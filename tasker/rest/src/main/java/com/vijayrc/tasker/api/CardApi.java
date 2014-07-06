@@ -3,6 +3,7 @@ package com.vijayrc.tasker.api;
 import com.vijayrc.tasker.param.CardParam;
 import com.vijayrc.tasker.service.CardService;
 import com.vijayrc.tasker.view.CardView;
+import com.vijayrc.tasker.view.TaskView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,19 @@ public class CardApi {
         service.remove(id);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
+    @POST
+    @Produces({"application/xml", "application/json"})
+    @Consumes("application/json")
+    public Response create(CardView cardView){
+        try {
+            log.info("received|"+cardView);
+            return Response.ok(service.create(cardView)).build();
+        } catch (Exception e) {
+            log.error(e);
+            return Response.serverError().build();
+        }
+    }
+
     @Path("{card}/tasks")
     public TaskApi task(){
         return taskApi;

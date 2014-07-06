@@ -24,22 +24,31 @@ public class AllCards {
     public AllCards(DataSource dataSource) {
         this.template = new JdbcTemplate(dataSource);
     }
+
     public List<Card> all(){
         List<Card> cards = template.query("select * from cards", new CardMapper());
         cards.forEach(log::info);
-        log.info("|size=" + cards.size());
+        log.info("|fetch size|" + cards.size());
        return cards;
     }
+
     public Card getFor(String id) {
-        log.info("|id="+id);
         List<Card> cards = template.query("select * from cards where id = ?", new Object[]{id}, new CardMapper());
         Card card = cards.isEmpty()? null: cards.get(0);
-        log.info(card);
+        log.info("|fetch|"+card);
         return card;
     }
+
     public void remove(String id) {
         template.execute("delete from cards where id = "+id);
-        log.info("|deleted: "+id);
+        log.info("|delete| "+id);
+    }
+
+    public Card create(Card card) {
+        int update = template.update("insert into cards(title,summary,startBy,endBy) values (?,?,?,?)",
+                card.title(), card.summary(), card.startBy(), card.endBy());
+        log.info("|create|"+card);
+        return card;
     }
 
     private static final class CardMapper implements RowMapper<Card>{

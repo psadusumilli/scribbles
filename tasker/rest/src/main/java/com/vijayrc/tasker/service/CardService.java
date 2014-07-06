@@ -15,13 +15,16 @@ public class CardService {
 
     public List<CardView> getAll(){
         List<CardView> views = new ArrayList<>();
-        allCards.all().forEach(t -> views.add(CardView.createFrom(t)));
+        allCards.all().forEach(t -> views.add(CardView.map(t)));
         return views;
     }
     public CardView getFor(String id) {
-        return CardView.createFrom(allCards.getFor(id));
+        return CardView.map(allCards.getFor(id));
     }
     public void remove(String id) {
         allCards.remove(id);
+    }
+    public CardView create(CardView cardView) {
+        return CardView.map(allCards.create(cardView.toCard()));
     }
 }

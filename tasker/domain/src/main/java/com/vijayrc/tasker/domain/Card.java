@@ -21,17 +21,20 @@ public class Card {
         this.startBy = startBy;
         this.endBy = endBy;
     }
+    public Card(String title, String summary, Date startBy, Date endBy){
+        this(null,title,summary,startBy,endBy);
+    }
     public String id() {
         return id;
     }
     public String title() {
         return title;
     }
-    public String startBy(){
-        return startBy != null ? startBy.toString():"";
+    public Date startBy(){
+        return startBy;
     }
-    public String endBy(){
-        return endBy != null ? endBy.toString():"";
+    public Date endBy(){
+        return endBy;
     }
     public String summary(){
         return summary;

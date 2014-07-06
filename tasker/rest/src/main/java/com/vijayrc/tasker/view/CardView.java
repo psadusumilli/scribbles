@@ -1,22 +1,21 @@
 package com.vijayrc.tasker.view;
 
-import com.vijayrc.meta.Bean;
 import com.vijayrc.meta.ToString;
 import com.vijayrc.tasker.domain.Card;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
+import java.util.Date;
+//TODO remove the getters/setters
 @XmlRootElement
-@Bean
 @ToString
 public class CardView {
     private String id;
     private String title;
     private String summary;
-    private String startBy;
-    private String endBy;
+    private Date startBy;
+    private Date endBy;
 
-    public static CardView createFrom(Card card){
+    public static CardView map(Card card){
         CardView cardView = new CardView();
         if(card != null){
             cardView.id = card.id();
@@ -27,5 +26,53 @@ public class CardView {
         }
         return cardView;
     }
-
+    public Card toCard() {
+        return new Card(title,summary,startBy,endBy);
+    }
+    public CardView title(String title) {
+        this.title = title;
+        return this;
+    }
+    public CardView summary(String summary) {
+        this.summary = summary;
+        return this;
+    }
+    public CardView startBy(Date startBy) {
+        this.startBy = startBy;
+        return this;
+    }
+    public CardView endBy(Date endBy) {
+        this.endBy = endBy;
+        return this;
+    }
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public String getSummary() {
+        return summary;
+    }
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+    public Date getStartBy() {
+        return startBy;
+    }
+    public void setStartBy(Date startBy) {
+        this.startBy = startBy;
+    }
+    public Date getEndBy() {
+        return endBy;
+    }
+    public void setEndBy(Date endBy) {
+        this.endBy = endBy;
+    }
 }
