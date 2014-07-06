@@ -53,10 +53,6 @@ public class CardApiTest {
     }
 
     @Test
-    public void shouldReturn500ForException(){
-
-    }
-    @Test
     public void shouldReturn404ForCardNotFound(){
 
     }

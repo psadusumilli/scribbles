@@ -45,10 +45,12 @@ public class AllCards {
     }
 
     public Card create(Card card) {
-        int update = template.update("insert into cards(title,summary,startBy,endBy) values (?,?,?,?)",
+        template.update("insert into cards(title,summary,startBy,endBy) values (?,?,?,?)",
                 card.title(), card.summary(), card.startBy(), card.endBy());
-        log.info("|create|"+card);
-        return card;
+        Integer id = template.queryForObject("select max(id) from cards", Integer.class);
+        Card cardDb = template.query("select * from cards where id = ?", new Object[]{id}, new CardMapper()).get(0);
+        log.info("|create|"+cardDb);
+        return cardDb;
     }
 
     private static final class CardMapper implements RowMapper<Card>{
