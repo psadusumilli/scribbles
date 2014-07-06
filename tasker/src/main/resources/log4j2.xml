@@ -10,14 +10,16 @@
         </Console>
         <File name="fa" fileName="${filename}">
             <PatternLayout>
-                <pattern>%d %p %C{1.} [%t] %m%n</pattern>
+                <pattern>%highlight{%d %p %C{1.} [%t] %m%n}</pattern>
             </PatternLayout>
         </File>
+        <Console name="sca" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS}|%c{1}.%M()|%L| ->%msg%n}{FATAL=red blink, ERROR=red, WARN=yellow, INFO=cyan, DEBUG=green, TRACE=blue}"/>
+        </Console>
     </Appenders>
     <Loggers>
         <Root level="debug">
-            <AppenderRef ref="ca"/>
-            <AppenderRef ref="fa"/>
+            <AppenderRef ref="sca"/>
         </Root>
     </Loggers>
 </Configuration>
