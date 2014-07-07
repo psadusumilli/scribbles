@@ -42,13 +42,17 @@ public class AllMyFiles {
         return myFile;
     }
 
-    public void create(MyFile myFile) throws Exception {
+    public Integer create(MyFile myFile) throws Exception {
         String path = location + "/files/" + myFile.name();
         log.info("create|"+path);
+
         File fileDb = new File(path);
         FileCopyUtils.copy(myFile.file(), fileDb);
         template.update("insert into files (card,path) values (?)", myFile.card(),path);
-        log.info("create|"+path);
+
+        Integer id = template.queryForObject("select max(id) from files", Integer.class);
+        log.info("create|"+id);
+        return id;
     }
 
     private static class MyFileMapper implements RowMapper<MyFile>{

@@ -19,13 +19,20 @@ public class MyFile {
         this.path = path;
         this.file = new File(path);
     }
+    public MyFile(File file, String card) {
+        this.card = card;
+        this.file = file;
+    }
+    public String id() {
+        return id;
+    }
+    public String card() {
+        return card;
+    }
     public File file() {
         return file;
     }
     public String name() {
         return file.getName();
-    }
-    public String card() {
-        return card;
     }
 }
