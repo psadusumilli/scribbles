@@ -2,6 +2,7 @@ package com.vijayrc.tasker.repository;
 
 import com.vijayrc.tasker.domain.MyFile;
 import com.vijayrc.tasker.error.FileNotFound;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +45,12 @@ public class AllMyFiles {
 
     public Integer create(MyFile myFile) throws Exception {
         String path = location + "/files/" + myFile.name();
-        log.info("create|"+path);
+        System.out.println(path);
+        File newFile = new File(path);
+        FileUtils.copyInputStreamToFile(myFile.inputStream(),newFile);
+        log.info("saved|"+newFile);
 
-        File fileDb = new File(path);
-        FileCopyUtils.copy(myFile.file(), fileDb);
         template.update("insert into files (card,path) values (?)", myFile.card(),path);
-
         Integer id = template.queryForObject("select max(id) from files", Integer.class);
         log.info("create|"+id);
         return id;
@@ -58,7 +59,7 @@ public class AllMyFiles {
     private static class MyFileMapper implements RowMapper<MyFile>{
         @Override
         public MyFile mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new MyFile(rs.getString("id"),rs.getString("card"),rs.getString("path"));
+            return MyFile.readInstance(rs.getString("id"),rs.getString("card"),rs.getString("path"));
         }
     }
 
