@@ -3,6 +3,7 @@ package com.vijayrc.tasker.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,8 +26,8 @@ public class MyFileApiTest {
 
     @Before
     public void setup(){
-        client = ClientBuilder.newClient();
-        target = client.target(baseUrl).path("files");
+        client = ClientBuilder.newClient().register(MultiPartFeature.class);
+        target = client.target(baseUrl).path("files/upload");
     }
 
     @Test

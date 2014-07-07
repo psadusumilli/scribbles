@@ -1,21 +1,21 @@
 package com.vijayrc.tasker.domain;
 
-import com.vijayrc.meta.NoArgsConstr;
 import com.vijayrc.meta.ToString;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @ToString
-@NoArgsConstr
 public class Card {
     private String id;
     private String title;
     private String summary;
     private Date startBy;
     private Date endBy;
+
+    public Card() {
+    }
 
     public Card(String id, String title, String summary, Date startBy, Date endBy) {
         this.id = id;

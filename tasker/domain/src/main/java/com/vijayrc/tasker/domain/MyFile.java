@@ -1,17 +1,18 @@
 package com.vijayrc.tasker.domain;
 
-import com.vijayrc.meta.NoArgsConstr;
 import com.vijayrc.meta.ToString;
 
 import java.io.File;
 
 @ToString
-@NoArgsConstr
 public class MyFile {
     private String id;
     private String card;
     private String path;
     private File file;
+
+    public MyFile() {
+    }
 
     public MyFile(String id, String card, String path) {
         this.id = id;
@@ -35,4 +36,5 @@ public class MyFile {
     public String name() {
         return file.getName();
     }
+
 }
