@@ -36,6 +36,7 @@ public class MyFileApiTest {
         String contentType = new MimetypesFileTypeMap().getContentType(file);
         FormDataMultiPart multiPart = new FormDataMultiPart()
                 .field("card","1")
+                .field("fileName","end1.png")
                 .field("file", file, MediaType.valueOf(contentType));
         Response response = target.request().post(Entity.entity(multiPart, multiPart.getMediaType()));
         String s = response.readEntity(String.class);

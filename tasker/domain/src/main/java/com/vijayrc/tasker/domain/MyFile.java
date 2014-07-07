@@ -1,9 +1,11 @@
 package com.vijayrc.tasker.domain;
 
 import com.vijayrc.meta.ToString;
+import org.apache.commons.io.FileUtils;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 @ToString
@@ -32,6 +34,10 @@ public class MyFile {
         myFile.name = name;
         return myFile;
     }
+    public void writeTo(String path) throws IOException {
+        FileUtils.copyInputStreamToFile(inputStream,new File(path));
+    }
+
     public String id() {
         return id;
     }

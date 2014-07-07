@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
@@ -45,12 +46,10 @@ public class AllMyFiles {
 
     public Integer create(MyFile myFile) throws Exception {
         String path = location + "/files/" + myFile.name();
-        System.out.println(path);
-        File newFile = new File(path);
-        FileUtils.copyInputStreamToFile(myFile.inputStream(),newFile);
-        log.info("saved|"+newFile);
+        myFile.writeTo(path);
+        log.info("saved|"+path);
 
-        template.update("insert into files (card,path) values (?)", myFile.card(),path);
+        template.update("insert into files (card,path) values (?,?)", myFile.card(),path);
         Integer id = template.queryForObject("select max(id) from files", Integer.class);
         log.info("create|"+id);
         return id;

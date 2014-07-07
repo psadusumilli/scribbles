@@ -6,6 +6,7 @@ import com.vijayrc.tasker.error.FileNotFoundWebError;
 import com.vijayrc.tasker.error.WebError;
 import com.vijayrc.tasker.service.MyFileService;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.File;
 import java.io.InputStream;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 @Component
 @Path("files")
@@ -44,15 +47,14 @@ public class MyFileApi {
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response create(@FormDataParam("file") InputStream inputStream,
+                           @FormDataParam("fileName") String fileName,
                            @FormDataParam("file") FormDataContentDisposition fileDetail,
                            @FormDataParam("card") String card){
         try {
-            System.out.println(inputStream.available()+"|"+card+"|"+fileDetail.getFileName());
-            FileUtils.copyInputStreamToFile(inputStream, new File("eng.png"));
-//            MyFile myFile = MyFile.writeInstance(inputStream,card,fileDetail.getFileName());
-//            Integer id = service.create(myFile);
-//            return Response.created(uriInfo.getAbsolutePathBuilder().build(id)).build();
-            return Response.ok().build();
+            String name = isBlank(fileName)?fileDetail.getFileName():fileName;
+            MyFile myFile = MyFile.writeInstance(inputStream,card,name);
+            Integer id = service.create(myFile);
+            return Response.created(uriInfo.getAbsolutePathBuilder().build(id)).build();
         } catch (Exception e) {
             throw new WebError(e);
         }
