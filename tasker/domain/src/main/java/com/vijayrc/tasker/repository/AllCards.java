@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -17,6 +18,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
 @Scope("singleton")
@@ -38,7 +41,7 @@ public class AllCards {
 
     public Card fetch(String id) throws CardNotFound {
         List<Card> cards = template.query("select * from cards where id = ?", new Object[]{id}, new CardMapper());
-        if(cards == null || cards.isEmpty()) throw new CardNotFound();
+        if(isEmpty(cards)) throw new CardNotFound();
         Card card = cards.get(0);
         log.info("|fetch|"+card);
         return card;

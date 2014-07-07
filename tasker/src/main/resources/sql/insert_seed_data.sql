@@ -10,3 +10,5 @@ insert into tasks(card,description,status) values(3,'task-1->card-3','complete')
 insert into tasks(card,description,status) values(3,'task-1->card-3','park');
 insert into tasks(card,description,status) values(4,'task-4->card-3','progress');
 insert into tasks(card,description,status) values(5,'task-5->card-3','invalid');
+
+insert into files(card,path) values(1,'/home/vijayrc/projs/VRC5/scribbles/tasker/files/notes.txt');

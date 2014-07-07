@@ -33,13 +33,13 @@ public class CardApi {
     private TaskApi taskApi;
 
     @GET
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public List<CardView> all(){
         return service.getAll();
     }
     @GET
     @Path("/{id}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public Response get(@PathParam("id") String id){
         try {
             return ok(service.getFor(id)).build();
@@ -65,7 +65,7 @@ public class CardApi {
         return status(NO_CONTENT).build();
     }
     @POST
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     @Consumes("application/json")
     public Response create(CardView cardView){
         try {
@@ -77,7 +77,7 @@ public class CardApi {
         }
     }
     @PUT
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     @Consumes("application/json")
     public Response update(CardView cardView){
         try {

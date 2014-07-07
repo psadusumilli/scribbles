@@ -29,7 +29,7 @@ public class TaskApi {
     private TaskService service;
 
     @GET
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public Response allFor(@PathParam("card") String card){
         try {
             return ok(service.getFor(card)).build();
@@ -39,7 +39,7 @@ public class TaskApi {
     }
     @GET
     @Path("{id}")
-    @Produces({"application/xml", "application/json"})
+    @Produces({"application/json"})
     public Response getFor(@PathParam("card") String card, @PathParam("id") String id){
         try {
             return ok(service.getFor(card, id)).build();
