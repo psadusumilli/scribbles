@@ -42,8 +42,7 @@ dependencies{
     compile 'org.glassfish.jersey.ext:jersey-spring3:2.10'
     compile 'org.springframework:spring-context:4.0.5.RELEASE'
     compile 'org.springframework:spring-jdbc:4.0.5.RELEASE'
-    compile 'org.glassfish.jersey.media:jersey-media-multipart:2.10'
-
+    testCompile 'org.glassfish.jersey.media:jersey-media-multipart:2.10'
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'org.springframework:spring-test:4.0.5.RELEASE'
