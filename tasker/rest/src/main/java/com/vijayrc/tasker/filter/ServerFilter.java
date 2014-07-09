@@ -12,6 +12,7 @@ public class ServerFilter implements ContainerRequestFilter{
 
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
+        log.debug(context.getHeaders()+"|"+context.getHeaderString("zip"));
         log.debug("|-----------------------------------------------------------|");
     }
 }

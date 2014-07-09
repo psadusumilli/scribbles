@@ -7,6 +7,7 @@ import com.vijayrc.tasker.param.CardParam;
 import com.vijayrc.tasker.service.CardService;
 import com.vijayrc.tasker.view.CardView;
 import com.vijayrc.tasker.view.TaskView;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import static javax.ws.rs.core.Response.Status.*;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.serverError;
 import static javax.ws.rs.core.Response.status;
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 @Component
 @Path("cards")
@@ -42,8 +44,8 @@ public class CardApi {
     }
 
     /** Contrived,
-     *  1) client requires gzip compression via 'accept-encoding' header in client filter
-     *  2) server card api checks for 'accept-encoding' adds custom header 'zip' to response
+     *  1) client filter add custom header 'zip'
+     *  2) server card api checks for 'zip' in request adds custom header 'zip' to response
      *  3) server interceptor does gzip compression based on 'zip'
      *  4) client interceptor does gzip expansion based on 'zip'
      *  */
@@ -53,7 +55,7 @@ public class CardApi {
     public Response get(@PathParam("id") String id,@Context HttpHeaders headers){
         try {
             CardView cardView = service.getFor(id);
-            return headers.getHeaderString("Accept-Encoding").contains("gzip")?
+            return equalsIgnoreCase(headers.getHeaderString("zip"), "yes")?
                 ok(cardView).header("zip","yes").build():
                 ok(cardView).build();
         } catch (CardNotFound e) {

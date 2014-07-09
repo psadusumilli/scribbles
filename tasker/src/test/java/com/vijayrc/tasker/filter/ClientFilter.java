@@ -12,7 +12,7 @@ public class ClientFilter implements ClientRequestFilter {
 
     @Override
     public void filter(ClientRequestContext context) throws IOException {
-        context.getHeaders().add("Accept-Encoding","gzip");
+        context.getHeaders().add("zip","yes");
         log.info("add header|gzip|" + context.getHeaders());
     }
 }
