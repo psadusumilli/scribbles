@@ -1,5 +1,6 @@
 package com.vijayrc.tasker;
 
+import com.vijayrc.tasker.interceptor.ZipInterceptor;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
@@ -13,6 +14,7 @@ public class MyApplication extends Application {
         Set<Class<?>> classes = new HashSet<>();
         classes.add(MultiPartFeature.class);
         classes.add(LoggingFilter.class);
+        classes.add(ZipInterceptor.class);
         return classes;
     }
 }

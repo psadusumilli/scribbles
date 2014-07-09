@@ -1,5 +1,6 @@
 package com.vijayrc.tasker.api;
 
+import com.vijayrc.tasker.interceptor.UnzipInterceptor;
 import com.vijayrc.tasker.view.CardView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ public class CardApiTest {
 
     @Before
     public void setup(){
-        client = ClientBuilder.newClient();
+        client = ClientBuilder.newClient().register(UnzipInterceptor.class);
         target = client.target(baseUrl).path("cards");
     }
     @Test

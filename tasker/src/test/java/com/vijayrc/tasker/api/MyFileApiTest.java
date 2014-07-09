@@ -1,5 +1,6 @@
 package com.vijayrc.tasker.api;
 
+import com.vijayrc.tasker.interceptor.UnzipInterceptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -26,7 +27,7 @@ public class MyFileApiTest {
 
     @Before
     public void setup(){
-        client = ClientBuilder.newClient().register(MultiPartFeature.class);
+        client = ClientBuilder.newClient().register(MultiPartFeature.class).register(UnzipInterceptor.class);
         target = client.target(baseUrl).path("files/upload");
     }
 
