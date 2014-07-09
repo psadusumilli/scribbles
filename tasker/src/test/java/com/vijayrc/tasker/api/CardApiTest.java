@@ -1,26 +1,21 @@
 package com.vijayrc.tasker.api;
 
-import com.vijayrc.tasker.interceptor.UnzipInterceptor;
+import com.vijayrc.tasker.config.TestMaker;
 import com.vijayrc.tasker.view.CardView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-import static com.vijayrc.tasker.config.TestConfig.baseUrl;
+import static com.vijayrc.tasker.config.TestMaker.baseUrl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -31,8 +26,8 @@ public class CardApiTest {
 
     @Before
     public void setup(){
-        client = ClientBuilder.newClient().register(UnzipInterceptor.class);
-        target = client.target(baseUrl).path("cards");
+        client = TestMaker.client();
+        target = client.target(baseUrl()).path("cards");
     }
     @Test
     public void shouldReturnAllTasksAsTypeFromXml(){
@@ -49,9 +44,16 @@ public class CardApiTest {
     }
     @Test
     public void shouldUseABeanParam(){
-        target = client.target(baseUrl).path("cards/filter/title;key=tech").queryParam("format","json");
+        target = client.target(baseUrl()).path("cards/filter/title;key=tech").queryParam("format","json");
         Response response = target.request().get();
         log.info(response.readEntity(String.class));
+    }
+
+    @Test
+    public void shouldGetACard(){
+        target = client.target(baseUrl()).path("cards/1");
+        CardView cardViewUpdated = target.request().get(CardView.class);
+        assertEquals("card-1",cardViewUpdated.getTitle());
     }
 
     @Test

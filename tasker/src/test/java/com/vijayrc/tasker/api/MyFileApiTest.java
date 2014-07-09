@@ -1,23 +1,21 @@
 package com.vijayrc.tasker.api;
 
-import com.vijayrc.tasker.interceptor.UnzipInterceptor;
+import com.vijayrc.tasker.config.TestMaker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
 
-import static com.vijayrc.tasker.config.TestConfig.baseUrl;
+import static com.vijayrc.tasker.config.TestMaker.baseUrl;
 import static java.lang.System.getProperty;
 
 public class MyFileApiTest {
@@ -27,8 +25,8 @@ public class MyFileApiTest {
 
     @Before
     public void setup(){
-        client = ClientBuilder.newClient().register(MultiPartFeature.class).register(UnzipInterceptor.class);
-        target = client.target(baseUrl).path("files/upload");
+        client = TestMaker.client();
+        target = client.target(baseUrl()).path("files/upload");
     }
 
     @Test

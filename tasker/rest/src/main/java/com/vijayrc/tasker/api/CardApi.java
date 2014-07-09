@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.WriterInterceptorContext;
 import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.*;
@@ -37,12 +40,22 @@ public class CardApi {
     public List<CardView> all(){
         return service.getAll();
     }
+
+    /** Contrived,
+     *  1) client requires gzip compression via 'accept-encoding' header in client filter
+     *  2) server card api checks for 'accept-encoding' adds custom header 'zip' to response
+     *  3) server interceptor does gzip compression based on 'zip'
+     *  4) client interceptor does gzip expansion based on 'zip'
+     *  */
     @GET
     @Path("/{id}")
     @Produces({"application/json"})
-    public Response get(@PathParam("id") String id){
+    public Response get(@PathParam("id") String id,@Context HttpHeaders headers){
         try {
-            return ok(service.getFor(id)).build();
+            CardView cardView = service.getFor(id);
+            return headers.getHeaderString("Accept-Encoding").contains("gzip")?
+                ok(cardView).header("zip","yes").build():
+                ok(cardView).build();
         } catch (CardNotFound e) {
             throw new CardNotFoundWebError(id);
         }

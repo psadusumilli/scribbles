@@ -9,13 +9,18 @@ import javax.ws.rs.ext.ReaderInterceptorContext;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
-public class UnzipInterceptor implements ReaderInterceptor {
-    private static Logger log  = LogManager.getLogger(UnzipInterceptor.class);
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+
+public class ClientReadInterceptor implements ReaderInterceptor {
+    private static Logger log  = LogManager.getLogger(ClientReadInterceptor.class);
 
     @Override
     public Object aroundReadFrom(ReaderInterceptorContext context) throws IOException, WebApplicationException {
-        context.setInputStream(new GZIPInputStream(context.getInputStream()));
-        log.info("unzip|"+context.getMediaType());
+        String zip = context.getHeaders().getFirst("zip");
+        if(equalsIgnoreCase(zip, "yes")){
+            context.setInputStream(new GZIPInputStream(context.getInputStream()));
+            log.debug("unzip|" + context.getMediaType());
+        }
         return context.proceed();
     }
 }
