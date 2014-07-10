@@ -19,7 +19,6 @@ import static com.vijayrc.tasker.config.TestMaker.baseUrl;
 import static java.lang.System.getProperty;
 
 public class MyFileApiTest {
-    private static Logger log = LogManager.getLogger(MyFileApiTest.class);
     private Client client;
     private WebTarget target;
 

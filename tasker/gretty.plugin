@@ -1,0 +1,17 @@
+buildscript {
+  repositories {
+    mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
+  }
+  
+  dependencies {
+    classpath 'org.akhikhl.gretty:gretty:1.0.0'
+  }
+}
+
+repositories {
+  mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
+}
+
+if (!project.plugins.findPlugin(org.akhikhl.gretty.GrettyPlugin))
+  project.apply(plugin: org.akhikhl.gretty.GrettyPlugin)
+

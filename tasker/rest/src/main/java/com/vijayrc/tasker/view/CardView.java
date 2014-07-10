@@ -5,7 +5,7 @@ import com.vijayrc.tasker.domain.Card;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
-//TODO remove the getters/setters
+
 @XmlRootElement
 @ToString
 public class CardView {
@@ -49,6 +49,8 @@ public class CardView {
         this.endBy = endBy;
         return this;
     }
+
+    //TODO remove the getters/setters added only for tests to work as intellij does not see 'enhance'
     public String getId() {
         return id;
     }
