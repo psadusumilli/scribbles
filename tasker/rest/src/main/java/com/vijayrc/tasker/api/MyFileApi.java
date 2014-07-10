@@ -4,6 +4,7 @@ import com.vijayrc.tasker.domain.MyFile;
 import com.vijayrc.tasker.error.FileNotFound;
 import com.vijayrc.tasker.error.FileNotFoundWebError;
 import com.vijayrc.tasker.error.WebError;
+import com.vijayrc.tasker.filter.Track;
 import com.vijayrc.tasker.service.MyFileService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +27,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 @Component
 @Path("files")
+@Track
 public class MyFileApi {
     @Autowired
     private MyFileService service;
