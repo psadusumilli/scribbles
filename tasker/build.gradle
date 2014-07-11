@@ -6,7 +6,6 @@ subprojects{
     repositories {
         mavenLocal()
         mavenCentral()
-        mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
     }
     dependencies {
         compile 'commons-lang:commons-lang:2.5'
@@ -26,24 +25,7 @@ subprojects{
     }
 }
 apply plugin: 'war'
-//apply plugin: 'jetty'
-//apply from: 'gretty.plugin'
-
-jettyVersion = "8.1.0.RC0"
-
-configurations {
-    jetty8
-}
-
-dependencies {
-    jetty8 "org.mortbay.jetty:jetty-runner:$jettyVersion"
-}
-
-task runJetty8(type: JavaExec) {
-    main = "org.mortbay.jetty.runner.Runner"
-    args = [war.archivePath]
-    classpath configurations.jetty8
-}
+apply plugin: 'jetty'
 
 httpPort = 9090
 version = '1.0'
@@ -51,7 +33,6 @@ version = '1.0'
 repositories {
     mavenLocal()
     mavenCentral()
-    mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
 }
 dependencies{
     compile project(':rest')
@@ -61,7 +42,6 @@ dependencies{
     compile 'org.springframework:spring-context:4.0.5.RELEASE'
     compile 'org.springframework:spring-jdbc:4.0.5.RELEASE'
     compile 'commons-io:commons-io:2.4'
-    compile 'org.akhikhl.gretty:gretty8-plugin:0.0.24'
 
     testCompile 'org.glassfish.jersey.media:jersey-media-multipart:2.10'
     testCompile 'junit:junit:4.11'
