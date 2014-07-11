@@ -62,7 +62,7 @@ task ( enhance, type: JavaExec ) {
 
 buildscript {
     repositories {
-        jcenter()
+        mavenRepo(url: 'http://jcenter.bintray.com')
     }
     dependencies {
         classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
