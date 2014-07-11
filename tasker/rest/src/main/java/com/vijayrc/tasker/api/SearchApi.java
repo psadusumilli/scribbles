@@ -5,6 +5,7 @@ import com.vijayrc.tasker.service.SearchService;
 import com.vijayrc.tasker.view.SearchView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.server.ManagedAsync;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,7 @@ public class SearchApi {
     private SearchService service;
 
     @GET
+    @ManagedAsync
     public void fetchFor(@MatrixParam("key") String key, @Suspended final AsyncResponse response){
         log.info("search|"+key);
         response.setTimeoutHandler(r ->  r.resume(Response.status(SERVICE_UNAVAILABLE).entity("search timed out.").build()));

@@ -48,7 +48,7 @@ dependencies{
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'org.springframework:spring-test:4.0.5.RELEASE'
     testCompile 'org.reflections:reflections:0.9.9-RC1'
-    providedCompile 'javax.servlet:servlet-api:2.5'
+    providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
 
 }
 
@@ -58,6 +58,7 @@ task ( enhance, type: JavaExec ) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
+//--------------------------------tomcat ---------------------------------------
 
 buildscript {
     repositories {
@@ -68,11 +69,17 @@ buildscript {
     }
 }
 apply plugin: 'tomcat'
+
 dependencies {
-    def tomcatVersion = '7.0.11'
+    def tomcatVersion = '7.0.54'
     tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
             "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
     tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
         exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
     }
+}
+tomcat {
+    httpPort = 8080
+    httpsPort = 8091
+    enableSSL = true
 }
