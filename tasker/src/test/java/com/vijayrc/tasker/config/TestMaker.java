@@ -9,7 +9,7 @@ import javax.ws.rs.client.ClientBuilder;
 
 public class TestMaker {
     public static String baseUrl() {
-        return "http://localhost:9090/tasker/rest/";
+        return "http://localhost:8080/tasker/rest/";
     }
     public static Client client(){
         return ClientBuilder.newClient()

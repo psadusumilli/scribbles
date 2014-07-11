@@ -34,6 +34,7 @@ public class SearchApi {
 
     @GET
     @ManagedAsync
+    @Produces("application/json")
     public void fetchFor(@MatrixParam("key") String key, @Suspended final AsyncResponse response){
         log.info("search|"+key);
         response.setTimeoutHandler(r ->  r.resume(Response.status(SERVICE_UNAVAILABLE).entity("search timed out.").build()));
@@ -47,4 +48,5 @@ public class SearchApi {
             response.resume(views);
         }).start();
     }
+
 }
