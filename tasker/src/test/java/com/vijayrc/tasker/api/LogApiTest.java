@@ -9,7 +9,6 @@ import org.junit.Test;
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class LogApiTest {
@@ -30,6 +29,6 @@ public class LogApiTest {
         ChunkedInput<String> chunkedInput = response.readEntity(new GenericType<ChunkedInput<String>>(){});
         String chunk;
         while((chunk = chunkedInput.read()) != null)
-            log.info("client|"+chunk);
+            log.info("client|" + chunk);
     }
 }
