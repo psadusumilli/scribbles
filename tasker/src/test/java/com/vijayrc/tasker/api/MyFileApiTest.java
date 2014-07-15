@@ -30,11 +30,11 @@ public class MyFileApiTest {
 
     @Test
     public void shouldCreateANewFile(){
-        File file = new File(getProperty("user.dir") + "/files/end.png");
+        File file = new File(getProperty("user.dir") + "/files/captmidn.txt");
         String contentType = new MimetypesFileTypeMap().getContentType(file);
         FormDataMultiPart multiPart = new FormDataMultiPart()
                 .field("card","1")
-                .field("fileName","end1.png")
+                .field("fileName","captmidn.txt")
                 .field("file", file, MediaType.valueOf(contentType));
         Response response = target.request().post(Entity.entity(multiPart, multiPart.getMediaType()));
         String s = response.readEntity(String.class);

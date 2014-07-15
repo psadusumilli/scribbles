@@ -12,7 +12,6 @@ import java.io.InputStream;
 public class MyFile {
     private String id;
     private String card;
-    private String path;
     private String name;
     private File file;
     private InputStream inputStream;
@@ -23,7 +22,6 @@ public class MyFile {
         MyFile myFile = new MyFile();
         myFile.id = id;
         myFile.card = card;
-        myFile.path = path;
         myFile.file = new File(path);
         return myFile;
     }

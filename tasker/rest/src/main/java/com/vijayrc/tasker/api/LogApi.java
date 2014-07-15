@@ -2,14 +2,19 @@ package com.vijayrc.tasker.api;
 
 import com.vijayrc.tasker.error.WebError;
 import com.vijayrc.tasker.filter.Track;
+import com.vijayrc.tasker.service.MyFileService;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ChunkedOutput;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import java.io.IOException;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -18,33 +23,35 @@ import static java.lang.Thread.sleep;
 @Track
 public class LogApi {
     private static Logger log = LogManager.getLogger(LogApi.class);
-    private static int count = 0;
+
+    @Autowired
+    private MyFileService service;
+
     @GET
-    public ChunkedOutput<String> tail(){
+    @Path("{id}")
+    public ChunkedOutput<String> tail(@PathParam("id") String id){
         final ChunkedOutput<String> output = new ChunkedOutput<>(String.class);
         new Thread(()->{
             try {
-                while(count < 6)
-                    output.write(tailFile());
-                count = 0;
-            } catch (Exception e) {
+                List<String> lines = service.read(id);
+                for (String line : lines) {
+                    output.write(line);
+                    log.debug(line);
+                    Thread.sleep(200);
+                }
+            } catch(Exception e){
                 throw new WebError(e);
-            } finally {
+            }
+            finally {
                 try {
                     output.close();
                 } catch (IOException e) {
-                    log.error(e);
+                    e.printStackTrace();
                 }
             }
         }).start();
+        log.info("request returned");
         return output;
     }
 
-    //TODO - write a real file tail
-    private String tailFile() throws Exception {
-        sleep(1000);
-        String line = "line-" + count++;
-        log.debug(line);
-        return line;
-    }
 }
