@@ -37,18 +37,10 @@ public class LogApiTest {
     public void shouldReadFromChunkedResponsePieceMeal() throws Exception {
         Response response = TestMaker.target().path("/logs/2").request().get();
         ChunkedInput<String> chunkedInput = response.readEntity(new GenericType<ChunkedInput<String>>(){});
+        chunkedInput.setParser(ChunkedInput.createParser("\n"));
 
-        chunkedInput.setParser(responseStream -> {
-            int bufferSize = 2048;
-            byte[] bytes = new byte[bufferSize];
-            responseStream.read(bytes,0,bufferSize);
-            return bytes;
-        });
-
-        String chunk = chunkedInput.read();
-        while(chunk.length() > 0){
+        String chunk;
+        while((chunk = chunkedInput.read()) != null)
             log.info(chunk+"|"+chunk.length());
-            chunk = chunkedInput.read();
-        }
     }
 }

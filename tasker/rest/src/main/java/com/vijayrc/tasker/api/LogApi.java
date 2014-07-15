@@ -35,7 +35,7 @@ public class LogApi {
             try {
                 List<String> lines = service.read(id);
                 for (String line : lines) {
-                    output.write(line);
+                    output.write(line+"\n");
                     log.debug(line);
                     Thread.sleep(200);
                 }
