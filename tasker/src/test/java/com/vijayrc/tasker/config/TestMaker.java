@@ -6,6 +6,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 
 public class TestMaker {
     public static String baseUrl() {
@@ -16,5 +17,9 @@ public class TestMaker {
                 .register(ClientFilter.class)
                 .register(ClientReadInterceptor.class)
                 .register(MultiPartFeature.class);
+    }
+
+    public static WebTarget target(){
+        return client().target(baseUrl());
     }
 }
