@@ -14,11 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.WriterInterceptorContext;
+import java.net.URI;
 import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.*;
@@ -36,6 +34,8 @@ public class CardApi {
     private CardService service;
     @Autowired
     private TaskApi taskApi;
+    @Context
+    private UriInfo uriInfo;
 
     @GET
     @Produces({"application/json"})
@@ -48,6 +48,7 @@ public class CardApi {
      *  2) server card api checks for 'zip' in request adds custom header 'zip' to response
      *  3) server interceptor does gzip compression based on 'zip'
      *  4) client interceptor does gzip expansion based on 'zip'
+     *  5) also returns a link to card's tasks
      *  */
     @GET
     @Path("/{id}")
@@ -55,9 +56,11 @@ public class CardApi {
     public Response get(@PathParam("id") String id,@Context HttpHeaders headers){
         try {
             CardView cardView = service.getFor(id);
+            URI uri = uriInfo.getAbsolutePathBuilder().path("tasks").build();
+            log.info(uri);
             return equalsIgnoreCase(headers.getHeaderString("zip"), "yes")?
-                ok(cardView).header("zip","yes").build():
-                ok(cardView).build();
+                ok(cardView).header("zip","yes").link(uri,"tasks").build():
+                ok(cardView).link(uri,"tasks").build();
         } catch (CardNotFound e) {
             throw new CardNotFoundWebError(id);
         }

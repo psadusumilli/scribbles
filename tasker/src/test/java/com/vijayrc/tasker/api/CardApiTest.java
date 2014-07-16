@@ -11,6 +11,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +55,9 @@ public class CardApiTest {
         target = client.target(baseUrl()).path("cards/1");
         CardView cardViewUpdated = target.request().get(CardView.class);
         assertEquals("card-1",cardViewUpdated.getTitle());
+        Response response = target.request().get();
+        Link tasks = response.getLink("tasks");
+        assertEquals("tasker/rest/cards/1/tasks",tasks.getUri().getPath());
     }
 
     @Test
