@@ -3,6 +3,7 @@ package com.vijayrc.tasker.config;
 import com.vijayrc.tasker.filter.ClientFilter;
 import com.vijayrc.tasker.interceptor.ClientReadInterceptor;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.sse.SseFeature;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -16,6 +17,7 @@ public class TestMaker {
         return ClientBuilder.newClient()
                 .register(ClientFilter.class)
                 .register(ClientReadInterceptor.class)
+                .register(SseFeature.class)
                 .register(MultiPartFeature.class);
     }
 

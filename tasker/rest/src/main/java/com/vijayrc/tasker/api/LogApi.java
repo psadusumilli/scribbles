@@ -6,6 +6,9 @@ import com.vijayrc.tasker.service.MyFileService;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.sse.EventOutput;
+import org.glassfish.jersey.media.sse.OutboundEvent;
+import org.glassfish.jersey.media.sse.SseFeature;
 import org.glassfish.jersey.server.ChunkedOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,9 +16,11 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
 import static java.lang.Thread.sleep;
 
 @Component
@@ -37,7 +42,7 @@ public class LogApi {
                 for (String line : lines) {
                     output.write(line+"\n");
                     log.debug(line);
-                    Thread.sleep(200);
+                    sleep(100);
                 }
             } catch(Exception e){
                 throw new WebError(e);
@@ -46,11 +51,43 @@ public class LogApi {
                 try {
                     output.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error(e);
                 }
             }
         }).start();
-        log.info("request returned");
+        log.info("output returned");
+        return output;
+    }
+
+    @GET
+    @Path("sse/{id}")
+    @Produces(SseFeature.SERVER_SENT_EVENTS)
+    public EventOutput tailEvents(@PathParam("id") String id){
+        final EventOutput output = new EventOutput();
+        new Thread(()->{
+            try {
+                List<String> lines = service.read(id);
+                for (String line : lines) {
+                    final OutboundEvent.Builder builder = new OutboundEvent.Builder();
+                    builder.name("tail-event");
+                    builder.data(String.class,line);
+                    output.write(builder.build());
+                    log.debug(line);
+                    sleep(100);
+                }
+            } catch(Exception e){
+                throw new WebError(e);
+            }
+            finally {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+
+        }).start();
+        log.info("output returned");
         return output;
     }
 
