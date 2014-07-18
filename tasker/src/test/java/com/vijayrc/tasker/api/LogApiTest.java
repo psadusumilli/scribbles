@@ -1,28 +1,24 @@
 package com.vijayrc.tasker.api;
 
-import com.vijayrc.tasker.config.TestMaker;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.jersey.client.ChunkParser;
 import org.glassfish.jersey.client.ChunkedInput;
 import org.glassfish.jersey.media.sse.EventInput;
 import org.glassfish.jersey.media.sse.InboundEvent;
 import org.junit.Test;
 
 import javax.ws.rs.client.AsyncInvoker;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static com.vijayrc.tasker.config.TestMaker.target;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static org.apache.commons.lang.StringUtils.join;
+import static junit.framework.Assert.assertEquals;
 
 public class LogApiTest {
     private static Logger log = LogManager.getLogger(LogApiTest.class);
@@ -49,11 +45,33 @@ public class LogApiTest {
 
     @Test
     public void shouldReadFromServerEvents() throws Exception {
-        EventInput eventInput = target().path("/logs/sse/1").request().get(EventInput.class);
+        EventInput eventInput = target().path("/logs/sse/2").request().get(EventInput.class);
         while(!eventInput.isClosed()){
             InboundEvent event = eventInput.read();
             if(event == null) break;
             log.info(event.getName()+"|"+event.readData(String.class));
         }
+    }
+
+    @Test
+    public void shouldReadFromBroadcastEvents() throws Exception {
+        String message = target().path("/logs/broadcast/2;delay=600").request().post(Entity.entity("", MediaType.TEXT_PLAIN),String.class);
+        assertEquals("broadcast started|2", message);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        for(int i=1;i<6;i++){
+            executorService.submit(()->{
+                EventInput eventInput = target().path("/logs/broadcast").request().get(EventInput.class);
+                while(!eventInput.isClosed()){
+                    InboundEvent event = eventInput.read();
+                    System.out.println(event);
+                    if(event == null) break;
+                    log.info("read|"+event.getName()+"|"+event.readData(String.class));
+                }
+            });
+        }
+        log.info("waiting...");
+        executorService.awaitTermination(3000, TimeUnit.SECONDS);
+        log.info("all done");
     }
 }

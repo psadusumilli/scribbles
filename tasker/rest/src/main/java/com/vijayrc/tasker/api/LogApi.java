@@ -3,31 +3,32 @@ package com.vijayrc.tasker.api;
 import com.vijayrc.tasker.error.WebError;
 import com.vijayrc.tasker.filter.Track;
 import com.vijayrc.tasker.service.MyFileService;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventOutput;
 import org.glassfish.jersey.media.sse.OutboundEvent;
+import org.glassfish.jersey.media.sse.SseBroadcaster;
 import org.glassfish.jersey.media.sse.SseFeature;
 import org.glassfish.jersey.server.ChunkedOutput;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.inject.Singleton;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.util.List;
 
-import static java.lang.Thread.sleep;
 import static java.lang.Thread.sleep;
 
 @Component
+@Scope("singleton")
+@Singleton //required for broadcast
 @Path("logs")
 @Track
 public class LogApi {
     private static Logger log = LogManager.getLogger(LogApi.class);
+    private final SseBroadcaster broadcaster = new SseBroadcaster();
 
     @Autowired
     private MyFileService service;
@@ -38,8 +39,7 @@ public class LogApi {
         final ChunkedOutput<String> output = new ChunkedOutput<>(String.class);
         new Thread(()->{
             try {
-                List<String> lines = service.read(id);
-                for (String line : lines) {
+                for (String line : service.read(id)) {
                     output.write(line+"\n");
                     log.debug(line);
                     sleep(100);
@@ -66,8 +66,7 @@ public class LogApi {
         final EventOutput output = new EventOutput();
         new Thread(()->{
             try {
-                List<String> lines = service.read(id);
-                for (String line : lines) {
+                for (String line : service.read(id)) {
                     final OutboundEvent.Builder builder = new OutboundEvent.Builder();
                     builder.name("tail-event");
                     builder.data(String.class,line);
@@ -90,5 +89,42 @@ public class LogApi {
         log.info("output returned");
         return output;
     }
+
+    @POST
+    @Path("/broadcast/{id}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String startBroadcast(@PathParam("id") String id, @DefaultValue("400") @MatrixParam("delay") Integer delay){
+        log.info("id="+id+"|delay="+delay);
+        new Thread(() -> {
+            try {
+                for (String line : service.read(id)) {
+                    final OutboundEvent.Builder builder = new OutboundEvent.Builder();
+                    builder.name("radio-event");
+                    builder.data(String.class,line);
+                    broadcaster.broadcast(builder.build());
+                    log.debug(line);
+                    sleep(delay);
+                }
+            } catch(Exception e){
+                throw new WebError(e);
+            }finally {
+                broadcaster.closeAll();
+                log.info("closed all listeners");
+            }
+        }).start();
+        System.out.println(this);
+        return "broadcast started|"+id;
+    }
+
+    @GET
+    @Path("/broadcast/")
+    @Produces(SseFeature.SERVER_SENT_EVENTS)
+    public EventOutput registerForBroadcast(){
+        final EventOutput eventOutput = new EventOutput();
+        this.broadcaster.add(eventOutput);
+        log.info("registered to read");
+        return eventOutput;
+    }
+
 
 }
