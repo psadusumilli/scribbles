@@ -28,8 +28,8 @@ apply plugin: 'war'
 apply plugin: 'jetty'
 
 httpPort = 9090
-groupId='com.vijayrc.tasker'
-artifactId='tasker'
+groupId='com.vijayrc.security'
+artifactId='security'
 version = '1.0'
 
 repositories {
@@ -57,33 +57,6 @@ dependencies{
 
 task ( enhance, type: JavaExec ) {
     main = 'com.vijayrc.repo.AllEnhancers'
-    args("com.vijayrc.tasker")
+    args("com.vijayrc.security")
     classpath = sourceSets.main.runtimeClasspath
-}
-
-//--------------------------------tomcat ---------------------------------------
-
-buildscript {
-    repositories {
-      mavenRepo(url: 'http://jcenter.bintray.com')
-      //jcenter()
-    }
-    dependencies {
-        classpath 'org.gradle.api.plugins:gradle-tomcat-plugin:1.2.4'
-    }
-}
-apply plugin: 'tomcat'
-
-dependencies {
-    def tomcatVersion = '7.0.54'
-    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
-    tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
-        exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
-    }
-}
-tomcat {
-    httpPort = 8080
-    httpsPort = 8091
-    enableSSL = true
 }
