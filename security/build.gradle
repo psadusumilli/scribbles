@@ -1,6 +1,7 @@
 subprojects{
     apply plugin: 'java'
     apply plugin: 'maven'
+
     version = '1.0'
 
     repositories {
@@ -21,7 +22,6 @@ subprojects{
         testCompile 'junit:junit:4.11'
         testCompile 'org.mockito:mockito-all:1.9.5'
         testCompile 'org.springframework:spring-test:4.0.5.RELEASE'
-
     }
 }
 apply plugin: 'war'
