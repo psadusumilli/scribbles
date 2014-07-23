@@ -28,8 +28,6 @@ apply plugin: 'war'
 apply plugin: 'jetty'
 
 httpPort = 9090
-groupId='com.vijayrc.tasker'
-artifactId='tasker'
 version = '1.0'
 
 repositories {
