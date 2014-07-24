@@ -23,5 +23,5 @@ test-output/
 .gradle/
 ./notes/network.txt~
 *.*~
-**/build/
+build
 classes
