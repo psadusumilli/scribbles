@@ -2,6 +2,12 @@ package com.vijayrc.security.basic.hasher;
 
 import java.security.MessageDigest;
 
+/**
+ * widely used
+ * not collision proof
+ * not secure, brute and rainbow table attack
+ *
+ */
 public class MD5Hasher implements Hasher {
 
     @Override
