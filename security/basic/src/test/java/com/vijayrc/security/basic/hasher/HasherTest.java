@@ -8,9 +8,19 @@ public class HasherTest {
     private static Logger log = LogManager.getLogger(HasherTest.class);
 
     @Test
-    public void shouldDoMD5() throws Exception {
-        Hasher hasher = new MD5Hasher();
+    public void shouldDoWithoutSalt() throws Exception {
+        final SimpleHasher hasher = new SimpleHasher();
         log.info(hasher.encrypt("akk1214"));
+        log.info(hasher.withAlgo(HashAlgo.SHA_256).encrypt("akk1214"));
+        log.info(hasher.withAlgo(HashAlgo.SHA_384).encrypt("akk1214"));
+        log.info(hasher.withAlgo(HashAlgo.SHA_512).encrypt("akk1214"));
     }
-
+    @Test
+    public void shouldDoWithSalt() throws Exception {
+        final Hasher hasher = new SaltyHasher();
+        log.info(hasher.encrypt("akk1214"));
+        log.info(hasher.withAlgo(HashAlgo.SHA_256).encrypt("akk1214"));
+        log.info(hasher.withAlgo(HashAlgo.SHA_384).encrypt("akk1214"));
+        log.info(hasher.withAlgo(HashAlgo.SHA_512).encrypt("akk1214"));
+    }
 }
