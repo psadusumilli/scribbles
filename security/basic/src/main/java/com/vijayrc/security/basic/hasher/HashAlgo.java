@@ -5,7 +5,8 @@ public enum HashAlgo {
     SHA_1("SHA-1"),
     SHA_256("SHA-256"),
     SHA_384("SHA-384"),
-    SHA_512("SHA-512");
+    SHA_512("SHA-512"),
+    PBK("PBKDF2WithHmacSHA1");
 
     private String key;
 

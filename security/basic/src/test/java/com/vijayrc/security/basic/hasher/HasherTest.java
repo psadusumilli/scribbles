@@ -23,4 +23,14 @@ public class HasherTest {
         log.info(hasher.withAlgo(HashAlgo.SHA_384).encrypt("akk1214"));
         log.info(hasher.withAlgo(HashAlgo.SHA_512).encrypt("akk1214"));
     }
+    @Test
+    public void shouldDoPBK() throws Exception {
+        final PBKHasher hasher = new PBKHasher();
+        log.info(hasher.withIterations(1000).encrypt("akk1214"));
+    }
+    @Test
+    public void shouldDoBScrypt() throws Exception {
+        final BScryptHasher hasher = new BScryptHasher();
+        log.info(hasher.withIterations(4).encrypt("akk1214"));
+    }
 }
