@@ -2,12 +2,14 @@ package com.vijayrc.tasker.view;
 
 import com.vijayrc.meta.ToString;
 import com.vijayrc.tasker.domain.Card;
+import com.wordnik.swagger.annotations.ApiModel;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @XmlRootElement
 @ToString
+@ApiModel(value = "a card is a card is a card")
 public class CardView {
     private String id;
     private String title;

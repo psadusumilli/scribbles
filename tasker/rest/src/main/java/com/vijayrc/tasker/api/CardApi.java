@@ -7,6 +7,10 @@ import com.vijayrc.tasker.param.CardParam;
 import com.vijayrc.tasker.service.CardService;
 import com.vijayrc.tasker.view.CardView;
 import com.vijayrc.tasker.view.TaskView;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +31,7 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 @Component
 @Path("cards")
+@Api(value = "cards", description = "Operations about cards")
 public class CardApi {
     private static Logger log = LogManager.getLogger(CardApi.class);
 
@@ -39,6 +44,11 @@ public class CardApi {
 
     @GET
     @Produces({"application/json"})
+    @ApiOperation(value = "find all cards", notes = "returns all cards in repository", response = CardView.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 500, message = "cards bombed"),
+            @ApiResponse(code = 404, message = "cards not found")
+    })
     public List<CardView> all(){
         return service.getAll();
     }
