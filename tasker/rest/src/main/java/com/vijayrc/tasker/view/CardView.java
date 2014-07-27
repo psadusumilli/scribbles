@@ -3,6 +3,7 @@ package com.vijayrc.tasker.view;
 import com.vijayrc.meta.ToString;
 import com.vijayrc.tasker.domain.Card;
 import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
@@ -11,7 +12,9 @@ import java.util.Date;
 @ToString
 @ApiModel(value = "a card is a card is a card")
 public class CardView {
+    @ApiModelProperty( value = "card unique id", required = true )
     private String id;
+    @ApiModelProperty( value = "card title", required = true )
     private String title;
     private String summary;
     private Date startBy;
@@ -52,7 +55,8 @@ public class CardView {
         return this;
     }
 
-    //TODO remove the getters/setters added only for tests to work as intellij does not see 'enhance'
+    /** TODO remove the getters/setters added only for tests to work as intellij does not see 'enhance'
+     */
     public String getId() {
         return id;
     }
