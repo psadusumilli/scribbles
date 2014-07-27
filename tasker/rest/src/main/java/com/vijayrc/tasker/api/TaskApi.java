@@ -38,7 +38,7 @@ public class TaskApi {
         }
     }
     @GET
-    @Path("{id}")
+    @Path("/{id}")
     @Produces({"application/json"})
     public Response getFor(@PathParam("card") String card, @PathParam("id") String id){
         try {

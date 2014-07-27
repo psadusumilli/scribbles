@@ -116,7 +116,7 @@ public class CardApi {
             throw new WebError(e);
         }
     }
-    @Path("{card}/tasks")
+    @Path("/{card}/tasks")
     public TaskApi task(){
         return taskApi;
     }

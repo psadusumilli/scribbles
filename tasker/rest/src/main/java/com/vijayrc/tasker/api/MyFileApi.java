@@ -38,7 +38,7 @@ public class MyFileApi {
     UriInfo uriInfo;
 
     @GET
-    @Path("{id}")
+    @Path("/{id}")
     @ApiOperation(value = "return file content", notes = "file content is spilled out", response = Response.class)
     @ApiResponses(value = {
             @ApiResponse(code = 500, message = "file bombed"),
