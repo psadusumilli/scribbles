@@ -29,7 +29,7 @@ import static java.lang.Thread.sleep;
 @Singleton //required for broadcast
 @Path("logs")
 @Track
-@Api(value = "cards", description = "Operations about tailing log files using asynch mechanism")
+@Api(value = "logs", description = "Operations about tailing log files using asynch mechanism")
 public class LogApi {
     private static Logger log = LogManager.getLogger(LogApi.class);
     private final SseBroadcaster broadcaster = new SseBroadcaster();

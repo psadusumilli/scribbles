@@ -4,6 +4,9 @@ import com.vijayrc.tasker.error.TaskNotFound;
 import com.vijayrc.tasker.error.TaskNotFoundWebError;
 import com.vijayrc.tasker.service.TaskService;
 import com.vijayrc.tasker.view.TaskView;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
 
 @Component
+@Api(value = "tasks",description = "task operations")
 public class TaskApi {
     private static Logger log = LogManager.getLogger(TaskApi.class);
 
@@ -30,7 +34,8 @@ public class TaskApi {
 
     @GET
     @Produces({"application/json"})
-    public Response allFor(@PathParam("card") String card){
+    @ApiOperation(value = "get tasks for given card",response = List.class)
+    public Response allFor(@ApiParam(value = "card number",required = true) @PathParam("card") String card){
         try {
             return ok(service.getFor(card)).build();
         } catch (TaskNotFound e) {
@@ -40,7 +45,9 @@ public class TaskApi {
     @GET
     @Path("/{id}")
     @Produces({"application/json"})
-    public Response getFor(@PathParam("card") String card, @PathParam("id") String id){
+    @ApiOperation(value = "get a task in the given card",response = TaskView.class)
+    public Response getFor(@ApiParam(value = "card number",required = true) @PathParam("card") String card,
+                           @ApiParam(value = "task id",required = true) @PathParam("id") String id){
         try {
             return ok(service.getFor(card, id)).build();
         } catch (TaskNotFound taskNotFound) {

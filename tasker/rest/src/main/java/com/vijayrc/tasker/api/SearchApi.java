@@ -29,7 +29,7 @@ import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 @Component
 @Path("search")
 @Track
-@Api("operations to search data")
+@Api(value = "search", description = "operations to search data")
 public class SearchApi {
     private static Logger log = LogManager.getLogger(SearchApi.class);
 

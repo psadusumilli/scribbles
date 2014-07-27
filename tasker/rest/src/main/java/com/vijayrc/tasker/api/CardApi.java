@@ -28,7 +28,7 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 @Component
 @Path("cards")
-@Api(value = "cards", description = "Operations about cards")
+@Api(value = "cards", description = "operations about cards")
 public class CardApi {
     private static Logger log = LogManager.getLogger(CardApi.class);
 

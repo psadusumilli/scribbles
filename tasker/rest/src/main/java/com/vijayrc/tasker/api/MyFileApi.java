@@ -30,7 +30,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Component
 @Path("files")
 @Track
-@Api("operations to work on files")
+@Api(value = "files",description = "operations to work on files")
 public class MyFileApi {
     @Autowired
     private MyFileService service;
