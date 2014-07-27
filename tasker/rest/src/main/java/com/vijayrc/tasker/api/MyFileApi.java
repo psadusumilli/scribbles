@@ -7,10 +7,7 @@ import com.vijayrc.tasker.error.WebError;
 import com.vijayrc.tasker.filter.Track;
 import com.vijayrc.tasker.service.MyFileService;
 import com.vijayrc.tasker.view.CardView;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -33,6 +30,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Component
 @Path("files")
 @Track
+@Api("operations to work on files")
 public class MyFileApi {
     @Autowired
     private MyFileService service;

@@ -10,14 +10,17 @@ import java.util.Date;
 
 @XmlRootElement
 @ToString
-@ApiModel(value = "a card is a card is a card")
+@ApiModel(value = "card is logical grouping of tasks done by a group of users")
 public class CardView {
     @ApiModelProperty( value = "card unique id", required = true )
     private String id;
-    @ApiModelProperty( value = "card title", required = true )
+    @ApiModelProperty( value = "title of the card", required = true )
     private String title;
+    @ApiModelProperty( value = "summary of the card", required = true )
     private String summary;
+    @ApiModelProperty( value = "card start date")
     private Date startBy;
+    @ApiModelProperty( value = "card end date")
     private Date endBy;
 
     public static CardView map(Card card){

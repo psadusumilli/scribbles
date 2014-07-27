@@ -3,6 +3,9 @@ package com.vijayrc.tasker.api;
 import com.vijayrc.tasker.filter.Track;
 import com.vijayrc.tasker.service.SearchService;
 import com.vijayrc.tasker.view.SearchView;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
@@ -26,6 +29,7 @@ import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 @Component
 @Path("search")
 @Track
+@Api("operations to search data")
 public class SearchApi {
     private static Logger log = LogManager.getLogger(SearchApi.class);
 
@@ -35,7 +39,8 @@ public class SearchApi {
     @GET
     @ManagedAsync
     @Produces("application/json")
-    public void fetchFor(@MatrixParam("key") String key, @Suspended final AsyncResponse response){
+    @ApiOperation("searches data using given key and returns results in asynch way")
+    public void fetchFor(@ApiParam("regex key to search") @MatrixParam("key") String key, @Suspended final AsyncResponse response){
         log.info("search|"+key);
         response.setTimeoutHandler(r ->  r.resume(Response.status(SERVICE_UNAVAILABLE).entity("search timed out.").build()));
         response.setTimeout(20, SECONDS);

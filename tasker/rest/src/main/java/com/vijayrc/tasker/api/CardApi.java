@@ -7,10 +7,7 @@ import com.vijayrc.tasker.param.CardParam;
 import com.vijayrc.tasker.service.CardService;
 import com.vijayrc.tasker.view.CardView;
 import com.vijayrc.tasker.view.TaskView;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponse;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +60,8 @@ public class CardApi {
     @GET
     @Path("/{id}")
     @Produces({"application/json"})
-    public Response get(@PathParam("id") String id,@Context HttpHeaders headers){
+    @ApiOperation("find and returns card for given id")
+    public Response get(@ApiParam @PathParam("id") String id,@Context HttpHeaders headers){
         try {
             CardView cardView = service.getFor(id);
             URI uri = uriInfo.getAbsolutePathBuilder().path("tasks").build();
