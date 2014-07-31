@@ -7,6 +7,7 @@ import com.vijayrc.tasker.param.CardParam;
 import com.vijayrc.tasker.service.CardService;
 import com.vijayrc.tasker.view.CardView;
 import com.vijayrc.tasker.view.TaskView;
+import com.wordnik.swagger.annotations.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +28,7 @@ import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 
 @Component
 @Path("cards")
+@Api(value = "cards", description = "operations about cards")
 public class CardApi {
     private static Logger log = LogManager.getLogger(CardApi.class);
 
@@ -39,6 +41,11 @@ public class CardApi {
 
     @GET
     @Produces({"application/json"})
+    @ApiOperation(value = "find all cards", notes = "returns all cards in repository", response = CardView.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 500, message = "cards bombed"),
+            @ApiResponse(code = 404, message = "cards not found")
+    })
     public List<CardView> all(){
         return service.getAll();
     }
@@ -53,7 +60,8 @@ public class CardApi {
     @GET
     @Path("/{id}")
     @Produces({"application/json"})
-    public Response get(@PathParam("id") String id,@Context HttpHeaders headers){
+    @ApiOperation("find and returns card for given id")
+    public Response get(@ApiParam @PathParam("id") String id,@Context HttpHeaders headers){
         try {
             CardView cardView = service.getFor(id);
             URI uri = uriInfo.getAbsolutePathBuilder().path("tasks").build();
@@ -108,7 +116,7 @@ public class CardApi {
             throw new WebError(e);
         }
     }
-    @Path("{card}/tasks")
+    @Path("/{card}/tasks")
     public TaskApi task(){
         return taskApi;
     }

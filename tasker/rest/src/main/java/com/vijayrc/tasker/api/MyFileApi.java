@@ -6,6 +6,8 @@ import com.vijayrc.tasker.error.FileNotFoundWebError;
 import com.vijayrc.tasker.error.WebError;
 import com.vijayrc.tasker.filter.Track;
 import com.vijayrc.tasker.service.MyFileService;
+import com.vijayrc.tasker.view.CardView;
+import com.wordnik.swagger.annotations.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -28,6 +30,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Component
 @Path("files")
 @Track
+@Api(value = "files",description = "operations to work on files")
 public class MyFileApi {
     @Autowired
     private MyFileService service;
@@ -35,8 +38,13 @@ public class MyFileApi {
     UriInfo uriInfo;
 
     @GET
-    @Path("{id}")
-    public Response getFile(@PathParam("id") String id){
+    @Path("/{id}")
+    @ApiOperation(value = "return file content", notes = "file content is spilled out", response = Response.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 500, message = "file bombed"),
+            @ApiResponse(code = 404, message = "file not found")
+    })
+    public Response getFile(@ApiParam(value = "id of file to fetch", required = true) @PathParam("id") String id){
         try {
             MyFile myFile = service.fetch(id);
             return Response.ok(myFile.file(),myFile.mediaType()).build();

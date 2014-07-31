@@ -2,17 +2,25 @@ package com.vijayrc.tasker.view;
 
 import com.vijayrc.meta.ToString;
 import com.vijayrc.tasker.domain.Card;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @XmlRootElement
 @ToString
+@ApiModel(value = "card is logical grouping of tasks done by a group of users")
 public class CardView {
+    @ApiModelProperty( value = "card unique id", required = true )
     private String id;
+    @ApiModelProperty( value = "title of the card", required = true )
     private String title;
+    @ApiModelProperty( value = "summary of the card", required = true )
     private String summary;
+    @ApiModelProperty( value = "card start date")
     private Date startBy;
+    @ApiModelProperty( value = "card end date")
     private Date endBy;
 
     public static CardView map(Card card){
@@ -50,7 +58,8 @@ public class CardView {
         return this;
     }
 
-    //TODO remove the getters/setters added only for tests to work as intellij does not see 'enhance'
+    /** TODO remove the getters/setters added only for tests to work as intellij does not see 'enhance'
+     */
     public String getId() {
         return id;
     }

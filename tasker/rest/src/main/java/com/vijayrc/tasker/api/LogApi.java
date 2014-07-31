@@ -3,6 +3,9 @@ package com.vijayrc.tasker.api;
 import com.vijayrc.tasker.error.WebError;
 import com.vijayrc.tasker.filter.Track;
 import com.vijayrc.tasker.service.MyFileService;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventOutput;
@@ -26,6 +29,7 @@ import static java.lang.Thread.sleep;
 @Singleton //required for broadcast
 @Path("logs")
 @Track
+@Api(value = "logs", description = "Operations about tailing log files using asynch mechanism")
 public class LogApi {
     private static Logger log = LogManager.getLogger(LogApi.class);
     private final SseBroadcaster broadcaster = new SseBroadcaster();
@@ -34,8 +38,9 @@ public class LogApi {
     private MyFileService service;
 
     @GET
-    @Path("{id}")
-    public ChunkedOutput<String> tail(@PathParam("id") String id){
+    @Path("/{id}")
+    @ApiOperation(value = "tail",notes = "tail logs using chunked output", response = ChunkedOutput.class,consumes = "string id of the file")
+    public ChunkedOutput<String> tail(@ApiParam(required = true, value = "unique id of the file") @PathParam("id") String id){
         final ChunkedOutput<String> output = new ChunkedOutput<>(String.class);
         new Thread(()->{
             try {
@@ -60,9 +65,10 @@ public class LogApi {
     }
 
     @GET
-    @Path("sse/{id}")
+    @Path("/sse/{id}")
     @Produces(SseFeature.SERVER_SENT_EVENTS)
-    public EventOutput tailEvents(@PathParam("id") String id){
+    @ApiOperation(value = "tailEvents",notes = "tail logs using sse ", response = ChunkedOutput.class,consumes = "string id of the file")
+    public EventOutput tailEvents(@ApiParam(required = true, value = "unique id of the file") @PathParam("id") String id){
         final EventOutput output = new EventOutput();
         new Thread(()->{
             try {
