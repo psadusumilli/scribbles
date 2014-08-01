@@ -10,11 +10,13 @@ import java.util.Set;
 public class Safe {
     static Map<String, String> passwords = new HashMap<>();
     static HashMultimap<String, String> roles = HashMultimap.create();
+    static HashMultimap<String, String> permissions = HashMultimap.create();
 
     static{
         passwords.put("pierre", encrypt("green"));
         passwords.put("paul", encrypt("blue"));
         roles.put("paul", "vip");
+        permissions.put("paul", "safe:*");
     }
 
     public static String encrypt(String password) {
@@ -25,5 +27,8 @@ public class Safe {
     }
     public static Set<String> getRoles(String username) {
         return roles.get(username);
+    }
+    public static Set<String> getPermissions(String username) {
+        return null;
     }
 }
