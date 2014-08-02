@@ -17,7 +17,8 @@ public class MyRealm extends AuthorizingRealm {
 
         String username = (String) principals.getPrimaryPrincipal();
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(Safe.getRoles(username));
-        info.setStringPermissions(Safe.getPermissions(username));
+//        info.setStringPermissions(Safe.getPermissions(username));
+        log.info("called "+username);
         return info;
     }
 

@@ -118,7 +118,6 @@ public class LogApi {
                 log.info("closed all listeners");
             }
         }).start();
-        System.out.println(this);
         return "broadcast started|"+id;
     }
 

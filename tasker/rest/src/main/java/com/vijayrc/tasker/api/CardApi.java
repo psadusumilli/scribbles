@@ -11,6 +11,8 @@ import com.wordnik.swagger.annotations.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,7 @@ import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.serverError;
 import static javax.ws.rs.core.Response.status;
 import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+import static org.apache.shiro.SecurityUtils.getSubject;
 
 @Component
 @Path("cards")
@@ -46,8 +49,9 @@ public class CardApi {
             @ApiResponse(code = 500, message = "cards bombed"),
             @ApiResponse(code = 404, message = "cards not found")
     })
-    public List<CardView> all(){
-        return service.getAll();
+    public Response all(){
+        if(roleIsNot("viewer")) return forbidden();
+        return ok(service.getAll()).build();
     }
 
     /** Contrived,
@@ -62,6 +66,7 @@ public class CardApi {
     @Produces({"application/json"})
     @ApiOperation("find and returns card for given id")
     public Response get(@ApiParam @PathParam("id") String id,@Context HttpHeaders headers){
+        if(roleIsNot("viewer")) return forbidden();
         try {
             CardView cardView = service.getFor(id);
             URI uri = uriInfo.getAbsolutePathBuilder().path("tasks").build();
@@ -77,6 +82,7 @@ public class CardApi {
     @Path("/filter/{field}")
     @Produces({"application/xml", "application/json"})
     public Response filter(@BeanParam CardParam cardParam){
+        if(roleIsNot("viewer")) return forbidden();
         log.info(cardParam);
         try {
             return ok(service.getFor("1")).build();
@@ -87,6 +93,7 @@ public class CardApi {
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") String id){
+        if(roleIsNot("deleter")) return forbidden();
         service.remove(id);
         return status(NO_CONTENT).build();
     }
@@ -96,6 +103,7 @@ public class CardApi {
     public Response create(CardView cardView){
         try {
             log.info("received|"+cardView);
+            if(roleIsNot("creator")) return forbidden();
             return ok(service.create(cardView)).build();
         } catch (Exception e) {
             log.error(e);
@@ -108,6 +116,7 @@ public class CardApi {
     public Response update(CardView cardView){
         try {
             log.info("received|"+cardView);
+            if(roleIsNot("creator")) return forbidden();
             return ok(service.update(cardView)).build();
         } catch (CardNotFound e) {
             throw new CardNotFoundWebError(cardView.getId());
@@ -119,6 +128,17 @@ public class CardApi {
     @Path("/{card}/tasks")
     public TaskApi task(){
         return taskApi;
+    }
+
+    private boolean roleIsNot(String role){
+        Subject subject = SecurityUtils.getSubject();
+        boolean hasNoRole = !subject.hasRole(role);
+        if(hasNoRole) log.info("subject has no valid role:"+role);
+        else log.info("subject has valid role:"+role);
+        return hasNoRole;
+    }
+    private Response forbidden(){
+        return Response.status(Response.Status.FORBIDDEN).build();
     }
 
 }

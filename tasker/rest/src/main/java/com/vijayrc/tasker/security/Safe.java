@@ -13,9 +13,13 @@ public class Safe {
     static HashMultimap<String, String> permissions = HashMultimap.create();
 
     static{
-        passwords.put("pierre", encrypt("green"));
-        passwords.put("paul", encrypt("blue"));
-        roles.put("paul", "vip");
+        passwords.put("paul1", encrypt("green"));
+        passwords.put("paul2", encrypt("blue"));
+
+        roles.put("paul1", "creator");
+        roles.put("paul1", "viewer");
+        roles.put("paul1", "deleter");
+
         permissions.put("paul", "safe:*");
     }
 
