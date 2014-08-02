@@ -4,7 +4,7 @@
 #have a decent login page not authcbasic
 
 [main]
-myMatcher = com.vijayrc.tasker.security.MyCredentialsMatcher
+myMatcher = com.vijayrc.tasker.security.MyMatcher
 myRealm = com.vijayrc.tasker.security.MyRealm
 myRealm.credentialsMatcher = $myMatcher
 securityManager.realms = $myRealm

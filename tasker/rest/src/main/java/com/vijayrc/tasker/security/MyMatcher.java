@@ -6,9 +6,11 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.springframework.stereotype.Component;
 
-public class MyCredentialsMatcher extends SimpleCredentialsMatcher {
-    private static Logger log = LogManager.getLogger(MyCredentialsMatcher.class);
+@Component
+public class MyMatcher extends SimpleCredentialsMatcher {
+    private static Logger log = LogManager.getLogger(MyMatcher.class);
 
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info){

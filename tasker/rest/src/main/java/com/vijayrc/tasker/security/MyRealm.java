@@ -7,9 +7,18 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MyRealm extends AuthorizingRealm {
-    private static Logger log = LogManager.getLogger(MyCredentialsMatcher.class);
+    private static Logger log = LogManager.getLogger(MyMatcher.class);
+
+    @Autowired
+    public MyRealm(MyMatcher matcher, MyResolver resolver) {
+        this.setCredentialsMatcher(matcher);
+        this.setRolePermissionResolver(resolver);
+    }
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
@@ -22,14 +31,12 @@ public class MyRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
-
         String username = upToken.getUsername();
-        check(username, "null usernames are not allowed by this realm.");
-
-        String password = Safe.getPassword(username);
         log.info("user entry|" + username);
-        check(password, "no account found for user [" + username + "]");
 
+        check(username, "null usernames are not allowed by this realm.");
+        String password = Safe.getPassword(username);
+        check(password, "no account found for user [" + username + "]");
         return new SimpleAuthenticationInfo(username, password.toCharArray(), getName());
     }
 

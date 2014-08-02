@@ -14,6 +14,24 @@
         <jdbc:script location="classpath:sql/create_new_tables.sql"/>
         <jdbc:script location="classpath:sql/insert_seed_data.sql"/>
     </jdbc:embedded-database>
+
+    <bean id="shiro" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="filterChainDefinitions">
+            <value>
+                /index.html = anon
+                **/cards/** = authcBasic,rest[cards]
+                **/tasks/** = authcBasic,rest[tasks]
+                **/files/** = authcBasic,rest[files]
+                **/search/** = authcBasic,rest[search]
+                /** = authcBasic
+            </value>
+        </property>
+    </bean>
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm"/>
+    </bean>
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
 </beans>
 
 
