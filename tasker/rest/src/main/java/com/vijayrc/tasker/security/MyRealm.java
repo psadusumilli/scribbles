@@ -1,5 +1,7 @@
 package com.vijayrc.tasker.security;
 
+import com.vijayrc.tasker.domain.User;
+import com.vijayrc.tasker.repository.AllUsers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.shiro.authc.*;
@@ -13,9 +15,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyRealm extends AuthorizingRealm {
     private static Logger log = LogManager.getLogger(MyMatcher.class);
+    private AllUsers allUsers;
 
     @Autowired
-    public MyRealm(MyMatcher matcher, MyResolver resolver) {
+    public MyRealm(MyMatcher matcher, MyResolver resolver, AllUsers allUsers) {
+        this.allUsers = allUsers;
         this.setCredentialsMatcher(matcher);
         this.setRolePermissionResolver(resolver);
     }
@@ -25,7 +29,8 @@ public class MyRealm extends AuthorizingRealm {
         check(principals, "principal-collection method argument cannot be null.");
         String username = (String) principals.getPrimaryPrincipal();
         log.info("called "+username);
-        return new SimpleAuthorizationInfo(Safe.getRoles(username));
+        User user = allUsers.get(username);
+        return new SimpleAuthorizationInfo(user.roles());
     }
 
     @Override
@@ -33,14 +38,14 @@ public class MyRealm extends AuthorizingRealm {
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
         String username = upToken.getUsername();
         log.info("user entry|" + username);
-
-        check(username, "null usernames are not allowed by this realm.");
-        String password = Safe.getPassword(username);
-        check(password, "no account found for user [" + username + "]");
-        return new SimpleAuthenticationInfo(username, password.toCharArray(), getName());
+        check(username, "blank user name");
+        User user = allUsers.get(username);
+        check(user, "no account found for user [" + username + "]");
+        return new SimpleAuthenticationInfo(username, user.password(), getName());
     }
 
-    private void check(Object reference, String message) {
+    private void check(Object reference, String
+            message) {
         if (reference == null)
             throw new AuthenticationException(message);
     }

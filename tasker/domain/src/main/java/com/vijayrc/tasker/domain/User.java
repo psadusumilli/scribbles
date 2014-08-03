@@ -6,22 +6,30 @@ import com.vijayrc.meta.ToString;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static java.util.Collections.addAll;
+import static org.apache.commons.lang.StringUtils.split;
+
 @ToString
 public class User {
     private String name;
     private String password;
-    private Set<Role> roles = new TreeSet<>();
+    private Set<String> roles = new TreeSet<>();
 
-    public User(String name, String password) {
+    public User(String name, String password, String rolesStr) {
         this.name = name;
         this.password = password;
+        addAll(roles, split(rolesStr, ","));
     }
-    public User withRole(Role role){
-        roles.add(role);
-        return this;
+    public boolean hasRole(String role){
+        return roles.contains(role);
     }
-    public boolean hasRole(String roleName){
-        return roles.contains(new Role(roleName));
+    public Set<String> roles() {
+        return roles;
     }
-
+    public char[] password(){
+        return password.toCharArray();
+    }
+    public String name() {
+        return name;
+    }
 }

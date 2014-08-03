@@ -19,7 +19,6 @@ import java.util.List;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
-@Scope("singleton")
 public class AllTasks {
     private static Logger log = LogManager.getLogger(AllTasks.class);
     private JdbcTemplate template;

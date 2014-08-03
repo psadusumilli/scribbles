@@ -22,7 +22,6 @@ import java.util.List;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
-@Scope("singleton")
 public class AllCards {
     private static Logger log = LogManager.getLogger(AllCards.class);
     private JdbcTemplate template;

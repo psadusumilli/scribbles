@@ -24,7 +24,6 @@ import static org.apache.commons.io.FileUtils.copyInputStreamToFile;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Repository
-@Scope("singleton")
 public class AllMyFiles {
     private static Logger log = LogManager.getLogger(AllMyFiles.class);
     private JdbcTemplate template;
