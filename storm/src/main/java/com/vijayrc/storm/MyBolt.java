@@ -28,7 +28,7 @@ public class MyBolt extends BaseRichBolt {
     }
     @Override
     public void execute(Tuple tuple) {
-        String value = name + "-" + tuple.getString(0);
+        String value = tuple.getString(0)+"|"+name;
         log.info(value);
         myCollector.emit(tuple,new Values(value));
         myCollector.ack(tuple);
