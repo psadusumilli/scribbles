@@ -14,7 +14,6 @@ dependencies {
     compile 'com.vijayrc.enhancer:enhancer:1.0'
     compile 'org.apache.logging.log4j:log4j-api:2.0-rc2'
     compile 'org.apache.logging.log4j:log4j-core:2.0-rc2'
-//    compile 'com.googlecode:kryo:2.16'
     testCompile 'junit:junit:4.11'
     providedCompile 'org.apache.storm:storm-core:0.9.3-incubating-SNAPSHOT'
 }

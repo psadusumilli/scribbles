@@ -15,7 +15,7 @@ public class MyTopology {
         builder.setBolt("b2",new MyBolt("b2"),1).shuffleGrouping("b1");
 
         Config config = new Config();
-        config.setDebug(true);
+        config.setDebug(false);
 
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("myTopology",config,builder.createTopology());

@@ -37,7 +37,7 @@ public class MySpout extends BaseRichSpout {
         sleep(100);
         final String[] words = new String[] {"cartman","stan","kyle","kenny"};
         final Random rand = new Random();
-        final String word = name+"-"+words[rand.nextInt(words.length)]+"|";
+        final String word = name+"-"+words[rand.nextInt(words.length)];
         log.info(word);
         myCollector.emit(new Values(word));
     }
