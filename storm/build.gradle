@@ -19,6 +19,6 @@ dependencies {
 }
 
 task (topo, type: JavaExec) {
-    main = 'com.vijayrc.storm.MyTopology'
+    main = 'com.vijayrc.storm.wordcount.Topology'
     classpath = sourceSets.main.runtimeClasspath
 }

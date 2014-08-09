@@ -7,7 +7,6 @@ import backtype.storm.topology.TopologyBuilder;
 import static backtype.storm.utils.Utils.sleep;
 
 public class MyTopology {
-
     public static void main(String[] args) {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("s1", new MySpout("s1"), 2);
