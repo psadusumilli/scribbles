@@ -1,4 +1,4 @@
-package com.vijayrc.storm;
+package com.vijayrc.storm.append;
 
 
 import backtype.storm.task.OutputCollector;

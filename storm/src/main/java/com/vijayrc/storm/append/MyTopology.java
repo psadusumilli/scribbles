@@ -1,8 +1,10 @@
-package com.vijayrc.storm;
+package com.vijayrc.storm.append;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
+import com.vijayrc.storm.append.MyBolt;
+import com.vijayrc.storm.append.MySpout;
 
 import static backtype.storm.utils.Utils.sleep;
 
