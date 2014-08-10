@@ -43,10 +43,4 @@ public class CountBolt extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
     }
 
-    @Override
-    public void cleanup() {
-//        repo.shutdown();
-        super.cleanup();
-        log.info("repo shutdown");
-    }
 }

@@ -37,7 +37,7 @@ public class LineSpout extends BaseRichSpout {
     }
     @Override
     public void nextTuple() {
-        String line = lines.get(count++);
-        myCollector.emit(new Values(line));
+        if(count < lines.size())
+            myCollector.emit(new Values(lines.get(count++)));
     }
 }

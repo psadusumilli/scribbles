@@ -28,7 +28,7 @@ public class WordCountTopology implements MyTopology {
         cluster.submitTopology(name, new Config(),builder.createTopology());
         sleep(10000);
 
-        readResults();
+//        readResults();
         cluster.killTopology(name);
         cluster.shutdown();
     }
@@ -45,9 +45,11 @@ public class WordCountTopology implements MyTopology {
 
         long counts = jedis.zcard("counts");
         log.info("no of words: " + counts);
-        jedis.zrangeWithScores("counts", counts-100, counts-1).stream().forEach(t -> log.info(t.getElement() + "->" + t.getScore()));
+        jedis.zrangeWithScores("counts", counts-100, counts-1)
+                .stream().forEach(t -> log.info(t.getElement() + "->" + t.getScore()));
 
         repo.close(jedis);
         repo.shutdown();
+        log.info("repo shutdown");
     }
 }
