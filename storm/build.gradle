@@ -20,6 +20,8 @@ dependencies {
 
 task (topo, type: JavaExec) {
     main = 'com.vijayrc.storm.AllTopologies'
-    args("append")
+    if (project.hasProperty('myArgs')) {
+        args(myArgs.split(','))
+    }
     classpath = sourceSets.main.runtimeClasspath
 }
