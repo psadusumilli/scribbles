@@ -27,10 +27,10 @@ public class WordCountTopology implements MyTopology {
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology(name, new Config(),builder.createTopology());
         sleep(10000);
-        cluster.killTopology(name);
-        cluster.shutdown();
 
         readResults();
+        cluster.killTopology(name);
+        cluster.shutdown();
     }
 
     @Override
