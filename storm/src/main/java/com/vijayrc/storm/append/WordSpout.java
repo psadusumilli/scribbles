@@ -14,13 +14,13 @@ import java.util.Random;
 
 import static backtype.storm.utils.Utils.sleep;
 
-public class MySpout extends BaseRichSpout {
-    private static Logger log = LogManager.getLogger(MySpout.class);
+public class WordSpout extends BaseRichSpout {
+    private static Logger log = LogManager.getLogger(WordSpout.class);
 
     private SpoutOutputCollector myCollector;
     private String name;
 
-    public MySpout(String name) {
+    public WordSpout(String name) {
         this.name = name;
     }
 

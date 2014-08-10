@@ -4,11 +4,14 @@ import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
+import com.vijayrc.storm.MyTopology;
 
 import static backtype.storm.utils.Utils.sleep;
 
-public class Topology {
-    public static void main(String[] args) throws Exception {
+public class WordCountTopology implements MyTopology {
+
+    @Override
+    public void run() throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("s1",new LineSpout(),1);
         builder.setBolt("b1",new SplitBolt(),10).shuffleGrouping("s1");
@@ -20,5 +23,10 @@ public class Topology {
         sleep(10000);
         cluster.killTopology("myTopology");
         cluster.shutdown();
+    }
+
+    @Override
+    public String name() {
+        return "wordcount";
     }
 }

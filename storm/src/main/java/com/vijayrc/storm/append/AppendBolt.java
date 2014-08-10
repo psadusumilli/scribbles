@@ -13,13 +13,13 @@ import org.apache.log4j.Logger;
 
 import java.util.Map;
 
-public class MyBolt extends BaseRichBolt {
-    private static Logger log = LogManager.getLogger(MyBolt.class);
+public class AppendBolt extends BaseRichBolt {
+    private static Logger log = LogManager.getLogger(AppendBolt.class);
 
     private String name;
     private OutputCollector myCollector;
 
-    public MyBolt(String name) {
+    public AppendBolt(String name) {
         this.name = name;
     }
     @Override
