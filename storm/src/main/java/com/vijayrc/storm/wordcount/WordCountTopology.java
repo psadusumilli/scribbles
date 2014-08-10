@@ -28,7 +28,7 @@ public class WordCountTopology implements MyTopology {
         cluster.submitTopology(name, new Config(),builder.createTopology());
         sleep(10000);
 
-//        readResults();
+        readResults();
         cluster.killTopology(name);
         cluster.shutdown();
     }
