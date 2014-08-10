@@ -32,17 +32,20 @@ public class CountBolt extends BaseRichBolt {
     }
     @Override
     public void execute(Tuple tuple) {
+        String word = tuple.getString(0);
         Jedis jedis = repo.newJedis();
-        jedis.zincrby("counts", 1, tuple.getString(0));
+        jedis.zincrby("counts", 1, word);
         repo.close(jedis);
+
         myCollector.ack(tuple);
     }
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
     }
+
     @Override
     public void cleanup() {
-        repo.shutdown();
+//        repo.shutdown();
         super.cleanup();
         log.info("repo shutdown");
     }

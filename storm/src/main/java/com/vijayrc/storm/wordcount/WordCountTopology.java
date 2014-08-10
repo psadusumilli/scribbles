@@ -42,8 +42,11 @@ public class WordCountTopology implements MyTopology {
         log.info("reading results...");
         JedisRepo repo = new JedisRepo();
         Jedis jedis = repo.newJedis();
-        log.info("no of words: " + jedis.zcard("counts"));
-        jedis.zrangeWithScores("counts", 0, 10).stream().forEach(t -> log.info(t.getElement() + "->" + t.getScore()));
+
+        long counts = jedis.zcard("counts");
+        log.info("no of words: " + counts);
+        jedis.zrangeWithScores("counts", counts-100, counts-1).stream().forEach(t -> log.info(t.getElement() + "->" + t.getScore()));
+
         repo.close(jedis);
         repo.shutdown();
     }
