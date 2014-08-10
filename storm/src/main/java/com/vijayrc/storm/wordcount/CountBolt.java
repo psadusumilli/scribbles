@@ -31,6 +31,7 @@ public class CountBolt extends BaseRichBolt {
         if (count == null) count = 0;
         count++;
         map.put(word, count);
+        log.info(word+":"+count);
         myCollector.emit(new Values(word,count));
     }
 
@@ -40,6 +41,6 @@ public class CountBolt extends BaseRichBolt {
     }
 
     public void print(){
-        map.keySet().forEach(k -> log.info(k+":"+map.get(k)));
+        map.keySet().forEach(k -> System.out.println(k+":"+map.get(k)));
     }
 }

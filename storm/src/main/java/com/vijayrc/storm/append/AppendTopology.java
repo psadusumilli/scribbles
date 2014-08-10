@@ -8,6 +8,8 @@ import com.vijayrc.storm.MyTopology;
 import static backtype.storm.utils.Utils.sleep;
 
 public class AppendTopology implements MyTopology{
+    private String name = "append";
+
     @Override
     public void run() {
         TopologyBuilder builder = new TopologyBuilder();
@@ -19,14 +21,14 @@ public class AppendTopology implements MyTopology{
         config.setDebug(false);
 
         LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("myTopology",config,builder.createTopology());
+        cluster.submitTopology(name,config,builder.createTopology());
         sleep(10000);
-        cluster.killTopology("myTopology");
+        cluster.killTopology(name);
         cluster.shutdown();
     }
 
     @Override
     public String name() {
-        return "append";
+        return name;
     }
 }
