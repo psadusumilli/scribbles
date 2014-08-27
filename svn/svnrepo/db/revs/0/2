@@ -1,0 +1,29 @@
+id: 0-2.0.r2/0
+type: dir
+count: 0
+cpath: /prj2
+copyroot: 0 /
+
+PLAIN
+K 4
+prj1
+V 14
+dir 0-1.0.r1/0
+K 4
+prj2
+V 14
+dir 0-2.0.r2/0
+END
+ENDREP
+id: 0.0.r2/137
+type: dir
+pred: 0.0.r1/108
+count: 2
+text: 2 62 62 62 dea7623a8f7e6bbf2387c7236b42ba37
+cpath: /
+copyroot: 0 /
+
+_0.0.t1-1 add-dir false false /prj2
+
+
+137 262

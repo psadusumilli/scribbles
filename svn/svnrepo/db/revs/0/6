@@ -1,0 +1,50 @@
+id: 0-1.0-6.r6/0
+type: dir
+pred: 0-1.0.r5/308
+count: 3
+text: 5 258 37 37 b86f3cc19045bd1ce10ec2df67240c1a
+cpath: /prj1/b1
+copyfrom: 5 /prj1
+
+PLAIN
+K 2
+b1
+V 16
+dir 0-1.0-6.r6/0
+K 6
+t1.txt
+V 16
+file 1-3.0.r5/72
+END
+ENDREP
+id: 0-1.0.r6/220
+type: dir
+pred: 0-1.0.r5/308
+count: 3
+text: 6 141 66 66 845db16dfa89499165297e5ae6a121a1
+cpath: /prj1
+copyroot: 0 /
+
+PLAIN
+K 4
+prj1
+V 16
+dir 0-1.0.r6/220
+K 4
+prj2
+V 16
+dir 0-2.0.r4/259
+END
+ENDREP
+id: 0.0.r6/433
+type: dir
+pred: 0.0.r5/521
+count: 6
+text: 6 354 66 66 db35818504a3b3cbf75c7b4549562384
+cpath: /
+copyroot: 0 /
+
+0-1._0.t5-5 add-dir false false /prj1/b1
+5 /prj1
+
+433 559

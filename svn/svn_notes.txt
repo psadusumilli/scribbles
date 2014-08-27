@@ -1,0 +1,81 @@
+SVN:
+
+1) Branches and Tags are files copied from trunk to separate folders named after them.
+2) Commits are states of complete repository
+3) brew install svn
+4) Create repo:	
+	$ svnadmin create ~/<path-to-your-new-repo-folder> say svnrepo
+5) cd svnrepo 
+6)  $ vim conf/svnserve.conf
+		Add the lines 
+		anon-access = none
+		auth-access = write
+		password-db = passwd
+7) Edit the password store file and add a test svn user
+	$ vim conf/passwd
+		vijayrc=jejus210
+8) Create multiple projs under svnrepo as you require (no relative paths)
+	$ svn mkdir file:////Users/xwg532/Code/c1/svnrepo/prj1	-m "new prj1"
+	$ svn mkdir file:////Users/xwg532/Code/c1/svnrepo/prj2  -m "new prj2"
+9) Start server as daemon
+	# svnserve -d 
+
+10) Create a client (working copy) svnclone for svnrepo to checkout
+	$ mkdir svnclone
+	$ cd svnclone
+	$ svn co file://///Users/xwg532/Code/c1/svnrepo/prj1 prj1  //in case of remote servers -> svn+ssh://
+	$ svn co file://///Users/xwg532/Code/c1/svnrepo/prj2 prj2 
+	$ ls svnclone 
+		prj1 prj2
+
+11) create code, commit to repo (unlike commit also pushes)
+	$ cd prj1
+	$ vi t1.txt //some text
+	$ svn add t1.txt
+	$ svn status   
+	$ svn commit -m "Adding new file"
+	$ svn info t1.txt
+	repeat for prj2
+
+12) verify changes are pushed to repo by creating another client copy
+	$ mkdir svnclone1
+	$ cd svnclone1
+	$ svn co file://///Users/xwg532/Code/c1/svnrepo/prj1 prj1  
+	$ cd prj1
+	$ svn log
+	------------------------------------------------------------------------
+	r3 | xwg532 | 2014-08-22 14:13:08 -0400 (Fri, 22 Aug 2014) | 1 line
+
+	adding new t1 file
+	------------------------------------------------------------------------
+	r1 | xwg532 | 2014-08-22 13:48:30 -0400 (Fri, 22 Aug 2014) | 1 line
+
+	new project1
+	------------------------------------------------------------------------
+
+	$ vim t1.txt //add some new lines
+	$ svn commit -m "some changes from clone 2 side"
+
+13) update from repo to pull changes from clone2
+	$ cd svnclone/prj1
+    $ svn update 
+    $ svn log
+    -----------------------------------------------------------------------
+	r5 | xwg532 | 2014-08-22 14:21:50 -0400 (Fri, 22 Aug 2014) | 1 line
+
+	changes from clone2
+	------------------------------------------------------------------------
+
+14) Create a branch in svnrepo
+	$ cd svnrepo
+	$ svn copy file://///Users/xwg532/Code/c1/svnrepo/prj1 file://///Users/xwg532/Code/c1/svnrepo/prj1/b1 -m "creating branch b1"
+	$ cd svnclone/prj1
+	$ svn update
+	$ ls 
+		b1/ t1.txt
+
+
+
+
+
+
