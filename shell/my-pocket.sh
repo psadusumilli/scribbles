@@ -10,7 +10,8 @@ function pocket(){
     case $1 in 
     	"find" ) 
 			##########check if empty index##########
-			if [ ! -s $index ]
+			last_page_no=$(head -1 $index | grep -E '[0-9]+' -o)
+			if [ $last_page_no = '0' ]
 			then 
 				echo -e "\033[93mno pages yet! \033[36m{$ pocket add}"
 				return
@@ -57,9 +58,9 @@ function pocket(){
 			fi
 
 			##########clean up##########
-			sed -i.bak 's/^ *//; s/ *$//; /^$/d; s/total:$last_page_no/total:$new_page_no/' $index
+			sed -i.bak "s/^ *//; s/ *$//; /^$/d; s/total:$last_page_no/total:$new_page_no/" $index
 			rm -f $index.bak
-			echo -e "\033[93m total pages:$new_page_no, added $new_page"
+			echo -e "\033[93mtotal ::> $new_page_no, added $new_page"
 			;;
 		"list" ) 
 			echo -e "\033[90m#--------------------------------------------------------#"
