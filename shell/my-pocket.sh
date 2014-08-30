@@ -27,13 +27,13 @@ function pocket(){
 				echo "no pages yet|$ pocket add"
 				exit 0;
 			fi	
-			grep $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' | tee $menu
+			grep -E $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' | tee $menu
 			echo "#--------------------------------------------------------#"
 			echo -n "select page ::>"
 			read page_no
 			page=$(grep $page_no $menu | sed 's/[0-9]*:://g')
 			echo "opening $page ..."
-			open -a Google\ Chrome http://$page
+			open -a Google\ Chrome $page
 			;;
 
 		#add a new page
@@ -56,4 +56,4 @@ function pocket(){
 	rm -f $index.bak
 }
 
-pocket add;
+pocket find emotional;
