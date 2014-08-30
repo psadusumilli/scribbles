@@ -41,17 +41,19 @@ function pocket(){
 			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
 			read new_page_and_tags
 			 
-			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')
-			new_page_content=$(curl -s $new_page | tr -d '\n|\t| \*')			
+			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')			
+			#new_page_content=$(curl -s $new_page | tr -d '\n|\t| \*')				
 			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://')
 			new_page_no=$[last_page_no+1]
 
-			echo "$new_page_no::$new_page_and_tags [ $new_page_content ]" >> $index			
+			#echo "$new_page_no::$new_page_and_tags [ $new_page_content ]" >> $index			
+			echo "$new_page_no::$new_page_and_tags" >> $index
 			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
 			echo "added $new_page"
 			;;
 		#usage instructions	
 		"*" ) echo "usage pocket find|add"
+			;;
 	esac
 	rm -f $index.bak
 }
