@@ -5,7 +5,8 @@ function pocket(){
 		touch .pocket;
 		echo "new .pocket";
 	fi	
-	
+	sed -i.bak 's/^ *//; s/ *$//; /^$/d' .pocket
+
     case $1 in 
     	"find" ) 
 			grep $2 .pocket | grep -E '(.+?)\|' -o | sed 's/|//g' | tee .pocket-menu
@@ -19,6 +20,7 @@ function pocket(){
 		"add" )
 			echo -n "please enter url|tags ::'vijayrc.com|code,tech,blog': "
 			read newpage
+			tail -n 1 .pocket | grep -E '[0-9]*' -o 
 			echo "added $newpage"
 			;;
 		"*" ) echo "usage pocket find|add"
