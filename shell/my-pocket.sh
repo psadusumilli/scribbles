@@ -29,7 +29,7 @@ function pocket(){
 			open -a Google\ Chrome $page
 			;;
 		"add" )
-			echo -ne "\033[93menter page|tags \033[36m{'http://vijayrc.com|code,tech,blog'}\033[39m ::>  "
+			echo -ne "\033[93mpage|tags \033[36m{'http://vijayrc.com|code,tech,blog'}\033[39m ::>  "
 			read new_page_and_tags			 
 			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')			
 
@@ -47,7 +47,7 @@ function pocket(){
 			new_page_no=$[last_page_no+1]
 
 			##########download page content##########
-			echo -ne "\033[93mwant to add page content? \033[36m[y|n]\033[39m: "	
+			echo -ne "\033[93mpage content? \033[36m[y|n]\033[39m: "	
 			read download
 			if [ $download = "y" ]
 			then 
@@ -60,7 +60,7 @@ function pocket(){
 			##########clean up##########
 			sed -i.bak "s/^ *//; s/ *$//; /^$/d; s/total:$last_page_no/total:$new_page_no/" $index
 			rm -f $index.bak
-			echo -e "\033[93mtotal ::> $new_page_no, added $new_page"
+			echo -e "\033[93mtotal=$new_page_no, added $new_page"
 			;;
 		"list" ) 
 			echo -e "\033[90m#--------------------------------------------------------#"
