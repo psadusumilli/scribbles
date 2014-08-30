@@ -4,23 +4,13 @@ function pocket(){
 	index=$dir/.index
 	menu=$dir/.menu
 	
+	if [ ! -e $dir ]; then mkdir $dir; fi	
+	if [ ! -e $index ]; then touch $index; fi
 
-	#create new files if non-existent
-	if [ ! -e $dir ]
-	then mkdir $dir
-	fi	
-	if [ ! -e $index ] 
-	then touch $index
-	fi
 	rm -f $index.bak
-
-	#clean up index file
 	sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
 
-	#switch as per commands find|add|delete
     case $1 in 
-    	
-    	#find and open page
     	"find" ) 
 			if [ ! -s $index ]
 			then 
@@ -36,8 +26,6 @@ function pocket(){
 			echo "opening $page ..."
 			open -a Google\ Chrome $page
 			;;
-
-		#add a new page
 		"add" )
 			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
 			read new_page_and_tags			 
@@ -58,11 +46,11 @@ function pocket(){
 			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
 			echo "added $new_page"
 			;;
-		#usage instructions	
+		"list" ) 
+			echo "#--------------------------------------------------------#"
+			cat $index | grep -E '(.+?)\|' -o | sed 's/|//g' | grep --color=always -E '[0-9]*'
+			;;	
 		"*" ) echo "usage pocket find|add"
-			;;
+		
 	esac
-	rm -f $index.bak
 }
-
-pocket find 'emotional';
