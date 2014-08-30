@@ -42,7 +42,7 @@ function pocket(){
 			fi
 
 			##########add entry##########
-			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://' | head -1)
+			last_page_no=$(tail -n 1 $index | grep -E '^[0-9]{1,5}::::' -o | sed 's/:::://' | head -1)
 			new_page_no=$[last_page_no+1]
 			
 			##########download page content##########
@@ -51,9 +51,9 @@ function pocket(){
 			if [ $download = "y" ]
 			then 
 				new_page_content=$(curl -s $new_page | tr -d '\n|\t| \*')				
-				echo "$new_page_no::$new_page_and_tags,$new_page_content" >> $index			
+				echo "$new_page_no::::$new_page_and_tags,$new_page_content" >> $index			
 			else
-				echo "$new_page_no::$new_page_and_tags" >> $index
+				echo "$new_page_no::::$new_page_and_tags" >> $index
 			fi
 
 			##########clean up##########
