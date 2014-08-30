@@ -25,7 +25,7 @@ function pocket(){
 			if [ ! -s $index ]
 			then 
 				echo "no pages yet|$ pocket add"
-				exit 0;
+				return
 			fi	
 			grep -E $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' | tee $menu
 			echo "#--------------------------------------------------------#"
