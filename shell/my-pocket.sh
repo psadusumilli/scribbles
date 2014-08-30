@@ -27,10 +27,10 @@ function pocket(){
 			open -a Google\ Chrome $page
 			;;
 		"add" )
-			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
+			echo -n "enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
 			read new_page_and_tags			 
 			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')						
-			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://')
+			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://' | head -1)
 			new_page_no=$[last_page_no+1]
 
 			echo -n "want to add page content? [y|n]: "	
