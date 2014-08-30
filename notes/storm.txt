@@ -28,6 +28,19 @@ Chapter2: Configuration
   < internal component specific configuration (getComponentConfiguration() in bolt/spout)
   < external component specific configuration.(setBolt/setSpout returns addConfiguration())
 
-
-
+Chapter3: Parallelism
+***********************
+1) A machine in a cluster can run 1-* worker process for 1-* topologies.
+2) A worker process can run many 1-* executors backed the workers' child threads.
+3) A executor can run 1-* tasks of the same component(bolt/spout).
+4) Cluster -> Machines -> Worker Process -> Executors (thread pools) -> tasks (bolt/spout running instance)
+5) Parallelism hint given in setBolt/setSpout is the initial number of executors.
+6) How to set number of workers? 
+    TOPOLOGY_WORKERS (config files)
+    Config.setNumberOfWorkers()
+7) How to set number of executors?
+    setBolt/setSpout
+8) rebalance executors in a running topology
+   $ storm rebalance mytopology -n 5 -e blue-spout=3 -e yellow-bolt=10
+   or use storm ui
 
