@@ -3,7 +3,8 @@ function pocket(){
 	dir=$HOME/.pocket
 	index=$dir/.index
 	menu=$dir/.menu
-	
+	downloaded=$dir/.downloaded
+
 	#create new files if non-existent
 	if [ ! -e $dir ]
 	then mkdir $dir
@@ -39,18 +40,13 @@ function pocket(){
 		"add" )
 			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
 			read new_page_and_tags
-			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://')
-			new_page_no=$[last_page_no+1] 
-			echo "$new_page_no::$new_page_and_tags" >> $index
+			 
 			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')
+			new_page_content=$(curl -s $new_page | tr -d '\n|\t| \*')			
+			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://')
+			new_page_no=$[last_page_no+1]
 
-
-			#fetch and save minified html
-			
-
-			#tr -d '\n' < index.html > index.html.2
-						
-
+			echo "$new_page_no::$new_page_and_tags [ $new_page_content ]" >> $index			
 			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
 			echo "added $new_page"
 			;;
