@@ -25,7 +25,7 @@ function pocket(){
 			read page_no
 			page=$(grep $page_no $menu | sed 's/[0-9]*:://g')
 			
-			echo "\033[93mopening $page ..."
+			echo -e "\033[93mopening $page ..."
 			open -a Google\ Chrome $page
 			;;
 		"add" )
