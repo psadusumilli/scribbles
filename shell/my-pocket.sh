@@ -39,7 +39,7 @@ function pocket(){
 		"add" )
 			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
 			read new_page_and_tags
-			last_page_no=$(tail -n 1 .pocket | grep -E '[0-9]*' -o)
+			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://')
 			new_page_no=$[last_page_no+1] 
 			echo "$new_page_no::$new_page_and_tags" >> $index
 			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')
