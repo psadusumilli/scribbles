@@ -12,7 +12,7 @@ function pocket(){
 			##########check if empty index##########
 			if [ ! -s $index ]
 			then 
-				echo -e "no pages yet! \033[36m{$ pocket add}"
+				echo -e "\033[93mno pages yet! \033[36m{$ pocket add}"
 				return
 			fi	
 			##########search and open########## 
@@ -24,20 +24,19 @@ function pocket(){
 			read page_no
 			page=$(grep $page_no $menu | sed 's/[0-9]*:://g')
 			
-			echo "opening $page ..."
+			echo "\033[93mopening $page ..."
 			open -a Google\ Chrome $page
 			;;
 		"add" )
-			echo -ne "enter page|tags \033[36m{'http://vijayrc.com|code,tech,blog'}\033[39m ::>  "
+			echo -ne "\033[93menter page|tags \033[36m{'http://vijayrc.com|code,tech,blog'}\033[39m ::>  "
 			read new_page_and_tags			 
 			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')			
 
 			##########check if exists##########
 			exists=$(grep $new_page $index -c)
-			echo $exists
 			if [ ! $exists == '0' ] 
 			then 
-				echo -ne "page already present, want to continue? \033[36m[y|n]\033[39m: "
+				echo -ne "\033[93mpage already present, want to continue? \033[36m[y|n]\033[39m: "
 				read ok_to_add
 				if [ ! $ok_to_add = "y" ]; then return ; fi 
 			fi
@@ -47,7 +46,7 @@ function pocket(){
 			new_page_no=$[last_page_no+1]
 			
 			##########download page content##########
-			echo -ne "want to add page content? \033[36m[y|n]\033[39m: "	
+			echo -ne "\033[93mwant to add page content? \033[36m[y|n]\033[39m: "	
 			read download
 			if [ $download = "y" ]
 			then 
@@ -60,7 +59,7 @@ function pocket(){
 			##########clean up##########
 			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
 			rm -f $index.bak
-			echo -e "\033[93m{added $new_page"
+			echo -e "\033[93madded $new_page"
 			;;
 		"list" ) 
 			echo -e "\033[90m#--------------------------------------------------------#"
@@ -70,7 +69,7 @@ function pocket(){
 			now=$(date +"%k:%M:%S_%m-%d-%Y")
 			cp $index $index.$now
 			;;	
-		"*" ) echo -ne "usage pocket find|add"
+		"*" ) echo -ne "\033[93musage pocket find|add"
 		
 	esac
 }
