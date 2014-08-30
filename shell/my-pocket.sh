@@ -5,7 +5,7 @@ function pocket(){
 	menu=$dir/.menu
 
 	if [ ! -e $dir ]; then mkdir $dir; fi	
-	if [ ! -e $index ]; then touch $index; fi
+	if [ ! -e $index ]; then echo "total:0" >  $index; fi
 
     case $1 in 
     	"find" ) 
@@ -41,10 +41,10 @@ function pocket(){
 				if [ ! $ok_to_add = "y" ]; then return ; fi 
 			fi
 
-			##########add entry##########
-			last_page_no=$(tail -n 1 $index | grep -E '^[0-9]{1,5}::::' -o | sed 's/:::://' | head -1)
+			##########get page no##########
+			last_page_no=$(head -1 $index | grep -E '[0-9]+' -o)
 			new_page_no=$[last_page_no+1]
-			
+
 			##########download page content##########
 			echo -ne "\033[93mwant to add page content? \033[36m[y|n]\033[39m: "	
 			read download
@@ -57,9 +57,9 @@ function pocket(){
 			fi
 
 			##########clean up##########
-			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
+			sed -i.bak 's/^ *//; s/ *$//; /^$/d; s/total:$last_page_no/total:$new_page_no/' $index
 			rm -f $index.bak
-			echo -e "\033[93madded $new_page"
+			echo -e "\033[93m total pages:$new_page_no, added $new_page"
 			;;
 		"list" ) 
 			echo -e "\033[90m#--------------------------------------------------------#"
