@@ -1,0 +1,29 @@
+xwg532@3c15c2c12066:~$ pocket add
+enter page|tags {'http://vijayrc.com|code,tech,blog'} ::>  http://misc.flogisoft.com/bash/tip_colors_and_formatting|code linux shell color
+want to add page content? [y|n]: y
+total ::> 1, added http://misc.flogisoft.com/bash/tip_colors_and_formatting
+xwg532@3c15c2c12066:~$ pocket add
+enter page|tags {'http://vijayrc.com|code,tech,blog'} ::>  http://vijayrc.com/vectorclocks/post/regex|code regex 
+want to add page content? [y|n]: y
+total ::> 2, added http://vijayrc.com/vectorclocks/post/regex
+xwg532@3c15c2c12066:~$ pocket add
+enter page|tags {'http://vijayrc.com|code,tech,blog'} ::>  https://twitter.com|fun social news
+want to add page content? [y|n]: n
+total ::> 3, added https://twitter.com
+xwg532@3c15c2c12066:~$ pocket add
+enter page|tags {'http://vijayrc.com|code,tech,blog'} ::>  https://news.ycombinator.com|news tech
+want to add page content? [y|n]: n
+total ::> 4, added https://news.ycombinator.com
+xwg532@3c15c2c12066:~$ pocket list
+#--------------------------------------------------------#
+1::::http://misc.flogisoft.com/bash/tip_colors_and_formatting
+2::::http://vijayrc.com/vectorclocks/post/regex
+3::::https://twitter.com
+4::::https://news.ycombinator.com
+xwg532@3c15c2c12066:~$ pocket find 'color|anchor'
+1::::http://misc.flogisoft.com/bash/tip_colors_and_formatting
+2::::http://vijayrc.com/vectorclocks/post/regex
+#--------------------------------------------------------#
+select page ::> 1
+opening http://misc.flogisoft.com/bash/tip_colors_and_formatting ...
+xwg532@3c15c2c12066:~$ 

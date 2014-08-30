@@ -1,5 +1,10 @@
+function hello(){
+	echo "say hello"
+}
+
 function say() {
-	echo "hey dude $1" 
+	echo "hey dude $1"
+	#hello; 
 }
 say "sweet"
 
