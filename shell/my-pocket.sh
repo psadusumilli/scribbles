@@ -1,9 +1,9 @@
 #!/bin/bash
 function pocket(){
-	dir=$HOME/.pocket
+	dir=.pocket
 	index=$dir/.index
 	menu=$dir/.menu
-	downloaded=$dir/.downloaded
+	
 
 	#create new files if non-existent
 	if [ ! -e $dir ]
@@ -27,9 +27,9 @@ function pocket(){
 				echo "no pages yet|$ pocket add"
 				return
 			fi	
-			grep -E $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' | tee $menu
+			grep -E -i $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' | tee $menu
 			echo "#--------------------------------------------------------#"
-			echo -n "select page ::>"
+			echo -n "select page ::> "
 			read page_no
 			page=$(grep $page_no $menu | sed 's/[0-9]*:://g')
 			echo "opening $page ..."
@@ -39,15 +39,21 @@ function pocket(){
 		#add a new page
 		"add" )
 			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
-			read new_page_and_tags
-			 
-			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')			
-			#new_page_content=$(curl -s $new_page | tr -d '\n|\t| \*')				
+			read new_page_and_tags			 
+			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')						
 			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://')
 			new_page_no=$[last_page_no+1]
 
-			#echo "$new_page_no::$new_page_and_tags [ $new_page_content ]" >> $index			
-			echo "$new_page_no::$new_page_and_tags" >> $index
+			echo -n "want to add page content? [y|n]: "	
+			read download
+			if [ $download = "y" ]
+			then 
+				new_page_content=$(curl -s $new_page | tr -d '\n|\t| \*')				
+				echo "$new_page_no::$new_page_and_tags,$new_page_content" >> $index			
+			else
+				echo "$new_page_no::$new_page_and_tags" >> $index
+			fi
+
 			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
 			echo "added $new_page"
 			;;
@@ -58,4 +64,4 @@ function pocket(){
 	rm -f $index.bak
 }
 
-pocket find emotional;
+pocket find 'HPUX|emotional';
