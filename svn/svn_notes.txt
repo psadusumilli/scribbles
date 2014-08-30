@@ -74,7 +74,13 @@ SVN:
 	$ ls 
 		b1/ t1.txt
 
-
+15) Ignore:
+	svn propset svn:ignore -RF /root/svn-ignore.txt . 
+        svn propset svn:ignore target .
+16) Add changed files:
+     svn add * --force 
+17) reset hard directory
+     svn revert -R .
 
 
 
