@@ -3,12 +3,12 @@ function pocket(){
 	dir=.pocket
 	index=$dir/.index
 	menu=$dir/.menu
-	
+
 	if [ ! -e $dir ]; then mkdir $dir; fi	
 	if [ ! -e $index ]; then touch $index; fi
 
-	rm -f $index.bak
 	sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
+	rm -f $index.bak
 
     case $1 in 
     	"find" ) 
@@ -49,6 +49,10 @@ function pocket(){
 		"list" ) 
 			echo "#--------------------------------------------------------#"
 			cat $index | grep -E '(.+?)\|' -o | sed 's/|//g' | grep --color=always -E '[0-9]*'
+			;;	
+		"backup" ) 
+			now=$(date +"%k:%M:%S_%m-%d-%Y")
+			cp $index $index.$now
 			;;	
 		"*" ) echo "usage pocket find|add"
 		
