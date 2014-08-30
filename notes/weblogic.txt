@@ -1,0 +1,3 @@
+WEBLOGIC SERVER:
+domain is a collection of WebLogic Server services designed for a specific purpose (a portal app, a business service)
+
