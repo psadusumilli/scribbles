@@ -33,8 +33,8 @@ function pocket(){
 			read new_page_and_tags			 
 			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')			
 
-			##########check if exists##########
-			exists=$(grep $new_page $index -c)
+			##########check if page already exists##########
+			exists=$(grep '::::$new_page $index' -c)
 			if [ ! $exists == '0' ] 
 			then 
 				echo -ne "\033[93mpage already present, want to continue? \033[36m[y|n]\033[39m: "
