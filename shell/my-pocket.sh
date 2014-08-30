@@ -28,26 +28,30 @@ function pocket(){
 			fi	
 			grep $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' | tee $menu
 			echo "#--------------------------------------------------------#"
-			echo -n "select page:=>"
+			echo -n "select page ::>"
 			read page_no
 			page=$(grep $page_no $menu | sed 's/[0-9]*:://g')
 			echo "opening $page ..."
 			open -a Google\ Chrome http://$page
 			;;
 
-		#add a new page	
+		#add a new page
 		"add" )
-			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'}:=>  "
-			read new_page
+			echo -n "please enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
+			read new_page_and_tags
 			last_page_no=$(tail -n 1 .pocket | grep -E '[0-9]*' -o)
 			new_page_no=$[last_page_no+1] 
-			echo "$new_page_no::$new_page" >> $index
-			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
+			echo "$new_page_no::$new_page_and_tags" >> $index
+			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')
+
 
 			#fetch and save minified html
-			#tr -d '\n' < index.html > index.html.2
 			
 
+			#tr -d '\n' < index.html > index.html.2
+						
+
+			sed -i.bak 's/^ *//; s/ *$//; /^$/d' $index
 			echo "added $new_page"
 			;;
 		#usage instructions	
