@@ -5,13 +5,24 @@ function pocket(){
 		touch .pocket;
 		echo "new .pocket";
 	fi	
-	grep $1 .pocket | grep -E '(.+?)\|' -o | sed 's/|//g' | tee .pocket-menu
-	echo "#--------------------------------------------------------#"
-	echo -n "enter ur choice: "
-	read choice
-	page=$(grep $choice .pocket-menu | sed 's/[0-9]*:://g')
-	echo "opening $page ..."
-	open -a Google\ Chrome http://$page
+	
+    case $1 in 
+    	"find" ) 
+			grep $2 .pocket | grep -E '(.+?)\|' -o | sed 's/|//g' | tee .pocket-menu
+			echo "#--------------------------------------------------------#"
+			echo -n "enter choice: "
+			read choice
+			page=$(grep $choice .pocket-menu | sed 's/[0-9]*:://g')
+			echo "opening $page ..."
+			open -a Google\ Chrome http://$page
+			;;
+		"add" )
+			echo -n "please enter url|tags ::'vijayrc.com|code,tech,blog': "
+			read newpage
+			echo "added $newpage"
+			;;
+		"*" ) echo "usage pocket find|add"
+	esac
 }
 
-pocket news;
+pocket add news;
