@@ -20,14 +20,14 @@ function pocket(){
 			grep -E -i $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' > $menu 
 			grep --color=always -E '[0-9]*' $menu
 			echo "#--------------------------------------------------------#"
-			echo -n "select page ::> "
+			echo -ne "\033[36mselect page\033[39m ::> "
 			read page_no
 			page=$(grep $page_no $menu | sed 's/[0-9]*:://g')
 			echo "opening $page ..."
 			open -a Google\ Chrome $page
 			;;
 		"add" )
-			echo -n "enter page|tags {'vijayrc.com|code,tech,blog'} ::>  "
+			echo -ne "enter page|tags \033[36m{'http://vijayrc.com|code,tech,blog'}\033[39m ::>  "
 			read new_page_and_tags			 
 			new_page=$(echo $new_page_and_tags | grep -E '.*\|' -o | sed 's/\|//')						
 			last_page_no=$(tail -n 1 $index | grep -E '[0-9]{1,5}::' -o | sed 's/:://' | head -1)
