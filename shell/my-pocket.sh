@@ -27,7 +27,8 @@ function pocket(){
 				echo "no pages yet|$ pocket add"
 				return
 			fi	
-			grep -E -i $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' | tee $menu
+			grep -E -i $2 $index | grep -E '(.+?)\|' -o | sed 's/|//g' > $menu 
+			grep --color=always -E '[0-9]*' $menu
 			echo "#--------------------------------------------------------#"
 			echo -n "select page ::> "
 			read page_no
@@ -64,4 +65,4 @@ function pocket(){
 	rm -f $index.bak
 }
 
-pocket find 'HPUX|emotional';
+pocket find 'emotional';
