@@ -23,7 +23,7 @@ function pocket(){
 			echo -e "#\033[90m--------------------------------------------------------#"
 			echo -ne "\033[36mselect page\033[39m ::> "
 			read page_no
-			page=$(grep $page_no:::: $menu | sed 's/[0-9]*:://g')
+			page=$(grep $page_no:::: $menu | sed 's/[0-9]*:://g'| head -1)
 			
 			echo -e "\033[93mopening $page ..."
 			open -a Google\ Chrome $page
