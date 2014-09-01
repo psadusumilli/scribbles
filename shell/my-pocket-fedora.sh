@@ -64,7 +64,7 @@ function pocket(){
 			;;
 		"list" ) 
 			echo -e "\033[90m#--------------------------------------------------------#"
-			cat $index | grep -E '(.+?)\|' -o | sed 's/|//g' | grep --color=always -E '[0-9]*'
+			cat $index | grep -E '(.+?)\|' -o #|sed 's/|//g' | grep --color=always -E '[0-9]*'
 			;;	
 		"backup" ) 
 			now=$(date +"%k:%M:%S_%m-%d-%Y")
