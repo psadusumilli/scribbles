@@ -1,8 +1,29 @@
-      ___  __        __   __     __  
+      __  __        __   __     __  
       |  | |__  |__) |    /  \ / _` | /  ` 
       |/\| |___ |__) |___ \__/ \__> | \__, 
                                            
 features like j2ee support, clustering, coherence caching, special spring suppport, network channels, work managers, domains,diagnostics and security
+chap1-install:
+1) download the right install jar 
+2) gui mode sucks in mac so run : http://oracle-webcenter.blogspot.com/2012/06/installing-weblogic-1036-in-command.html
+   java -d64 i-Dspace.detection=false -jar wls1036_generic.jar -mode=console
+3) I installed in $HOME/Tools/oracle, after installation got weblogic 10.3 and coherence 3.7 in that folder.
+4) set MW_HOME to $HOME/Tools/oracle
+5) bash functions to create/start domains
+  	function wl-start-domain(){
+ 		cd $HOME/Code/c1/wlsdomain/$1;
+ 		. $MW_HOME/wlserver_10.3/server/bin/setWLSEnv.sh ;
+ 		# . $MW_HOME/wlserver/server/bin/setWLSEnv.sh ;
+ 		./startWebLogic.sh;
+	 }
+ 	function wl-make-domain(){
+  		cd $HOME/Code/c1/wlsdomain/;
+  		mkdir $1;
+  		cd $1;
+ 		. $MW_HOME/wlserver_10.3/server/bin/setWLSEnv.sh ;
+ 		java -Dweblogic.management.allowPasswordEcho=true -Xmx1024m -XX:MaxPermSize=256m weblogic.Server;
+ 	} 
+
 
 chap2- administration:
 ***********************
