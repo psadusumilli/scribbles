@@ -22,7 +22,26 @@ chap1-install:
   		cd $1;
  		. $MW_HOME/wlserver_10.3/server/bin/setWLSEnv.sh ;
  		java -Dweblogic.management.allowPasswordEcho=true -Xmx1024m -XX:MaxPermSize=256m weblogic.Server;
- 	} 
+ 	}
+ 
+6) From console http://localhost:7001/console, Environment> Coherence Server > Setup new
+   localhost|8888|coherence1
+   Enter the following params for server start:
+	6.1) Java Home - Specify the Java home directory (path on the machine running Node Manager) to use when starting this server. Specify the parent directory of the JDK's bin directory. For example, c:\Oracle\Middleware\jdk160_20.
+	6.2) Java Vendor - Specify the Java vendor value to use when starting this server. For example, BEA, Sun, and such.
+	6.3) BEA Home - Specify the directory on the Node Manager machine under which all of Oracle's WebLogic products were installed. For example, c:\Oracle\Middleware\.
+	6.4) Root Directory - Specify the directory that this server uses as its root directory. This directory must be on the computer that hosts the Node Manager. If you do not specify a Root Directory value, the domain directory is used by default.
+	6.5) Class Path - Specify the classpath (path on the machine running Node Manager) to use when starting this server. If you need to add user classes to the classpath, in addition you will need to add the following: FEATURES_HOME/weblogic.server.modules.coherence.server_10.3.4.0.jar:COHERENCE_HOME/lib/coherence.jar, where FEATURES_HOME is the features directory, typically MW_HOME\modules\features, and COHERENCE_HOME is the Coherence directory, typically MW_HOME\coherence_3.6, on the Node Manager machine. If you do not specify a classpath, the preceding classpath will be used by default.
+The operating system determines which character you use to separate path elements. On Windows use a semicolon (;). On UNIX use a colon (:).
+	6.6) Arguments - The arguments to use when starting this server. These are the first arguments appended immediately after 
+
+7) Setup a machine; Environment > Machines ; localhost|5556|machine1
+
+
+
+
+
+ 
 
 
 chap2- administration:

@@ -8,7 +8,7 @@ function pocket(){
 	if [ ! -e $index ]; then echo "total:0" >  $index; fi
 
     case $1 in 
-    	"find" ) 
+    	        "find" ) 
 			##########check if empty index##########
 			last_page_no=$(head -1 $index | grep -E '[0-9]+' -o)
 			if [ $last_page_no = '0' ]
