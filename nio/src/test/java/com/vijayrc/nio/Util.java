@@ -10,4 +10,7 @@ public class Util {
     public static File resource(String path){
         return new File(Util.class.getResource(path).getFile());
     }
+    public static File fromBaseDir(String path){
+        return new File(System.getProperty("user.dir")+"/"+path);
+    }
 }

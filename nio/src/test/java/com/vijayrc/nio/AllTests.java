@@ -2,9 +2,13 @@ package com.vijayrc.nio;
 
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 import static com.vijayrc.nio.Util.*;
 
@@ -28,7 +32,8 @@ public class AllTests {
     @Test
     public void shouldDoAScatterReadAndWrite() throws Exception {
         RandomAccessFile readFile = new RandomAccessFile(resource("/samples/1.txt"),"rw");
-        RandomAccessFile writeFile = new RandomAccessFile(resource("/samples/2.txt"),"rw");
+        RandomAccessFile writeFile = new RandomAccessFile(fromBaseDir("2.txt"),"rw");
+
         FileChannel readChannel = readFile.getChannel();
         FileChannel writeChannel = writeFile.getChannel();
 
@@ -43,13 +48,26 @@ public class AllTests {
         print("next 120 chars(bytes).....");
         readFrom(buffer2);
 
-        writeChannel.write(buffers);
+        writeChannel.write(buffers);//TODO not working
+        writeChannel.write(ByteBuffer.wrap("Randy is Lorde".getBytes()));
+        writeChannel.force(true);
         buffer1.clear();
         buffer2.clear();
 
-        readChannel.close();
         writeChannel.close();
+        readChannel.close();
         readFile.close();
+    }
+
+    @Test
+    public void shouldScatterWriteToFile() throws Exception{
+        ByteBuffer buffer3 = Charset.defaultCharset().encode(CharBuffer.wrap("Line1\n".toCharArray()));
+        ByteBuffer buffer4 = Charset.defaultCharset().encode(CharBuffer.wrap("Line2".toCharArray()));
+
+        FileChannel channel = new FileOutputStream(fromBaseDir("2.txt").getPath(),true).getChannel();
+        channel.write(new ByteBuffer[]{buffer3, buffer4});
+        channel.force(true);
+        channel.close();
     }
 
     private void readFrom(ByteBuffer buffer) {
