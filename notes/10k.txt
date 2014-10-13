@@ -16,7 +16,7 @@ On huge loads, large stack frames and frequent context switches lead to poor per
 
 3) Event-Based
 ****************
-1 thread runs a event loop working on a event queue.
+One thread runs a event loop working on a event queue.
 This queue contains all events like incoming connections, IO response from a previous IO request, etc.
 Each event is linked with its callback to execute
 No context-switching it is a single thread serving connections. But dedicated OS kernel threads do IO and put a response event back?
@@ -24,4 +24,22 @@ No context-switching it is a single thread serving connections. But dedicated OS
  3.1) Reactor pattern:
  *********************
  synchronous, non-blocking I/O handling and relies on an event notification interface	
-  
+ On startup, application registers a set or resources (socket) and events (incoming connections)
+ Core component is a synchronous event demultiplexer waiting on events
+ On receipt of an event, it forwards to a dispatcher and waits for the next event.
+ Only the dispatcher processes the event with the registered callback
+ Therefore the event multiplexer still maintains the purity of a single thread.
+ The event handlers must also be non-blocking, one blocking operation can stop the entire application.
+ Can use a thread pool
+ TODO: Must read more
+
+ 3.2) Proactor pattern:
+ **********************
+ Non-synchronous, non-blocking I/O operations 
+ Support for completion events instead of blocking event notification interfaces.
+ Core component is a Proactive initiator, a single application thread that initiates asynch IO calls.
+ IO handling is done by OS
+ Can use a thread pool for event handling
+
+
+
