@@ -1,4 +1,4 @@
-package com.capitalone.p2p.action;
+package com.vijayrc.agent.action;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,17 +11,13 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.capitalone.p2p.util.Logger.log;
-import static java.lang.System.getProperty;
+import static com.vijayrc.agent.util.Logger.log;
 
-/**
- * Created by xwg532 on 11/9/14.
- */
 public class UploadAction extends BaseAction {
 
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final Part filePart = request.getPart("artifact");
+        final Part filePart = request.getPart("script");
         final String srcPath = getFileName(filePart);
         final String destPath = Action.baseDir + "/" + srcPath;
 
@@ -39,7 +35,7 @@ public class UploadAction extends BaseAction {
             output = "New file " + srcPath + " created at " + destPath;
             log(output);
 
-            Map<String, String> model = new HashMap<String, String>();
+            Map<String, String> model = new HashMap<>();
             model.put("$srcPath", srcPath);
             model.put("$destPath", destPath);
             return fill(template(), model);
@@ -57,7 +53,7 @@ public class UploadAction extends BaseAction {
     @Override
     public String template() {
         return "<body style='font-family:Arial'>" +
-                "<p>New file $srcPath created at <span style='color:#6495ED'>$destPath</span></p></body>";
+                "<p>New script $srcPath created at <span style='color:#6495ED'>$destPath</span></p></body>";
     }
 
     @Override

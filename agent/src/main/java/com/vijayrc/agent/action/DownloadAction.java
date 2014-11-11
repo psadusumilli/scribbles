@@ -1,12 +1,9 @@
-package com.capitalone.p2p.action;
+package com.vijayrc.agent.action;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Created by xwg532 on 11/9/14.
- */
-public class LogAction extends BaseAction{
+public class DownloadAction extends BaseAction{
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
         return "";
