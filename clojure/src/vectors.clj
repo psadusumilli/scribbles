@@ -3,6 +3,7 @@
 ; This means that using conj is more efficient than cons for adding items.
 ; They are efficient (constant time) for finding (using nth) or changing (using assoc) items by index.
 ;Function definitions specify their parameter list using a vector.
+; # is anonymous function and % is each item from list
 (println "------------------VECTORS----------------------")
 
 (println "count:" (count [19 "yellow" true]))
@@ -31,3 +32,6 @@
 
 (println "peek: " (peek boys ))  ;operates on the end element so Kenny
 (println "pop: " (pop boys ))
+(println "cons: " (cons "butters" boys)) ; appends to front
+(println "conj: " (conj boys "bebe")) ; appends to back
+

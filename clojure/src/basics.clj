@@ -5,3 +5,5 @@
 (def x 3)
 (def y 5)
 (* x y )
+(def z (+ x y ))
+(println "z =" z)
