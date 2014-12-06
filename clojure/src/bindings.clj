@@ -8,7 +8,7 @@
   ; creates local binding v that shadows global one
   (println "f2: before let v:" v)
   ; local binding only within this let statement
-  (let [v 2](println "f2: in let, v:" v)(f1))
+  (let [v 2](println "f2: in let, v:" v)(f1));f1=1
   ; outside of this let, v refers to global binding
   (println "f2: after let v:" v)
 )
@@ -17,7 +17,7 @@
   ; same global binding with new, temporary value
   (println "f3: before binding v:" v)
   ; global binding, new value
-  (binding [v 3](println "f3: within binding function v: " v) (f1))
+  (binding [v 3](println "f3: within binding function v: " v) (f1));f1=3
   ; outside of binding v refers to first global value
   (println "f3: after binding v:" v)
 )

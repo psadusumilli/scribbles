@@ -18,7 +18,7 @@
 (println "pick: " (first boys)(second boys)(last boys)(nth boys 2))
 (println "filter: "(filter #(> (count %) 5) boys))
 
-(println   "predicates:"
+(println "predicates:"
   (every? #(instance? String %) boys)
   (not-every? #(instance? String %) boys)
   (some #(instance? Number %) boys)
