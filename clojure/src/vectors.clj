@@ -14,6 +14,7 @@
 
 (def boys ["Stan" "Cartman" "Kyle" "Kenny"])
 (#(println %) boys)
+(println "access via index " (boys 2))
 
 (println "pick: " (first boys)(second boys)(last boys)(nth boys 2))
 (println "filter: "(filter #(> (count %) 5) boys))
