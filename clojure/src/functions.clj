@@ -1,4 +1,8 @@
-;defn defines a function
+;fn
+(println "simple fn functions " ((fn [x y] (+ x y 5)) 5 15)); 25
+
+
+;defn defines a function = def+fn
 (defn greet "will greet anyone" [name] (str "Hello ", name))
 (println (greet "vijay"))
 (defn curse "to cuss" [name] (str "fuck u ", name))
@@ -22,8 +26,11 @@
 (println (parting "Mark", "en"))
 
 ;anonymous function
+(#(println "sum is " (+ %1 %2)) 1 2)
+
 (def years [1940 1944 1961 1985 1987])
 (println (filter #(> % 1950) years))
+
 
 ;anonymous function with a name
 (defn pair-test "to check pairs sum is even"

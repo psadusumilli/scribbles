@@ -3,6 +3,7 @@
   [[x1 _ x3]] (+ x1 x3)); not the embedded square brackets
 (println "sum =" (summer [1 2 4 5]))
 
+;&
 (defn name-summary [[name1 name2 & others]]
   (println (str name1 ", " name2) "and" (count others) "others"))
 (name-summary ["Moe" "Larry" "Curly" "Shemp"]) ; -> Moe, Larry and 2 others
@@ -11,6 +12,10 @@
 (defn first-and-third-percentage [[n1 _ n3 :as coll]]
   (/ (+ n1 n3) (apply + coll)))
 (println "1-3/% = " (first-and-third-percentage [4 5 6 7]));
+
+;pull by index
+(def x [1,2,3,4,5] )
+(let [{y 1} x] (println "y is " y))
 
 ;extracting from map
 (defn summer-sales-percentage
@@ -29,3 +34,28 @@
              :september 200 :october  300 :november 400 :december 600})
 
 (println "summer sales = " (summer-sales-percentage sales)) ; ratio reduced from 1000/3300 -> 10/33
+
+;if keys names match
+(def chas {:name "Chas" :age 31 :location "Massachusetts"})
+(let [{:keys [name age location]} chas]
+  (println (format "%s is %s years old and lives in %s." name age location)))
+
+(def brian {"name" "Brian" "age" 31 "location" "British Columbia"})
+(let [{:strs [name age location]} brian]
+  (println (format "%s is %s years old and lives in %s." name age location)))
+
+(def christophe {'name "Christophe" 'age 33 'location "Rhône-Alpes"})
+(let [{:syms [name age location]} christophe]
+  (println (format "%s is %s years old and lives in %s." name age location)))
+
+(def user-info ["robert8990" 2011 :name "Bob" :city "Boston"])
+(let [[username account-year & extra-info] user-info
+      {:keys [name city]} (apply hash-map extra-info)]
+  (println (format "%s is in %s" name city)))
+(let [[username account-year & {:keys [name city]}] user-info]
+  (println (format "%s is in %s" name city)))
+
+;or -default value x is given 2 since no-key does not exist in input {:key 3}
+(let [{x :no-key :or { x 2}} {:key 3}] (println "default x is " x))
+
+
