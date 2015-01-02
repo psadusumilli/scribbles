@@ -95,7 +95,12 @@
                       (partial map str/lower-case)
                       #(str/split % #"(?<=[a-z])(?=[A-Z])")))
 (camel->keyword "assCake") ; :ass-cake
-
-
 ;-------------------------------------------------------------------------------------------------------------
 
+;logger
+;anonymous function gives u the %; the power to pick future arguments
+(defn my-logger "modifies *out* to an custom pipe" [writer] #(binding [*out* writer] (println %)))
+(def my-out-logger (my-logger *out*))
+(my-out-logger "hey there")
+(def my-file-logger (my-logger (java.io.FileWriter. "/home/vijayrc/projs/VRC5/scribbles/clojure/io.log")))
+(my-file-logger "hey there")
