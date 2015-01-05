@@ -5,11 +5,9 @@ apply plugin: 'jetty'
 
 httpPort = 9090
 version = '1.0'
-sourceCompatibility = '1.7'
 
 repositories {
     mavenCentral()
-    mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
 }
 
 dependencies{
