@@ -1,7 +1,11 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.functions.destructure)
+
 ;to break input params
 (defn summer "add item1 and item3 in given list "
   [[x1 _ x3]] (+ x1 x3)); not the embedded square brackets
-(println "sum =" (summer [1 2 4 5]))
+(println "sum =" (summer [1 2 4 5])) ; 1+4
 
 ;&
 (defn name-summary [[name1 name2 & others]]
@@ -57,5 +61,6 @@
 
 ;or -default value x is given 2 since no-key does not exist in input {:key 3}
 (let [{x :no-key :or { x 2}} {:key 3}] (println "default x is " x))
+
 
 

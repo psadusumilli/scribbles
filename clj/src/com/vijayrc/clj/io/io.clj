@@ -1,5 +1,9 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.io.io)
+
 ; special symbols *in*, *out* and *err* are set to stdin, stdout and stderr by default
-(binding [*out* (java.io.FileWriter. "/home/vijayrc/projs/VRC5/scribbles/clojure/io.log")]
+(binding [*out* (java.io.FileWriter. "/home/vijayrc/Projs/VRC5/scribbles/clojure/io.log")]
   (print "this goes to my io.log file")
   (flush)
   )

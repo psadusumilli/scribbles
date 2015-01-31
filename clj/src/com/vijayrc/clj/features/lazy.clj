@@ -1,3 +1,7 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.features.lazy)
+
 (map #(println %) [1,2,3]); nothing will be printed as map is lazy
 (dorun (map #(print %) [1,2,3])); dorun forces evaulation
 (doseq [x [1,2,3]] (print x)); doseq better than dorun as a duplicate sequence create is avoided

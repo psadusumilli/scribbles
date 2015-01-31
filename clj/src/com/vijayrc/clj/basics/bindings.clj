@@ -1,8 +1,13 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.basics.bindings)
+
+
 (def ^:dynamic v 1) ; v is a global binding, the :dynamic indicates its value can be changed in f4
 
 (defn f1 []
   (println "f1: v:" v)
-)
+  )
 
 (defn f2 []
   ; creates local binding v that shadows global one
@@ -11,7 +16,7 @@
   (let [v 2](println "f2: in let, v:" v)(f1));f1=1
   ; outside of this let, v refers to global binding
   (println "f2: after let v:" v)
-)
+  )
 
 (defn f3 []
   ; same global binding with new, temporary value
@@ -20,12 +25,12 @@
   (binding [v 3](println "f3: within binding function v: " v) (f1));f1=3
   ; outside of binding v refers to first global value
   (println "f3: after binding v:" v)
-)
+  )
 
 (defn f4 []
   ; changes the value of v in the global scope
   (def v 4)
-)
+  )
 
 (println "(= v 1) => " (= v 1))
 (println "Calling f2: --------------------------")(f2)

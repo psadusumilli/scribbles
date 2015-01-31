@@ -1,3 +1,7 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.features.java)
+
 (import '(java.lang.Math))
 (import '(java.util Calendar GregorianCalendar))
 
@@ -27,6 +31,7 @@
 ;map a java function
 (println (map #(.substring %1 %2) ["cartman", "kenny","stan"] [1,2,3])) ; (artman nny n)
 (println (map (memfn substring beginIndex) ["cartman", "kenny","stan"] [1,2,3])) ; (artman nny n)
+
 
 
 

@@ -1,3 +1,7 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.datastructures.lists)
+
 ;-----------------------------------------------------------------------------------------------
 ;list is done by adding a ' or mention 'list'
 ;Lists are ordered collections of items.
@@ -14,7 +18,7 @@
 
 (println "omg they killed kenny!" (remove #(= % "Kenny") boys ))
 
-(def new-boys (conj boys "Jimmy"))
+(def new-boys (conj boys "Jimmy")) ;vector
 (println "concatenation: " new-boys )
 
 (def boys1 ["Stan" "Cartman" "Kyle" "Kenny"])

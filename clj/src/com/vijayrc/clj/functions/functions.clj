@@ -1,3 +1,7 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.functions.functions)
+
 ;fn
 (println "simple fn functions " ((fn [x y] (+ x y 5)) 5 15)); 25
 
@@ -47,6 +51,7 @@
 (what-am-i 1)
 (what-am-i true)
 
+;-------------------------------------------------------------------------------
 ;function with variable args
 (defn f1 [x1 x2 x3] (println (+ x1 x2 x3)))
 (defn f2 [x1 _ x3] (println (+ x1 x3)))
@@ -70,6 +75,7 @@
 (def my-multiply (partial * 2))
 (println (my-multiply 3 4)) ; 2*3*4
 
+;-------------------------------------------------------------------------------
 ;memoise where a map of args-results are stored thereby repeated calls with same args will be faster without execution
 (defn f [x] (println "f called" x))
 (def memo-f (memoize f))

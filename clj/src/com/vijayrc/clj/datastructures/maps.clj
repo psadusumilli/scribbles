@@ -1,3 +1,7 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.datastructures.maps)
+
 ;(def boys (sorted-map :k1 :Stan, :k2 :Cartman , :k3 :Kenny , :k4 :Kyle ))
 ;(def boys (hash-map :k1 :Stan, :k2 :Cartman , :k3 :Kenny , :k4 :Kyle ))
 
@@ -36,3 +40,4 @@
 
 (def new_person (assoc-in person [:employer :address :city] "Richmond")) ; modify the nested value
 (println "modified city: " (-> new_person :employer :address :city))
+

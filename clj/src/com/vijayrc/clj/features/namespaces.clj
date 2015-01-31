@@ -1,3 +1,7 @@
+(ns
+  ^{:author vijayrc}
+  com.vijayrc.clj.features.namespaces)
+
 ;opt #1
 (require 'clojure.string)
 (println (clojure.string/join "&" [1,2,3]))
