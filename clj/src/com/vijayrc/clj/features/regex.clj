@@ -2,4 +2,4 @@
   ^{:author vijayrc}
   com.vijayrc.clj.features.regex)
 
-(re-seq #"(\d+)-(\d+)" "1-3");
+(println "get match groups=" (re-seq #"(\d+)-(\d+)" "1-3"))

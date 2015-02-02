@@ -37,3 +37,10 @@
 (println "Calling f3: --------------------------")(f3)
 (println "Calling f4: --------------------------")(f4)
 (println "after calling f4, v =" v)
+
+
+;let allows statements in its binding vector
+(let [x 1
+      _ (println "x is " x) ;1 -underscore ignores the bindings
+      x (+ x 1)]
+  (println "x in let body is " x)) ;2

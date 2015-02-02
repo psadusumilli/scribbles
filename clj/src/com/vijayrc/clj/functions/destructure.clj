@@ -59,8 +59,15 @@
 (let [[username account-year & {:keys [name city]}] user-info]
   (println (format "%s is in %s" name city)))
 
+;-------------------------------------------------------------------------------------------------
 ;or -default value x is given 2 since no-key does not exist in input {:key 3}
 (let [{x :no-key :or { x 2}} {:key 3}] (println "default x is " x))
 
-
-
+;combining vector and map
+(def m {:a 5 :b 6
+        :c [7 8 9]
+        :d {:e 10 :f 11}
+        "foo" 88
+        42 false})
+(let [{[x _ y] :c} m]
+  (println "x+y=" (+ x y))) ; 16

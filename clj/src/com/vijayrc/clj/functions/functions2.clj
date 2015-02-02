@@ -66,3 +66,11 @@
 (my-out-logger "hey there")
 (def my-file-logger (my-logger (java.io.FileWriter. "/home/vijayrc/Projs/VRC5/scribbles/clojure/io.log")))
 (my-file-logger "hey there")
+
+;fn function values - no definition here, so wont be re-used again
+;# anonymous functions are sugar for fn
+; defn is macro of def + fn
+((fn [y] (println "y+1" (inc y))) 10) ;11
+
+
+

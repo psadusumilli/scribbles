@@ -10,3 +10,6 @@
 ;good to read dynamic code and eval
 (eval (read-string "(println 123)")); 123
 
+(def x 5)
+(println "x is " x) ; 5
+(println "x with quotes is " 'x) ;  x - quote suppresses the evaluation
