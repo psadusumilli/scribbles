@@ -25,7 +25,6 @@
 ;{3 9, 2 4, 1 1}
 
 (println (reduce + (list 1 2 3 4 5))); translates to: (+ (+ (+ (+ 1 2) 3) 4) 5)
-
 (println (apply + (list 1 2 3 4 5))); translates to: (+ 1 2 3 4 5)
 (println (apply * 0.5 2 [1 2 3]));6
 
@@ -64,8 +63,15 @@
 (defn my-logger "modifies *out* to an custom pipe" [writer] #(binding [*out* writer] (println %)))
 (def my-out-logger (my-logger *out*))
 (my-out-logger "hey there")
-(def my-file-logger (my-logger (java.io.FileWriter. "/home/vijayrc/Projs/VRC5/scribbles/clojure/io.log")))
+(def my-file-logger (my-logger (java.io.FileWriter. "/home/vijayrc/Projs/VRC5/scribbles/clj/io.log")))
 (my-file-logger "hey there")
+
+;multi-logger
+(defn multi-logger [& loggers]
+  #(doseq [f loggers] (f %))); returs a anonymous function that loops through every logger function to log
+((multi-logger my-file-logger my-out-logger) "hey there multi")
+
+
 
 ;fn function values - no definition here, so wont be re-used again
 ;# anonymous functions are sugar for fn

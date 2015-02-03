@@ -41,3 +41,8 @@
 (def new_person (assoc-in person [:employer :address :city] "Richmond")) ; modify the nested value
 (println "modified city: " (-> new_person :employer :address :city))
 
+
+(println "make a map of numbers and squares = " (reduce
+  (fn [m x] (assoc m x (* x x)))
+              {}
+              [1 2 3 4]))
