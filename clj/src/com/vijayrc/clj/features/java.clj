@@ -33,5 +33,5 @@
 (println (map (memfn substring beginIndex) ["cartman", "kenny","stan"] [1,2,3])) ; (artman nny n)
 
 
-
+(println (seq (java.util.ArrayList. (range 1 10))))
 

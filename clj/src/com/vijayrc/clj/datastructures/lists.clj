@@ -1,7 +1,7 @@
 (ns
   ^{:author vijayrc}
   com.vijayrc.clj.datastructures.lists)
-
+;implementation
 ;-----------------------------------------------------------------------------------------------
 ;list is done by adding a ' or mention 'list'
 ;Lists are ordered collections of items.
@@ -30,3 +30,4 @@
 (println "peek: " (peek boys ))  ;operates on the start element so Stan
 (println "pop: " (pop boys ))
 
+(println "sequence: " (seq boys))

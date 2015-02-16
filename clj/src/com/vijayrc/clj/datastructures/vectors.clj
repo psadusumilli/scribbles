@@ -1,7 +1,7 @@
 (ns
   ^{:author vijayrc}
   com.vijayrc.clj.datastructures.vectors)
-
+;implementation
 ;[] is a vector more like a array
 ;Vectors are also ordered collections of items. They are ideal when new items will be added to or removed from the back (constant-time).
 ; This means that using conj is more efficient than cons for adding items.
@@ -39,4 +39,5 @@
 (println "pop: " (pop boys ))
 (println "cons: " (cons "butters" boys)) ; appends to front
 (println "conj: " (conj boys "bebe")) ; appends to back
+(println "sequence: " (seq boys))
 
