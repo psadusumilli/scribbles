@@ -7,7 +7,7 @@ version = '1.0'
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {url 'http://mvnrepository.com/artifact/'}
+   // maven {url 'http://mvnrepository.com/artifact/'}
 }
 
 dependencies {
