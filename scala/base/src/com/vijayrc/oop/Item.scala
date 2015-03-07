@@ -6,5 +6,5 @@ class Item(n:String,q:Int) {
 
   def describe():String =   "item:"+name+"|"+quantity+" nos"
   def isSameAs(i:Item):Boolean = name.equalsIgnoreCase(i.name)
-  def count():Int = {quantity}
+  def count():Int = quantity
 }

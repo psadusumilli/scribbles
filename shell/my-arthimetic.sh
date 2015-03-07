@@ -1,3 +1,4 @@
+#!/bin/sh
 echo -n "enter no: "
 read x
 echo "x*3 = $[x*3]"

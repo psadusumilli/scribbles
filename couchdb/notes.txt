@@ -99,7 +99,7 @@ OPERATIONS:
 ------------------------------
 5.1 As an append-only operation, the storage file will grow over time. So we need to compact the file regularly.
 5.2 Open a new storage file
-5.3 Walk the by_seqnum b+tree index (which only points to the latest revision), locate the document
+5.3 Walk back the by_seqnum b+tree index backward by time(188,187..1), pick the latest revision for each document 
 5.4 Copy the document to the new storage file (which automatically update the corresponding b+tree indexes in the new storage file).
 5.5 Note that because of the characteristic of MVCC, the compaction will get a consistency snapshot and can happen concurrently 
 	without being interfered by the continuously update after the start of compaction. 
