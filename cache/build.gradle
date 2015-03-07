@@ -6,5 +6,4 @@ sourceCompatibility = '1.7'
 
 repositories {
     mavenCentral()
-    mavenRepo name:'maven-repo', url:'http://mvnrepository.com/artifact'
 }
