@@ -23,12 +23,11 @@ object DeathWatch {
       case "stop" => log.info("stopping child"); context.stop(child)
       case "poison" => log.info("poisoning child"); child ! PoisonPill
       case "kill" => log.info("killing child"); child ! Kill
-      case "graceful" => {
+      case "graceful" =>
         log.info("graceful kill child")
         val stop: Future[Boolean] = gracefulStop(child, 5 seconds)
         stop.onComplete(x=> println(x))
-      }
-      case Terminated(child) => {log.info("child is dead")}
+      case Terminated(`child`) => log.info("child is dead")
     }
   }
   def work(){

@@ -159,7 +159,7 @@ class MergeSort extends Sort{
  * QUICKSORT
  * #########
  * pick the left-most as partition element
- * move l from left-right, r from right-left
+ * move l from left->right, r from right->left
  * swap elements to right places by comparing with partition
  * after each recurse, a new partition element is found at final sorted place
  *
