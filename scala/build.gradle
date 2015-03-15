@@ -10,13 +10,13 @@ subprojects{
 
     dependencies {
         compile 'org.scala-lang:scala-library:2.11.1'
-        testCompile "org.scala-lang:scala-library:2.11.1"
+        compile 'org.scalatest:scalatest_2.11:2.2.4'
     }
+    sourceCompatibility = '1.7'
 }
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'scala'
-
 
 version = '1.0'
 repositories {
@@ -25,5 +25,6 @@ repositories {
 
 dependencies {
     compile 'org.scala-lang:scala-library:2.11.1'
-    testCompile "org.scala-lang:scala-library:2.11.1"
+    compile 'org.scalatest:scalatest_2.11:2.2.4'
 }
+sourceCompatibility = '1.7'

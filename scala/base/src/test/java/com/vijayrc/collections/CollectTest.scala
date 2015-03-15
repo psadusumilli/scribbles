@@ -1,7 +1,7 @@
 package com.vijayrc.collections
 
 import org.scalatest.FunSuite
-import scala.collection.mutable
+
 import scala.collection.mutable.ListBuffer
 
 class CollectTest extends FunSuite{
