@@ -17,10 +17,12 @@ public class AllEnhancers {
         for (Class<? extends Enhancer> aClass : reflections.getSubTypesOf(Enhancer.class))
             enhancers.add(aClass.newInstance());
     }
-    public void run(String packageName) throws Exception{
+
+    public void run(String packageName) throws Exception {
         for (Enhancer enhancer : enhancers)
             enhancer.run(packageName);
     }
+
     public static void main(String[] args) throws Exception {
         try {
             new AllEnhancers().run(args[0]);

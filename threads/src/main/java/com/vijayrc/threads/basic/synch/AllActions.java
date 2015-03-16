@@ -9,21 +9,27 @@ import static com.vijayrc.threads.util.Printer.log;
  * Without locking, order gets messed up
  */
 public class AllActions {
-    public abstract static class Base implements Runnable{
+    public abstract static class Base implements Runnable {
         protected Account account;
-        protected void sleep(){
+
+        protected void sleep() {
             try {
                 Thread.sleep((long) (1000));
-            } catch (InterruptedException e) {log(e);}
+            } catch (InterruptedException e) {
+                log(e);
+            }
         }
     }
 
-    public static class LockDeposit extends Base{
-        private LockDeposit(Account account) {this.account = account;}
+    public static class LockDeposit extends Base {
+        private LockDeposit(Account account) {
+            this.account = account;
+        }
+
         @Override
         public void run() {
-            for(int i=0;i<5;i++){
-                synchronized (account){
+            for (int i = 0; i < 5; i++) {
+                synchronized (account) {
                     account.transaction("deposit|");
                     sleep();
                     account.cash(100);
@@ -33,13 +39,18 @@ public class AllActions {
             }
         }
     }
-    public static class LockWithDraw extends Base{
+
+    public static class LockWithDraw extends Base {
         private Account account;
-        private LockWithDraw(Account account) {this.account = account;}
+
+        private LockWithDraw(Account account) {
+            this.account = account;
+        }
+
         @Override
         public void run() {
-            for(int i=0;i<5;i++){
-                synchronized (account){
+            for (int i = 0; i < 5; i++) {
+                synchronized (account) {
                     account.transaction("withdraw|");
                     sleep();
                     account.cash(50);
@@ -49,30 +60,40 @@ public class AllActions {
             }
         }
     }
-    public static class NoLockDeposit extends Base{
+
+    public static class NoLockDeposit extends Base {
         private Account account;
-        private NoLockDeposit(Account account) {this.account = account;}
-        @Override
-        public void run() {
-            for(int i=0;i<5;i++){
-                account.combo("deposit|",100);
-                sleep();
-            }
+
+        private NoLockDeposit(Account account) {
+            this.account = account;
         }
-    }
-    public static class NoLockWithDraw extends Base{
-        private Account account;
-        private NoLockWithDraw(Account account) {this.account = account;}
+
         @Override
         public void run() {
-            for(int i=0;i<5;i++){
-                account.combo("withdraw|",50);
+            for (int i = 0; i < 5; i++) {
+                account.combo("deposit|", 100);
                 sleep();
             }
         }
     }
 
-    public static void main(String[] args){
+    public static class NoLockWithDraw extends Base {
+        private Account account;
+
+        private NoLockWithDraw(Account account) {
+            this.account = account;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < 5; i++) {
+                account.combo("withdraw|", 50);
+                sleep();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
         //test1();
         test2();
     }
@@ -85,6 +106,7 @@ public class AllActions {
         deposit.start();
         withdraw.start();
     }
+
     private static void test2() {
         log("test2:-------------------------");
         Account account = new LockAccount();

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Copyright 2011 The Apache Software Foundation
 # 
 # Licensed to the Apache Software Foundation (ASF) under one
