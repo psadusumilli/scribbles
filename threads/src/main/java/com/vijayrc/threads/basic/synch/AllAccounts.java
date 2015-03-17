@@ -15,6 +15,9 @@ public class AllAccounts {
         @Override
         public void print(){log(transaction+" "+amount);}
     }
+
+    /**
+     */
     public static class NoLockAccount extends BaseAccount{
         @Override
         public void cash(int cash){amount = cash;}
@@ -30,6 +33,9 @@ public class AllAccounts {
             print();
         }
     }
+
+    /**
+     */
     public static class LockAccount extends BaseAccount{
         @Override
         public synchronized void cash(int cash){amount = cash;}

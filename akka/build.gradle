@@ -2,6 +2,7 @@ apply plugin: 'scala'
 repositories {
     mavenCentral()
 }
+sourceCompatibility = '1.7'
 
 tasks.withType(ScalaCompile) {
     scalaCompileOptions.useAnt = false

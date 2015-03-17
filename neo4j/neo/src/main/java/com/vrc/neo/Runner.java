@@ -15,12 +15,8 @@ public class Runner {
     public static void main(String[] args) {
         NeoDb neoDb = new NeoDb().start();
         neoDb.hookToStop();
-
         samples.add(new Family(neoDb));
-
-        for(Sample sample: samples)
-            sample.run();
-
+        samples.forEach(com.vrc.neo.sample.Sample::run);
     }
 
 }

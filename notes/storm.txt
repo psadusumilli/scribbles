@@ -4,7 +4,7 @@ Chapter1: Terms
 ******************
 1) Topology made of Bolts and Spouts
 2) Stream is a bunch of tuples
-3) Spouts are date feeders, can be reliable or not, can emit 0-* streams. uses SpoutOutputCollector and OutputFieldsDeclarer
+3) Spouts are data feeders, can be reliable or not, can emit 0-* streams. uses SpoutOutputCollector and OutputFieldsDeclarer
 4) Bolts are data manipulators, can emit 0-* streams, uses OutputCollector and OutputFieldsDeclarer
 5) InputDeclarer got after setBolt/setSpout decides stream grouping(shuffle, field, direct, all, global
 6) Each spout or bolt executes as many tasks across the cluster. 

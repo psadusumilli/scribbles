@@ -1,0 +1,14 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'scala'
+
+version = '1.0'
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':macros')
+    compile 'org.scala-lang:scala-library:2.11.1'
+    compile 'org.scalatest:scalatest_2.11:2.2.4'
+}

@@ -14,11 +14,14 @@ public class AllTopologies {
 
     public static void main(String[] args) throws Exception {
         List<MyTopology> topologies = asList(new AppendTopology(), new WordCountTopology());
+
         if (args != null && args.length != 0) {
             MyTopology myTopology = topologies.stream().filter(t -> t.name().equals(args[0])).findFirst().get();
-            log.info("running topology: "+myTopology.name());
+            log.info("running topology: " + myTopology.name());
             myTopology.run();
-        } else log.warn("please enter a topology name");
+        } else{
+            log.warn("please enter a topology name");
+        }
         log.info("exit main.");
     }
 }

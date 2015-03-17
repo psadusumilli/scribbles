@@ -116,8 +116,7 @@ Each call to load a class, is made first to the primordial class loader(Boot), i
 
 Rules to write a custom class loader
 	0	Make sure your class loader prevents loading any class that impersonates like 'java.lang' apis
-	1	If packages exist that this class loader is not allowed to load from, the class loader checks whether the requested class is in one of those 
-		forbidden packages. If so, it throws a security exception. Else, it continues on to step two. 
+	1	If packages exist that this class loader is not allowed to load from, the class loader checks whether the requested class is in one of those forbidden packages. If so, it throws a security exception. Else, it continues on to step two. 
 	2	The class loader passes the request to the primordial class loader. If the primordial class loader successfully returns the class, 
 		the class loader returns that same class. Else, it continues on to step three. 
 	3	If trusted packages exist that this class loader is not allowed to add classes to, 
@@ -336,7 +335,7 @@ the array positions can be reused for multiple local variables based on their sc
 Like the local variables, the operand stack is organized as an array of words. But unlike the local variables, which are accessed via array indices, the operand stack is accessed by pushing and popping values. If an instruction pushes a value onto the operand stack, a later instruction can pop and use that value
 	iload_0 // push the int in local variable 0 onto the stack
 	iload_1 // push the int in local variable 1 onto the stack
-	iadd // pop two ints, add them, push result
+	iadd // pop two ints, add them, push resultbcdefghijklmnopqrs
 	istore_2 // pop int, store into local variable 2
 
 5.6.3|Frame Data
