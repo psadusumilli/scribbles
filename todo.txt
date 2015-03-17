@@ -1,0 +1,26 @@
+
+CICD
+Go.CD (Indrani) for
+Java/C++
+Scala (fine)
+Jersey to Spring boot
+Hysterix resiliency
+Config Server - 
+Netflix OSS 
+API - Eureka vul
+Spring Cloud
+Feature Toggle
+Spock
+
+------------------------
+F5
+Nginx
+Cicd book - jez humble
+------------------------
+Storm
+Kafka
+Cassandra
+Distributed Computing
+Spock - testing
+Gatling - performace
+
