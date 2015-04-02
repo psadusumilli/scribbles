@@ -29,7 +29,8 @@ public class AgentHandler extends AbstractHandler {
 
         baseRequest.setHandled(true);
         response.getWriter().println(content);
-        response.setContentType("text/html;charset=utf-8");
+//        response.setContentType("text/html;charset=utf-8");
+        response.setContentType("text/xml");
         response.setStatus(HttpServletResponse.SC_OK);
     }
 

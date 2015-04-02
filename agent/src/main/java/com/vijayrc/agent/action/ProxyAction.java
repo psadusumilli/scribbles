@@ -1,6 +1,7 @@
 package com.vijayrc.agent.action;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.EntityBuilder;
@@ -16,6 +17,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
@@ -34,7 +36,8 @@ public class ProxyAction extends BaseAction {
             StringWriter writer = new StringWriter();
             IOUtils.copy(servletInputStream, writer, "UTF-8");
 
-            StringEntity stringEntity = new StringEntity(writer.toString(), "UTF-8");
+            String requestStr = StringUtils.replace(writer.toString(), ">RTM</", ">Test</");
+            StringEntity stringEntity = new StringEntity(requestStr, "UTF-8");
             stringEntity.setChunked(true);
 
             HttpPost post = new HttpPost("http://bqamnmssass2d01.ingqa.com:8801/ccc");
@@ -43,7 +46,7 @@ public class ProxyAction extends BaseAction {
             post.addHeader("Content-Type", "text/xml");
             post.addHeader("SOAPAction", "");
 
-            System.out.format("request= %s", post.getRequestLine());
+            System.out.format("request= %s", post.getRequestLine() + "|" + requestStr);
             CloseableHttpResponse response = client.execute(post);
             try {
                 HttpEntity resEntity = response.getEntity();
