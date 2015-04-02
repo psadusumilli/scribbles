@@ -33,7 +33,7 @@ public class ShellAction extends BaseAction {
                 if (process != null) process.destroy();
                 log("process stopped");
             }
-        Map<String, String> model = new HashMap<>();
+        Map<String, String> model = new HashMap<String, String>();
         model.put("$output", output);
         return fill(template(), model);
     }

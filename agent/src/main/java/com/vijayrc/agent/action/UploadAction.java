@@ -35,7 +35,7 @@ public class UploadAction extends BaseAction {
             output = "New file " + srcPath + " created at " + destPath;
             log(output);
 
-            Map<String, String> model = new HashMap<>();
+            Map<String, String> model = new HashMap<String, String>();
             model.put("$srcPath", srcPath);
             model.put("$destPath", destPath);
             return fill(template(), model);

@@ -12,7 +12,8 @@ public class AllActions {
             new ShellAction(),
             new DownloadAction(),
             new UploadFormAction(),
-            new UploadAction());
+            new UploadAction(),
+            new ProxyAction());
 
     public String execute(HttpServletRequest request, HttpServletResponse response){
         for (Action action : actions)

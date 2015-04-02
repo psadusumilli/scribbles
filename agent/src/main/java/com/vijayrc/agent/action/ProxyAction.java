@@ -7,6 +7,7 @@ import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.EntityTemplate;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -25,19 +26,30 @@ public class ProxyAction extends BaseAction {
 
     @Override
     public String execute(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+
         ServletInputStream servletInputStream = servletRequest.getInputStream();
+        StringWriter responseWriter = new StringWriter();
         CloseableHttpClient client = HttpClients.createDefault();
         try {
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(servletInputStream, writer, "UTF-8");
+
+            StringEntity stringEntity = new StringEntity(writer.toString(), "UTF-8");
+            stringEntity.setChunked(true);
+
             HttpPost post = new HttpPost("http://bqamnmssass2d01.ingqa.com:8801/ccc");
-            post.setEntity(EntityBuilder.create().setStream(servletInputStream).build());
-            System.out.println("request=" + post.getRequestLine());
+            post.setEntity(stringEntity);
+            post.addHeader("Accept", "text/xml");
+            post.addHeader("Content-Type", "text/xml");
+            post.addHeader("SOAPAction", "");
+
+            System.out.format("request= %s", post.getRequestLine());
             CloseableHttpResponse response = client.execute(post);
             try {
                 HttpEntity resEntity = response.getEntity();
                 if (resEntity != null) {
-                    StringWriter writer = new StringWriter();
-                    IOUtils.copy(resEntity.getContent(), writer, "UTF-8");
-                    System.out.format("response= %s | %s ", response.getStatusLine(), writer.toString());
+                    IOUtils.copy(resEntity.getContent(), responseWriter, "UTF-8");
+                    System.out.format("response= %s | %s ", response.getStatusLine(), responseWriter.toString());
                 }
                 EntityUtils.consume(resEntity);
             } finally {
@@ -47,7 +59,7 @@ public class ProxyAction extends BaseAction {
         } finally {
             client.close();
         }
-        return "";
+        return responseWriter.toString();
     }
 
     @Override
