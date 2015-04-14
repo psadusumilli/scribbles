@@ -1,0 +1,29 @@
+install
+********
+download the server and agent rpms
+create user and group 'go; Add user 'go' to group 'go'.
+sudo rpm -i go-server.rpm
+http://vijayrc:8153/go
+
+sudo rpm -i go-agent.rpm
+edit /etc/default/go-agent and set GO_SERVER to the IP address of your Go Server
+/etc/init.d/go-agent start
+
+files
+*****
+/var/lib/go-server       #contains the binaries and database
+/etc/go                  #contains the pipeline configuration files
+/var/log/go-server       #contains the server logs
+/usr/share/go-server     #contains the start script
+/etc/default/go-server   #contains all the environment variables with default values. These variable values can be changed as per requirement.
+/var/lib/go-agent	 #contains the agent files
+
+concepts:
+*********
+'job' is the bunch of tasks that can be run on a single agent
+'resources' tags from agents to declare what jobs are best suited for them.
+'stage' is group of jobs that can be parallelized (split test suites, different OS, differnt browser-based tests)
+'pipeline' is a ordered bunch of stages
+pipeline can have dependencies on other pipelines or scm
+ 
+
