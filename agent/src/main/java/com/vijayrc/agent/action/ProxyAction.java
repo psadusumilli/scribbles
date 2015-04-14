@@ -36,17 +36,16 @@ public class ProxyAction extends BaseAction {
             StringWriter writer = new StringWriter();
             IOUtils.copy(servletInputStream, writer, "UTF-8");
 
-            String requestStr = StringUtils.replace(writer.toString(), ">RTM</", ">Test</");
-            StringEntity stringEntity = new StringEntity(requestStr, "UTF-8");
+//            String requestStr = StringUtils.replace(writer.toString(), ">RTM</", ">Test</");
+            StringEntity stringEntity = new StringEntity(writer.toString(), "UTF-8");
             stringEntity.setChunked(true);
 
-            HttpPost post = new HttpPost("http://bqamnmssass2d01.ingqa.com:8801/ccc");
+            HttpPost post = new HttpPost("http://some-server");
             post.setEntity(stringEntity);
             post.addHeader("Accept", "text/xml");
             post.addHeader("Content-Type", "text/xml");
             post.addHeader("SOAPAction", "");
 
-            System.out.format("request= %s", post.getRequestLine() + "|" + requestStr);
             CloseableHttpResponse response = client.execute(post);
             try {
                 HttpEntity resEntity = response.getEntity();
