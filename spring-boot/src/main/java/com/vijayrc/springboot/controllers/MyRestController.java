@@ -29,26 +29,23 @@ public class MyRestController {
     private final AtomicLong counter = new AtomicLong();
 
     @RequestMapping("/greeting")
-    public List<Greeting> greeting(@RequestParam(value="name", defaultValue="World") String name) {
+    public List<Greeting> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
         List<Greeting> greetings = new ArrayList<Greeting>();
-        for(int i=0;i<7;i++)
-            greetings.add(new Greeting(counter.incrementAndGet(),  format(template, name)));
+        for (int i = 0; i < 7; i++)
+            greetings.add(new Greeting(counter.incrementAndGet(), format(template, name)));
         return greetings;
     }
 
-    @RequestMapping("/greeting-small")
-    public void chunked(@RequestParam(value="name", defaultValue="World") String name, HttpServletResponse response) throws IOException, InterruptedException {
-       response.setHeader("Transfer-Encoding","chunked");
+    @RequestMapping("/greeting-chunk")
+    public void sendChunks(@RequestParam(value = "name", defaultValue = "World") String name, HttpServletResponse response) throws IOException, InterruptedException {
+        response.setHeader("Transfer-Encoding", "chunked");
         ServletOutputStream outputStream = response.getOutputStream();
-        ChunkedOutputStream chunkedOutputStream = new ChunkedOutputStream(new PrintStream(outputStream));
-        for(int i=0;i<5;i++){
+        for (int i = 0; i < 5; i++) {
             String s = new Greeting(counter.incrementAndGet(), format(template, name)).getContent() + new Date() + "\n";
-            chunkedOutputStream.write(s.getBytes());
-            chunkedOutputStream.flush();
+            outputStream.write(s.getBytes());
+            outputStream.flush();
             Thread.sleep(1000);
         }
-        chunkedOutputStream.flush();
-        chunkedOutputStream.close();
         outputStream.close();
     }
 }
