@@ -41,7 +41,7 @@ public class MyRestController {
         response.setHeader("Transfer-Encoding", "chunked");
         ServletOutputStream outputStream = response.getOutputStream();
         for (int i = 0; i < 5; i++) {
-            String s = new Greeting(counter.incrementAndGet(), format(template, name)).getContent() + new Date() + "\n";
+            String s = new Greeting(counter.incrementAndGet(), format(template, name)).getContent() + new Date() + "\r\n";
             outputStream.write(s.getBytes());
             outputStream.flush();
             Thread.sleep(1000);
