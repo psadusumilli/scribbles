@@ -1,0 +1,70 @@
+
+Notes for design of search API
+*******************************
+1) FB Graph API
+
+	nodes (basically "things" such as a User, a Photo, a Page, a Comment)
+	edges (the connections between those "things", such as a Page's Photos, or a Photo's Comments)
+	fields (info about those "things", such as the birthday of a User, or the name of a Page).
+
+	return fields asked for, not everything 
+	GET graph.facebook.com/vichakra?fields=id,name,picture
+
+	return five albums created by someone, and the last five posts in their feed.
+	GET graph.facebook.com/me?fields=albums.limit(5),posts.limit(5)
+	GET graph.facebook.com/me?fields=albums.limit(5){name, photos.limit(2)},posts.limit(5)
+
+	return cursor navigation
+	{
+	  "data": [
+	     ... Endpoint data is here
+	  ],
+	  "paging": {
+	    "cursors": {
+	      "after": "MTAxNTExOTQ1MjAwNzI5NDE=",
+	      "before": "NDMyNzQyODI3OTQw"
+	    },
+	    "previous": "https://graph.facebook.com/me/albums?limit=25&before=NDMyNzQyODI3OTQw"
+	    "next": "https://graph.facebook.com/me/albums?limit=25&after=MTAxNTExOTQ1MjAwNzI5NDE="
+	  }
+	}
+
+	return timebased
+		{
+	  "data": [
+	     ... Endpoint data is here
+	  ],
+	  "paging": {
+	    "previous": "https://graph.facebook.com/me/feed?limit=25&since=1364849754",
+	    "next": "https://graph.facebook.com/me/feed?limit=25&until=1364587774"
+	  }
+	}
+
+	return POST as GET
+	As a best practice, for large requests use a POST request instead of a GET request and add a method=GET parameter. 
+	If you do this, the POST will be interpreted as if it were a GET.
+
+
+	return results with multiple ids as input
+	GET graph.facebook.com/?ids=platform,me
+	GET graph.facebook.com/photos?ids={user-id-a},{user-id-b}
+
+
+	return search results
+	GET graph.facebook.com/search?q=coffee&type=place&center=37.76,-122.427&distance=1000
+
+	return batch request results
+	curl \
+    -F 'access_token=…' \
+    -F 'batch=[{"method":"GET", "relative_url":"me"},{"method":"GET", "relative_url":"me/friends?limit=50"}]' \
+    https://graph.facebook.com
+
+    curl \
+    -F 'access_token=…' \
+    -F 'batch=[{ "method":"POST","relative_url":"me/feed","body":"message=Test status update&link=http://developers.facebook.com/"},{ "method":"GET","relative_url":"me/feed?limit=1"}]' \
+    https://graph.facebook.com
+
+
+    return scenarios 
+    /{user-a-id}/friends/{user-b-id} -> vijay friends with shyam
+    /{user-id}/likes/{page-id} -> vijay likes rafting
