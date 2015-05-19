@@ -12,15 +12,21 @@ json queries
 ids encryption and combo reference ids. ..
 
 sql inspiration
-	order, 
-	selected fields only 
+	orderby, 
+	selected fields only , nested/multiple queries
 		GET googleapis.com/demo/v1?key=YOUR-API-KEY&fields=kind,items(title,characteristics/length)  (xpath)
 		GET graph.facebook.com/me?fields=albums.limit(5),posts.limit(5)
-		GET graph.facebook.com/me?fields=albums.limit(5){name, photos.limit(2)},posts.limit(5)
-	nested/multiple queries
 		GET graph.facebook.com/?ids=platform,me
 		GET graph.facebook.com/photos?ids={user-id-a},{user-id-b}
-	filter functions
+		GET googleapis.com/freebase/v1/topic/en/barack_obama?filter=/speeches/newyork/april&limit=1
+	nested
+		GET graph.facebook.com/me?fields=albums.limit(5){name, photos.limit(2)},posts.limit(5)
+	filter token functions  (like-regex, sounds-like, fuzzy, transpose, range)
+	groupby
+	boolean operators: 
+		& | (include) 
+		! (exclude)
+	pipelining
 
 1 single network aggregate search calling multiple small apis 
 	curl \
@@ -28,15 +34,13 @@ sql inspiration
     -F 'batch=[{ "method":"POST","relative_url":"me/feed","body":"message=Test status update&link=http://developers.facebook.com/"},{ "method":"GET","relative_url":"me/feed?limit=1"}]' \
     https://graph.facebook.com
 
+
+
 tracker tokens; 
 
-boolean operators: 
-	& | (include) 
-	! (exclude)
 
-match order 
-	strong
-	fast	
+
+	
 
 how we can reply?
 *****************
