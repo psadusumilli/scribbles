@@ -1,0 +1,9 @@
+download druid
+download zookeeper
+start zookeeper with sample conf only
+start example server in druid, select wikipedia edit example
+start example client in druid, select wikipedia edit example
+start querying
+
+
+curl -X POST 'http://localhost:8084/druid/v2/?pretty' -H 'content-type: application/json'  -d @topn.json
