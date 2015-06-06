@@ -1,0 +1,41 @@
+#1 INSTALL
+-----------
+wget https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.2.zip
+unzip elasticsearch-1.5.2.zip
+./bin/elasticsearch
+
+curl -X GET http://localhost:9200/
+{
+  "status" : 200,
+  "name" : "Amelia Voght",
+  "cluster_name" : "elasticsearch",
+  "version" : {
+    "number" : "1.5.2",
+    "build_hash" : "62ff9868b4c8a0c45860bebb259e21980778ab1c",
+    "build_timestamp" : "2015-04-27T09:21:06Z",
+    "build_snapshot" : false,
+    "lucene_version" : "4.10.4"
+  },
+  "tagline" : "You Know, for Search"
+}
+
+1 node is one jvm, which automatically forms a 1node cluster
+starting another node, will ping and join it, forming a 2 node cluster
+shards are for partitioning data across nodes
+replications are duplicating data across nodes
+
+#2 SHARDS
+-----------
+make 4 shards of a new index 'books'  - s1, s2, s3, s4  
+
+curl -X PUT http://localhost:9200/books -d '{"index.number_of_shards":4}'
+{"acknowledged":true}
+
+#3 REPLICAS
+------------
+make one copy of a shard to another 
+s1s2 s2s4 s3s1 s4s3
+
+curl -X PUT http://localhost:9200/books/_settings -d '{"index.number_of_replicas":1}'
+{"acknowledged":true}
+

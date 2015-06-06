@@ -68,3 +68,10 @@ Notes for design of search API
     return scenarios 
     /{user-a-id}/friends/{user-b-id} -> vijay friends with shyam
     /{user-id}/likes/{page-id} -> vijay likes rafting
+
+
+
+
+
+    https://developers.google.com/freebase/v1/topic-overview
+    https://developers.google.com/freebase/v1/search
