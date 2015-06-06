@@ -39,3 +39,19 @@ s1s2 s2s4 s3s1 s4s3
 curl -X PUT http://localhost:9200/books/_settings -d '{"index.number_of_replicas":1}'
 {"acknowledged":true}
 
+#4 CRUD
+-------
+
+curl -XPUT http://localhost:9200/books/book/1 -d '{"title" : "100 days of cholera", "author" : "Garcia Marquez", "language" : "spanish" }'
+curl -XGET http://localhost:9200/books/book/1                                                                                          
+{"_index":"books","_type":"book","_id":"1","_version":1,"found":true,"_source":{"title" : "100 days of cholera", "author" : "Garcia Marquez", "language" : "spanish" }}%    
+curl -XDELETE http://localhost:9200/books/book/1
+
+curl -xGET http://localhost:9200/books/book/_search -d {query json}
+
+
+Lucene is doing the heavy lifting.
+Each Shard is a Lucence index containing the inverted index (word1 -[doc1, doc2, doc3], word2 - [doc2, doc4], ...)
+
+
+Filters do not contribute to score, they act on results already fetched/:
