@@ -36,21 +36,12 @@ Relational DB  ->Databases->Tables->Rows->Columns
 Elasticsearch  ->Indices->Types->Documents->Fields
 
 Lucene is doing the heavy lifting.
-Each Shard is a Lucence index containing the inverted index (word1 -[doc1, doc2, doc3], word2 - [doc2, doc4], ...)
-Max number of docs in  index is 2,147,483,519 (= Integer.MAX_VALUE - 128) 
-
-
-Lucence index is made of immutable "segments" (never deleted just a flag to indicate deletion, lot of compression happens in segments)
-"Near Real Time", elasticsearch buffers incoming documents for 1 sec and then creates the lucene segments 
-elasticsearch merges the buffered segments before persisting.
 
 Cluster has a state which is shared across all nodes like "mappings", "routing table"
 When a search query is executed,
   1) a coordinator shard first picks it up 
   2) elasticsearch query is converted into lucene query
   3) 
-
-
 
 make 4 shards of a new index named 'library'  - s1, s2, s3, s4  
 
@@ -61,6 +52,14 @@ make one copy of a shard to another -  s1s2 s2s4 s3s1 s4s3
 
   curl -XPUT http://localhost:9200/library/_settings -d '{"index.number_of_replicas":1}'
   {"acknowledged":true}
+  or 
+  curl -XPUT http://localhost:9200/library/
+  {
+     "settings" : {
+        "number_of_shards" : 3,
+        "number_of_replicas" : 1
+     }
+  }
 
   curl -XPUT http://localhost:9200/library/book/1 -d 
     '{"title" : "100 days of cholera", "author" : "Garcia Marquez", "language" : "spanish" }'
@@ -111,7 +110,7 @@ users can talk to any node, no bottleneck in search
 curl -XGET http://localhost:9200/_cluster/health
 {
   "cluster_name":"elasticsearch",
-  "status":"yellow",
+  "status":"yellow", // only primary shards are up, no point in replica shards running on the same machine.
   "timed_out":false,
   "number_of_nodes":1,
   "number_of_data_nodes":1,
@@ -122,3 +121,72 @@ curl -XGET http://localhost:9200/_cluster/health
   "unassigned_shards":8,
   "number_of_pending_tasks":0
 }
+
+"index" is just a logical namespace that points to one or more physical shards
+
+Each "Shard" is a Lucence index containing the inverted index (word1 -[doc1, doc2, doc3], word2 - [doc2, doc4], ...)
+Max number of docs in  index is 2,147,483,519 (= Integer.MAX_VALUE - 128) 
+
+Lucence index is made of immutable "segments" (never deleted just a flag to indicate deletion, lot of compression happens in segments)
+"Near Real Time", elasticsearch buffers incoming documents for 1 sec and then creates the lucene segments 
+Elasticsearch merges the buffered segments before persisting.
+shards can be "primary" or "replica"
+The number of "primary" shards can be set only during index creation and cannot be changed later unlike the "replica" shards.
+
+Adding a 'node', start another elastic instance in the same machine, it will run on ports 9301, 9201
+
+ curl -XGET http://localhost:9200/_cluster/health
+{
+  "cluster_name":"elasticsearch",
+  "status":"yellow",
+  "timed_out":false,
+  "number_of_nodes":2,
+  "number_of_data_nodes":2,
+  "active_primary_shards":8,
+  "active_shards":8,
+  "relocating_shards":0,
+  "initializing_shards":2,
+  "unassigned_shards":6,
+  "number_of_pending_tasks":0
+}
+
+on a 'node failover', the replicas get promoted to primary status instanteously.
+on getting the node back, the old indexes are updated with the changes that happened during its downtime.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+#4 DOCUMENT:
+---------------
+
+ "document" is a json object with each field indexed and searcheable in Lucene
+ "Mappings" are the layer that Elasticsearch uses to map complex JSON documents into the simple flat documents that Lucene expects to receive.
+Each document has "_id, _type, _index, _source and _version"
+
+GET /website/blog/123?_source=title,text //select only certain partsof source
+GET /website/blog/123/_source //select without metata
+XHEAD /website/blog/123 //check if 123 exists, no body returned.
+
+//updating a document
+documents are immutable, so updating give a document updates the "version"
+Internally, Elasticsearch has marked the old document as deleted and added an entirely new document. 
+The old version of the document doesn’t disappear immediately, although you won’t be able to access it. 
+Elasticsearch cleans up deleted documents in the background as you continue to index more data.
+
+PUT to create document with a user given id or Update a document
+POST to create a new document with elasticsearch generated id.
+
+conflicts:
+---------
+"Pessimistic concurrency control":
+lock the data in that row, widely used in DBs.
+"Optimistic concurrency control"
+reads a data, does not block, when attempting to update that data, check if changed (version), the decides go/nogo.
+Simlar to CouchDb in managing conflicts using the latest version number
+Changes to a index are replicated to all nodes
+
+
+
+
+
+
+
+
