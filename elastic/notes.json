@@ -18,40 +18,107 @@ curl -X GET http://localhost:9200/
   },
   "tagline" : "You Know, for Search"
 }
-
-1 node is one jvm, which automatically forms a 1node cluster
-starting another node, will ping and join it, forming a 2 node cluster
-shards are for partitioning data across nodes
-replications are duplicating data across nodes
-
-#2 SHARDS
------------
-make 4 shards of a new index 'books'  - s1, s2, s3, s4  
-
-curl -X PUT http://localhost:9200/books -d '{"index.number_of_shards":4}'
-{"acknowledged":true}
-
-#3 REPLICAS
+-------------------------------------------------------------------------------------------------------------------------------------------
+#2 CONCEPTS:
 ------------
-make one copy of a shard to another 
-s1s2 s2s4 s3s1 s4s3
+A "node" is one jvm, which automatically forms a single-node cluster 
+default cluster name is elasticsearch, the node names are picked from the Marvel characters
+can be overridden by 
+  ./elasticsearch --cluster.name my_cluster_name --node.name my_node_name
 
-curl -X PUT http://localhost:9200/books/_settings -d '{"index.number_of_replicas":1}'
-{"acknowledged":true}
+starting another node, will ping and join it, forming a two node cluster
+"shards" are for partitioning data across nodes
+"replications" are duplicating shards across nodes
+default is 5 shards * 1 replica each = 10 shards per index
+library is the "index", book is a "type"
 
-#4 CRUD
--------
-
-curl -XPUT http://localhost:9200/books/book/1 -d '{"title" : "100 days of cholera", "author" : "Garcia Marquez", "language" : "spanish" }'
-curl -XGET http://localhost:9200/books/book/1                                                                                          
-{"_index":"books","_type":"book","_id":"1","_version":1,"found":true,"_source":{"title" : "100 days of cholera", "author" : "Garcia Marquez", "language" : "spanish" }}%    
-curl -XDELETE http://localhost:9200/books/book/1
-
-curl -xGET http://localhost:9200/books/book/_search -d {query json}
-
+Relational DB  ->Databases->Tables->Rows->Columns
+Elasticsearch  ->Indices->Types->Documents->Fields
 
 Lucene is doing the heavy lifting.
 Each Shard is a Lucence index containing the inverted index (word1 -[doc1, doc2, doc3], word2 - [doc2, doc4], ...)
+Max number of docs in  index is 2,147,483,519 (= Integer.MAX_VALUE - 128) 
 
 
-Filters do not contribute to score, they act on results already fetched/:
+Lucence index is made of immutable "segments" (never deleted just a flag to indicate deletion, lot of compression happens in segments)
+"Near Real Time", elasticsearch buffers incoming documents for 1 sec and then creates the lucene segments 
+elasticsearch merges the buffered segments before persisting.
+
+Cluster has a state which is shared across all nodes like "mappings", "routing table"
+When a search query is executed,
+  1) a coordinator shard first picks it up 
+  2) elasticsearch query is converted into lucene query
+  3) 
+
+
+
+make 4 shards of a new index named 'library'  - s1, s2, s3, s4  
+
+  curl -XPUT http://localhost:9200/library -d '{"index.number_of_shards":4}'
+  {"acknowledged":true}
+
+make one copy of a shard to another -  s1s2 s2s4 s3s1 s4s3
+
+  curl -XPUT http://localhost:9200/library/_settings -d '{"index.number_of_replicas":1}'
+  {"acknowledged":true}
+
+  curl -XPUT http://localhost:9200/library/book/1 -d 
+    '{"title" : "100 days of cholera", "author" : "Garcia Marquez", "language" : "spanish" }'
+
+  curl -XGET http://localhost:9200/library/book/1                                                                                          
+  {"_index":"library","_type":"book","_id":"1","_version":1,"found":true,"_source":{"title" : "100 days of cholera", "author" : "Garcia Marquez", "language" : "spanish" }}%  
+
+  curl -XDELETE http://localhost:9200/library/book/1
+
+  curl -xPOST http://localhost:9200/library/book/_search -d 
+  {
+    "query" : {
+        "match" : {
+            "title" : "100 days of Cholera"
+        }
+      }
+  }
+
+
+Cold cache..?
+Filters do not contribute to score and are cached.
+Queries contribute to score, but not cached.
+Aggregations help in aggregating results
+
+"Node client" -9300 port
+The node client joins a local cluster as a non data node. 
+In other words, it doesn’t hold any data itself, but it knows what data lives on which node in the cluster.
+Then it can forward requests directly to the correct node.
+
+"Transport client" - 9300 port
+The lighter-weight transport client can be used to send requests to a remote cluster. 
+It doesn’t join the cluster itself, but simply forwards requests to a node in the cluster.
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+#3 DISTRIBUTED:
+---------------
+
+Elasticsearch tries hard to hide the complexity of distributed systems. 
+
+"master" node does create/delete index or node.
+master node need not be used for search
+all nodes know where the data is,
+all nodes can talk to each other
+shards can be in single node or go across multiple nodes
+nodes can be added seamlessly and shards will be balanced automatically!
+users can talk to any node, no bottleneck in search
+
+curl -XGET http://localhost:9200/_cluster/health
+{
+  "cluster_name":"elasticsearch",
+  "status":"yellow",
+  "timed_out":false,
+  "number_of_nodes":1,
+  "number_of_data_nodes":1,
+  "active_primary_shards":8, // all are primary since its 1 local node
+  "active_shards":8,
+  "relocating_shards":0,
+  "initializing_shards":0,
+  "unassigned_shards":8,
+  "number_of_pending_tasks":0
+}

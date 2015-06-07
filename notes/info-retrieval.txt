@@ -1,4 +1,6 @@
-Book: INFORMATION RETRIEVAL
+Book: INFORMATION RETRIEVAL : 
+http://nlp.stanford.edu/IR-book/
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Chapter1:  BOOLEAN RETRIEVAL
 
@@ -26,7 +28,7 @@ Deciding between ArrayList and LinkedList is a choice of memory (arraylist doubl
 
 Antony,3 	[play1->play2->play6]  
 Brutus,3	[play1->play1->play4]
-Caesar,5	[play1->play2->play4->play5->play6]
+Caesar,5	[play1->play2->play4->play5->play6] 
 ...
 Checkout the codebase for InvertedIndex API 
 Logic for finding intersection of 2 sorted sets
@@ -40,7 +42,7 @@ determination of text encoding like UTF8/16 is important
 determination of document unit (like whether a page|chapter|paragraph|email message is a document 0
 stopwords like 'is, was, to, at' can be used, but sometimes they make a lot of sense like 'flight to LA' without 'to' is useless 
 modern IR systems do not use stopwords owing to good compression algos available.
-"We will meet, will meet, meet' - tokens 6 | type(unique words) 3
+"We will meet, will meet, meet" - tokens 6 | type(unique words) 3
 
 Token normalization=> is the process of canonicalizing tokens so that matches occur despite superficial differences in the character sequences of the tokens 
 The most standard way to normalize is to implicitly create equivalence classes, which are normally named after one member of the set
