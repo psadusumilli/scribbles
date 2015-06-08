@@ -101,7 +101,7 @@ Elasticsearch tries hard to hide the complexity of distributed systems.
 
 "master" node does create/delete index or node.
 master node need not be used for search
-all nodes know where the data is,
+all nodes know where the data is and route the client
 all nodes can talk to each other
 shards can be in single node or go across multiple nodes
 nodes can be added seamlessly and shards will be balanced automatically!
@@ -184,9 +184,263 @@ Simlar to CouchDb in managing conflicts using the latest version number
 Changes to a index are replicated to all nodes
 
 
+updates:
+--------
+"complete or full" -> PUT /website/blog/123 -> document retrieve-change-reindexed 
+"partial" -> POST /website/blog/1/_update -> posting only a subset of fields, document retrieve-change-reindexed
+  
+Mutltiget is done by "/books/_mget"
+Bulk operations can also be done to avoid multiple network calls
+POST /_bulk
+{ "delete": { "_index": "website", "_type": "blog", "_id": "123" }} //action : metadata
+{ "create": { "_index": "website", "_type": "blog", "_id": "123" }} //in case of create/index/update, the next line is the source document
+{ "title":    "My first blog post" }
+{ "index":  { "_index": "website", "_type": "blog" }}
+{ "title":    "My second blog post" }
+{ "update": { "_index": "website", "_type": "blog", "_id": "123", "_retry_on_conflict" : 3} }
+{ "doc" : {"title" : "My updated blog post"} } 
+bulk payloads consume memory, 5-15MB is safe 
+
+------------------------------------------------------------------------------------------------------------------------------------------
+#5 DISTRIBUTED DOCUMENTS HANDLING
+-----------------------------------
+"default sharding" => shard = hash(doc_id) % number_of_shards
+
+A) "update/create doc"
+---------------------
+whenever doc says doc1 is updated,
+  1) master node determines which primary shard (say s1 in node n1)
+  2) s1 is updated
+  3) if s1 has replicas r1 in node n2, r2 in node3, they are also updated.
+  4) after every shard is in synch, success response is given back to client.
+
+The above process is "sync", it can be "async" which does not gurantee replica synch up (not advised)
+"consistency"
+quorum -> ((primary + number_of_replicas)/ 2) + 1
+if a quorum is reached among primary and replicas, the change (CRUD) is marked as success.
 
 
+B) "get doc"
+------------
+whenever doc says doc1 is updated,
+  1) master node determines which primary shard (say s1 in node n1), but will pick from any replica r1,r2 to maintain load balancing.
+
+"timeout" can control how long to wait for an operation.
+
+C) "partial update"
+  1) master node determines which primary shard (say s1 in node n1)
+  2) if some process has already updated after its retrieval, it retries step 3 up to retry_on_conflict times, before giving up.
+
+"pagination"
+GET /_search?size=5
+GET /_search?size=5&from=5
+GET /_search?size=5&from=10
+  
+"multi-index" search can go across multiple shards of different types, but the mechanisms are still the same.
 
 
+------------------------------------------------------------------------------------------------------------------------------------------
+#6 MAPPING AND ANALYSIS
+------------------------
+
+"Analysers" work on normalizing the data before entering them into the inverted index.
+Query Strings are also analysed to match the normalized stored values
+
+1 "Standard analyzer"
+The standard analyzer is the default analyzer that Elasticsearch uses. It is the best general choice for analyzing text that may be in any language. 
+It splits the text on word boundaries, as defined by the Unicode Consortium, and removes most punctuation. Finally, it lowercases all terms. It would produce
+'set, the, shape, to, semi, transparent, by, calling, set_trans, 5'
+
+2 "Simple analyzer"
+The simple analyzer splits the text on anything that isn’t a letter, and lowercases the terms. It would produce
+'set, the, shape, to, semi, transparent, by, calling, set, trans'
+
+3 "Whitespace analyzer"
+The whitespace analyzer splits the text on whitespace. It doesn’t lowercase. It would produce
+'Set, the, shape, to, semi-transparent, by, calling, set_trans(5)'
+
+4 "Language analyzers" - knows the specific language rules, does stemming.
+
+To understand analyzer, run
+GET /_analyze?analyzer=standard -d 'I am a bad bad man'
 
 
+"mapping" to types dynamically
+------------------------------------
+Elasticsearch supports the following simple field types:
+String: string
+Whole number: byte, short, integer, long
+Floating-point: float, double
+Boolean: boolean
+Date: date
+
+GET /gb/_mapping/tweet
+
+"Custom mappings"
+---------------------
+  explicit integer mapping to number_of_clicks
+  {
+      "number_of_clicks": {
+          "type": "integer"
+      }
+  }
+The two most important mapping attributes for string fields are "index and analyzer".
+The "index" attribute controls how the string will be indexed. 
+It can contain one of three values:
+  analyzed => First analyze the string and then index it. In other words, index this field as full text.
+  not_analyzed => Index this field, so it is searchable, but index the value exactly as specified. Do not analyze it.
+  no => Don’t index this field at all. This field will not be searchable.
+
+The default value of index for a string field is analyzed. 
+If we want to map the field as an exact value, we need to set it to "not_analyzed"
+{
+    "tag": {
+        "type":     "string",
+        "index":    "not_analyzed"
+    }
+}
+
+For analyzed string fields, use the "analyzer" attribute to specify which analyzer to apply both at search time and at index time.
+By default, Elasticsearch uses the standard analyzer, but you can change this by specifying one of the built-in analyzers, such as "whitespace, simple, or english"
+
+sample:
+To demonstrate both ways of specifying mappings, let’s first delete the gb index:
+
+Then create a new index "profile", specifying that the tweet field should use the english analyzer:
+
+PUT /profile 
+{
+  "mappings": {
+    "tweet" : {
+      "properties" : {
+        "tweet" : {
+          "type" :    "string",
+          "analyzer": "english"
+        },
+        "date" : {
+          "type" :   "date"
+        },
+        "name" : {
+          "type" :   "string"
+        },
+        "user_id" : {
+          "type" :   "long"
+        }
+      }
+    }
+  }
+}
+
+update a mapping with a new field "tag"
+PUT /profile/_mapping/tweet
+{
+  "properties" : {
+    "tag" : {
+      "type" :    "string",
+      "index":    "not_analyzed"
+    }
+  }
+}
+
+Complex Types
+--------------
+1 Multivalue Fields : Array
+
+{ "tag": [ "search", "nosql" ]}
+
+There is no special mapping required for arrays. 
+Any field can contain zero, one, or more values, in the same way as a full-text field is analyzed to produce multiple terms.  
+
+2 Inner objects, nothing special, elasticsearch just flattens it out
+sample-1
+{
+    "tweet":            "Elasticsearch is very flexible",
+    "user": {
+        "id":           "@johnsmith",
+        "gender":       "male",
+        "age":          26,
+        "name": {
+            "full":     "John Smith",
+            "first":    "John",
+            "last":     "Smith"
+        }
+    }
+}
+translated:
+{
+    "tweet":            [elasticsearch, flexible, very],
+    "user.id":          [@johnsmith],
+    "user.gender":      [male],
+    "user.age":         [26],
+    "user.name.full":   [john, smith],
+    "user.name.first":  [john],
+    "user.name.last":   [smith]
+}
+------------------------------------------------------
+sample-2
+{
+    "followers": [
+        { "age": 35, "name": "Mary White"},
+        { "age": 26, "name": "Alex Jones"},
+        { "age": 19, "name": "Lisa Smith"}
+    ]
+}
+{
+    "followers.age":    [19, 26, 35],
+    "followers.name":   [alex, jones, lisa, smith, mary, white]
+}
+-------------------------------------------------------------------------------------------------------------------------------------------
+#7 QUERYING:
+------------
+Empty Search -> GET /_search
+Search across multiple types -> GET /index_2014*/type1,type2/_search
+
+HTTP GET is used with payloads!! 
+The truth is that RFC 7231—the RFC that deals with HTTP semantics and content—does not define what should happen to a GET request with a body! 
+As a result, some HTTP servers allow it, and some—especially caching proxies—don’t. 
+POST is also allowed as a backup
+
+pagination ->  POST /_search {"from": 30, "size": 10}
+
+Query DSL
+----------
+GET /_search
+{
+  "query": {
+      "match": {
+          "tweet": "elasticsearch"
+      }
+  }
+}
+
+Query clauses are simple building blocks that can be combined with each other to create complex queries. Clauses can be as follows:
+
+"Leaf clauses" (like the match clause) that are used to compare a field (or fields) to a query string.
+Compound clauses that are used to combine other query clauses. 
+For instance, a "bool" clause allows you to combine other clauses that either must "match, must_not match, or should match" if possible:
+{
+    "bool": {
+        "must":     { "match": { "tweet": "elasticsearch" }},
+        "must_not": { "match": { "name":  "mary" }},
+        "should":   { "match": { "tweet": "full text" }}
+    }
+}
+
+Filters
+---------
+
+A "filter" asks a yes|no question of every document and is used for fields that contain exact values:
+  Is the created date in the range 2013 - 2014?
+  Does the status field contain the term published?
+The output from most filter clauses—a simple list of the documents that match the filter—is quick to calculate and easy to cache in memory, using only 1 bit per document. 
+These cached filters can be reused efficiently for subsequent requests. 
+The goal of filters is to 'reduce the number of documents that have to be examined by the query'.
+
+A "query" is similar to a filter, but also asks the question: How well does this document match? 
+A query calculates how relevant each document is to the query, and assigns it a relevance _score
+  Best matching the words full text search
+  Containing the word run, but maybe also matching runs, running, jog, or sprint
+  Containing the words quick, brown, and fox—the closer together they are, the more relevant the document  
+
+As a general rule, use query clauses for full-text search or for any condition that should affect the relevance score, and use filter clauses for everything else.  
+Some important filters are 'term, terms, bool, range and bool'.
