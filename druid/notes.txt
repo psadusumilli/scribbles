@@ -1,3 +1,33 @@
+
+DRUID
+------
+
+Druid, an open source, real-time data store designed to work with high volume, high dimension data. 
+Druid enables fast aggregations and arbitrary filters, supports both batch and streaming data ingestion, and seamlessly connects with popular storage systems ― including S3, HDFS, Cassandra, and more. 
+Key Features:
+	Columnar storage format for partially nested data structures
+	Hierarchical query distribution with intermediate pruning
+	Indexing for quick filtering
+	Realtime and batch ingestion (ingested data is immediately available for querying)
+	Fault-tolerant distributed architecture that doesn’t lose data
+
+usage:
+1 eBay
+eBay uses Druid to aggregate multiple data streams for real-time user behavior analytics by ingesting up at a very high rate(over 100,000 events/sec), 
+with the ability to query or aggregate data by any random combination of dimensions, and support over 100 concurrent queries without impacting ingest rate and query latencies.
+
+2 Metamarkets
+Druid is the primary data store for Metamarkets’ full stack visual analytics service for the RTB (real time bidding) space. 
+Ingesting over 30 billion events per day, Metamarkets is able to provide insight to its customers using complex ad-hoc queries at a 95th percentile query time of around 1 second.
+
+3 Netflix
+Netflix engineers use Druid to aggregate multiple data streams, ingesting up to two terabytes per hour, with the ability to query data as its being ingested. 
+They use Druid to pinpoint anomalies within their infrastructure, endpoint activity and content flow.
+
+
+---------------------------------------------------------------------------------------------------------
+QUICKIE
+--------
 download druid
 download zookeeper
 start zookeeper with sample conf only
@@ -7,3 +37,153 @@ start querying
 
 
 curl -X POST 'http://localhost:8084/druid/v2/?pretty' -H 'content-type: application/json'  -d @topn.json
+
+---------------------------------------------------------------------------------------------------------
+CONCEPTS
+--------
+
+Druid is an open source data store designed for OLAP queries on time-series data.
+
+FLOW:
+	data -> 
+	ingestion -> 
+	rollup by dimensions -> 
+	segments by time -> 
+	indexing per segment and columnar storage -> 
+	query only needed columns (no scans)
+
+1 Rollup at ingestion time
+-------------------------
+	timestamp             publisher          advertiser  gender  country  click  price
+	2011-01-01T01:01:35Z  bieberfever.com    google.com  Male    USA      0      0.65
+	2011-01-01T01:03:63Z  bieberfever.com    google.com  Male    USA      0      0.62
+	2011-01-01T01:04:51Z  bieberfever.com    google.com  Male    USA      1      0.45
+	2011-01-01T01:00:00Z  ultratrimfast.com  google.com  Female  UK       0      0.87
+	2011-01-01T02:00:00Z  ultratrimfast.com  google.com  Female  UK       0      0.99
+	2011-01-01T02:00:00Z  ultratrimfast.com  google.com  Female  UK       1      1.53
+
+Timestamp column: We treat timestamp separately because all of our queries center around the time axis.
+Dimension columns: We have four dimensions of publisher, advertiser, gender, and country. They each represent an axis of the data that we’ve chosen to slice across.
+Metric columns: These are clicks and price. These represent values, usually numeric, which are derived from an aggregation operation – such as count, sum, and mean. 
+
+Druid summarizes this raw data at "ingestion time" using a process we refer to as "roll-up". 
+Roll-up is a first-level aggregation operation over a selected set of dimensions, equivalent to below
+
+GROUP BY timestamp, publisher, advertiser, gender, country
+  :: impressions = COUNT(1),  clicks = SUM(click),  revenue = SUM(price)
+The compacted version of our original raw data looks something like this:
+
+	 timestamp             publisher          advertiser  gender country impressions clicks revenue
+	 2011-01-01T01:00:00Z  ultratrimfast.com  google.com  Male   USA     1800        25     15.70
+	 2011-01-01T01:00:00Z  bieberfever.com    google.com  Male   USA     2912        42     29.18
+	 2011-01-01T02:00:00Z  ultratrimfast.com  google.com  Male   UK      1953        17     17.31
+	 2011-01-01T02:00:00Z  bieberfever.com    google.com  Male   UK      3194        170    34.01
+
+Size of data that needs to be stored (up to a factor of 100) but we lose the ability to query individual events. 
+rollup granularity is the minimum granularity you will be able to query data at-"queryGranularity" (minimum is millisec)
+
+Druid is designed to perform "single table" operations and does not currently support joins. 
+Although many production setups instrument joins at the ETL level, data must be denormalized before it is loaded into Druid.
+
+2 Sharding the Data into SEGMENTS
+--------------------------------------
+Druid shards are called "segments and Druid always first shards data by time". In our compacted data set, we can create two segments, one for each hour of data.
+
+For example:
+
+Segment sampleData_2011-01-01T01:00:00:00Z_2011-01-01T02:00:00:00Z_v1_0 contains
+
+ 2011-01-01T01:00:00Z  ultratrimfast.com  google.com  Male   USA     1800        25     15.70
+ 2011-01-01T01:00:00Z  bieberfever.com    google.com  Male   USA     2912        42     29.18
+
+Segment sampleData_2011-01-01T02:00:00:00Z_2011-01-01T03:00:00:00Z_v1_0 contains
+
+ 2011-01-01T02:00:00Z  ultratrimfast.com  google.com  Male   UK      1953        17     17.31
+ 2011-01-01T02:00:00Z  bieberfever.com    google.com  Male   UK      3194        170    34.01
+
+Segments are self-contained containers for the time interval of data they hold. 
+Segments contain data stored in compressed column orientations, along with the indexes for those columns. 
+Druid queries only understand how to scan segments.
+Segments are uniquely identified by a datasource, interval, version, and an optional partition number.
+
+3 Indexing the Data
+---------------------
+Druid gets its speed in part from how it stores data. 
+Druid creates immutable snapshots of data, stored in data structures highly optimized for analytic queries.
+Druid is a column store, which means each individual column is stored separately. 
+Only the columns that pertain to a query are used in that query, and Druid is pretty good about only scanning exactly what it needs for a query. 
+Different columns can also employ different compression methods. Different columns can also have different indexes associated with them.
+Druid indexes data on a per shard (segment) level.
+
+Druid has two means of ingestion, "real-time and batch"
+
+4 cluster
+-----------
+
+"Real-time Nodes"
+Realtime nodes updates the ingested events index in the heap, which is queryable.
+The events is persisted to a immutable columnar store in disk whenever a max count is reached.
+A background job aggregates all the events for a given time (say 1 hr) to make a segment.
+Segment is handed over to deep storage.
+Realtime node wipes clean its in-memory index, moves to the next 1 hour, and announces to zookeeper.
+Many realtime nodes can comsume from a single Kafka log.
+Max ingestion seen ~ 500 MB/s (150,000 events/s or 2 TB/hour).
+
+"Historical Nodes" 
+form the backbone of a Druid cluster. 
+download immutable segments from deep Storage to their filesystem.
+once downloaded segments, they announce to zookeeper, they are ready to server queries on these segments.
+shared nothing architecture and know how to load segments, drop segments, and serve queries on segments.
+if zookeeper goes down, they cant take in new segments.
+can be seggregated into hold and cold nodes based on segments frequently queried.
+
+"Broker Nodes"
+are what clients and applications query to get data from Druid. 
+are responsible for scattering queries and gathering and merging results from both realtime and historical.
+maintains a cache for results vs segments only for historical
+no cache for realtime data
+
+
+"Coordinator Nodes"
+manage segments on "historical" nodes in a cluster. 
+tell historical nodes to load new segments, drop old segments, and move segments to load balance.
+leader-election with remaining as backups
+makes decisions by comparing the expected state of the cluster with the actual state of the cluster at the time of the run
+
+Rules govern how coordinator works.
+a user may use rules to load the
+	most recent one month’s worth of segments into a “hot” cluster, the
+	most recent one year’s worth of segments into a “cold” cluster, and
+	drop any segments that are older.
+rules are loaded from MySQL
+maage replication of segments 
+9
+
+5 Storage
+---------
+Primary dimension is always "time" which splits data into segments
+segments store data in columnar format which is best suited for aggregation queries.
+segments have version number along with the timestamp, if they get updated
+
+
+
+
+6 External Dependencies
+--------------------------
+"Zookeeper" 
+Druid relies on Zookeeper for intra-cluster communication.
+
+"Metadata Storage" 
+Druid relies on a metadata storage to store "metadata about segments and configuration". 
+Services that create segments write new entries to the metadata store and the "coordinator nodes monitor the metadata store" to know when new data needs to be loaded or old data needs to be dropped. 
+The metadata store is not involved in the query path. MySQL and PostgreSQL
+
+"Deep Storage"
+Deep storage acts as a "permanent backup of segments". 
+Services that create segments upload segments to deep storage and historical nodes download segments from deep storage. 
+Deep storage is not involved in the query path. S3 and HDFS.
+
+"High Availability Characteristics"
+Druid is designed to have no single point of failure. 
+Different node types are able to fail without impacting the services of the other node types. 
+To run a highly available Druid cluster, you should have at least 2 nodes of every node type running.

@@ -444,3 +444,25 @@ A query calculates how relevant each document is to the query, and assigns it a 
 
 As a general rule, use query clauses for full-text search or for any condition that should affect the relevance score, and use filter clauses for everything else.  
 Some important filters are 'term, terms, bool, range and bool'.
+
+To combine query and filters, use "filtered"
+  "filtered": {
+          "query":  { "match": { "email": "business opportunity" }},
+          "filter": { "term":  { "folder": "inbox" }}
+      }
+
+There are query and filter "context", and each can work within the other.
+
+Query Validation
+----------------
+GET /gb/tweet/_validate/query
+{
+   "query": {
+      "tweet" : {
+         "match" : "really powerful"
+      }
+   }
+}
+explain
+--------
+GET /gb/tweet/_validate/query?explain to get more detail on the validation errors if any, and the parsed format.
