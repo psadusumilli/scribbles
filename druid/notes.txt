@@ -187,3 +187,9 @@ Deep storage is not involved in the query path. S3 and HDFS.
 Druid is designed to have no single point of failure. 
 Different node types are able to fail without impacting the services of the other node types. 
 To run a highly available Druid cluster, you should have at least 2 nodes of every node type running.
+
+
+Some figures:
+--------------
+ingestion rate -> 800,000 events/second/core
+90% of queries within sec
