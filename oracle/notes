@@ -79,11 +79,14 @@ oracle
 
 	2 "pooling"
 		http://www.tomcatexpert.com/blog/2010/04/01/configuring-jdbc-pool-high-concurrency
+
+		"spring-boot" used tomcat datasource
+
 		spring.datasource.max-active=100 //is the maximum number of established connections to the database. 
 		spring.datasource.max-idle=8 //behaves differently depending on if the pool sweeper, a background thread that can test idle connections and resize the pool while the pool is active
 		spring.datasource.min-idle=8 //minimum number of connections always established after the connection pool has reached this size. The pool can shrink to a smaller number of connections if the maxAge attribute
 		spring.datasource.initial-size=10
-		spring.datasource.validation-query= //any query 
+		spring.datasource.validation-query=SELECT 1//the query SELECT 1 is executed each time the Java code calls Connection con = dataSource.getConnection();.
 		spring.datasource.test-on-borrow=false
 		spring.datasource.test-on-return=false
 		spring.datasource.test-while-idle=
@@ -114,6 +117,11 @@ oracle
 			timeBetweenEvictionRunsMillis>0 AND suspectTimeout>0
 			timeBetweenEvictionRunsMillis>0 AND testWhileIdle=true AND validationQuery!=null
 			timeBetweenEvictionRunsMillis>0 AND minEvictableIdleTimeMillis>0 (timer && getMinEvictableIdleTimeMillis()>0);
+
+		Leaks:
+		removeAbandoned - set to true if we want to detect leaked connections
+		removeAbandonedTimeout - the number of seconds from when dataSource.getConnection was called to when we consider it abandoned
+		logAbandoned - set to true if we should log that a connection was abandoned. If this option is set to true, a stack trace is recorded during the dataSource.getConnection call and is printed when a connection is not returned.	
 
 
 	3 "backup and recovery"
