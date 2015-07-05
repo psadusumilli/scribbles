@@ -1,0 +1,140 @@
+"Data blocks":At the finest level of granularity, Oracle Database data is stored in data blocks. One data block corresponds to a specific number of bytes on disk.
+"Extents":An extent is a specific number of logically contiguous data blocks, obtained in a single allocation, used to store a specific type of information.
+"Segments": A segment is a set of extents allocated for a user object (for example, a table or index), undo data, or temporary data.
+"Tablespaces": A database is divided into logical storage units called tablespaces. A tablespace is the logical container for a segment. Each tablespace contains at least one data file.
+
+
+oracle
+
+	0 "create database"
+
+			CREATE DATABASE mynewdb
+			   USER SYS IDENTIFIED BY sys_$password
+			   USER SYSTEM IDENTIFIED BY system_$password
+			   LOGFILE GROUP 1 ('/u01/app/oracle/oradata/mynewdb/redo01.log') SIZE 100M,
+			           GROUP 2 ('/u01/app/oracle/oradata/mynewdb/redo02.log') SIZE 100M,
+			           GROUP 3 ('/u01/app/oracle/oradata/mynewdb/redo03.log') SIZE 100M
+			   MAXLOGFILES 5
+			   MAXLOGMEMBERS 5
+			   MAXLOGHISTORY 1
+			   MAXDATAFILES 100
+			   CHARACTER SET US7ASCII
+			   NATIONAL CHARACTER SET AL16UTF16
+			   EXTENT MANAGEMENT LOCAL
+			   DATAFILE '/u01/app/oracle/oradata/mynewdb/system01.dbf' SIZE 325M REUSE
+			   SYSAUX DATAFILE '/u01/app/oracle/oradata/mynewdb/sysaux01.dbf' SIZE 325M REUSE
+			   DEFAULT TABLESPACE users
+			      DATAFILE '/u01/app/oracle/oradata/mynewdb/users01.dbf'
+			      SIZE 500M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED
+			   DEFAULT TEMPORARY TABLESPACE tempts1
+			      TEMPFILE '/u01/app/oracle/oradata/mynewdb/temp01.dbf'
+			      SIZE 20M REUSE
+			   UNDO TABLESPACE undotbs
+			      DATAFILE '/u01/app/oracle/oradata/mynewdb/undotbs01.dbf'
+			      SIZE 200M REUSE AUTOEXTEND ON MAXSIZE UNLIMITED;
+
+
+	1 "users/schema"
+		CONN sys/$password AS SYSDBA
+
+		-- Remove existing users and roles with the same names.
+		DROP USER dep_rio_owner CASCADE;
+		DROP USER dep_rio_user CASCADE;
+		DROP ROLE dep_rio_admin_role;
+		DROP ROLE dep_rio_user_role;
+
+		-- Schema owner -----------------------------------
+		CREATE USER dep_rio_owner 
+			IDENTIFIED BY $password  
+			DEFAULT TABLESPACE $users 
+			TEMPORARY TABLESPACE $temp 
+			QUOTA UNLIMITED ON $users;
+
+		GRANT CONNECT, CREATE TABLE TO dep_rio_owner;
+
+		-- Application user -----------------------------------
+		CREATE USER dep_rio_user 
+			IDENTIFIED BY $password  
+			DEFAULT TABLESPACE $users 
+			TEMPORARY TABLESPACE $temp;
+
+		GRANT CONNECT TO dep_rio_user;
+
+		-- roles-----------------------------------
+		CREATE ROLE dep_rio_admin_role;
+		CREATE ROLE dep_rio_user_role;
+
+		GRANT dep_rio_admin_role TO dep_rio_admin;
+		GRANT dep_rio_user_role TO dep_rio_user;
+
+		--set schema of app user to point to schema owner 
+		ALTER SESSION SET current_schema=dep_rio_owner
+
+		--login as schema owner-----------------------------------
+		CONN dep_rio_owner/$password
+
+		GRANT ALL ON <table> TO dep_rio_admin_role;
+		GRANT SELECT, INSERT, UPDATE ON <table> TO dep_rio_user_role;
+
+
+	2 "pooling"
+		http://www.tomcatexpert.com/blog/2010/04/01/configuring-jdbc-pool-high-concurrency
+		spring.datasource.max-active=100 //is the maximum number of established connections to the database. 
+		spring.datasource.max-idle=8 //behaves differently depending on if the pool sweeper, a background thread that can test idle connections and resize the pool while the pool is active
+		spring.datasource.min-idle=8 //minimum number of connections always established after the connection pool has reached this size. The pool can shrink to a smaller number of connections if the maxAge attribute
+		spring.datasource.initial-size=10
+		spring.datasource.validation-query= //any query 
+		spring.datasource.test-on-borrow=false
+		spring.datasource.test-on-return=false
+		spring.datasource.test-while-idle=
+		spring.datasource.time-between-eviction-runs-millis= //The sweeper runs every timeBetweenEvictionRunsMillis milliseconds.
+		spring.datasource.min-evictable-idle-time-millis=
+		spring.datasource.max-wait=
+		spring.datasource.jmx-enabled=false
+
+
+		The sweeper runs every timeBetweenEvictionRunsMillis milliseconds.
+		The maxIdle attribute is defined as follows:
+
+		Pool sweeper disabled - If the idle pool is larger than maxIdle, the connection will be closed when returned to the pool
+		Pool sweeper enabled - Number of idle connections can grow beyond maxIdle but can shrink down to minIdle if the connection has been idle for longer than minEvictableIdleTimeMillis. This may sounds strange that the pool can will not close connections even if the idle pool is larger than maxIdle. It is actually optimal behavior. Imagine the following scenario:
+
+
+		100 parallel requests served by 100 threads
+		Each thread borrows a connection 3 times during a request
+		In this scenario, if we had maxIdle="50" then we could end up closing and opening 50x3 connections. 
+		This taxes the database and slows down the application. During peak traffic spikes like this, we want to be able to utilize all the pooled connections. 
+		So we definitely want to have the pool sweeper enabled. There is an additional attribute we mentioned here, "maxAge". 
+		maxAge defines the time in milliseconds that a connection can be open/established. 
+		When a connection is returned to the pool, if the connection has been connected and the time it was first connected is longer than the maxAge value, it will be closed.
+
+
+		As we saw by the "isPoolSweeper" enabled algorithm, the sweeper is enabled when one of the following conditions is met
+			timeBetweenEvictionRunsMillis>0 AND removeAbandoned=true AND removeAbandonedTimeout>0
+			timeBetweenEvictionRunsMillis>0 AND suspectTimeout>0
+			timeBetweenEvictionRunsMillis>0 AND testWhileIdle=true AND validationQuery!=null
+			timeBetweenEvictionRunsMillis>0 AND minEvictableIdleTimeMillis>0 (timer && getMinEvictableIdleTimeMillis()>0);
+
+
+	3 "backup and recovery"
+		need to talk with dbas on recovery manager
+
+
+	4 "replication"
+		Oracle Streams, a built-in feature of the Oracle database, is a data replication and integration feature. 
+		It provides a flexible infrastructure that meets a wide variety of information sharing needs. 
+		Oracle Streams enables the propagation of data, transactions and events in a data stream either within a database, or from one database to another
+
+
+	5 "migration"
+		Database migrations are carried out using flywaydb.org which allow us to 
+			Recreate a database from scratch
+			Make it clear at all times what state a database is in
+			Migrate in a deterministic way from your current version of the database to a newer one
+		FlwayDB applies qql or java migrations in its classpath
+		FlwayDB tracks the migrations applied via a single tracker table SCHEMA_VERSION in database.	
+
+
+
+
+
