@@ -1,0 +1,274 @@
+
+installation
+-------------
+1) install pmcd -> Performance Metrics Collector Daemon which will collect data from many agents
+
+	$ yum install pcp 
+		(1/6): pcp-conf-3.10.4-1.fc21.x86_64.rpm                                                                                                                                                    |  29 kB  00:00:00     
+		(2/6): python-pcp-3.10.4-1.fc21.x86_64.rpm                                                                                                                                                  | 105 kB  00:00:00     
+		(3/6): perl-JSON-2.90-2.fc21.noarch.rpm                                                                                                                                                     |  97 kB  00:00:00     
+		(4/6): perl-PCP-PMDA-3.10.4-1.fc21.x86_64.rpm                                                                                                                                               |  56 kB  00:00:00     
+		(5/6): pcp-libs-3.10.4-1.fc21.x86_64.rpm                                                                                                                                                    | 284 kB  00:00:01     
+		(6/6): pcp-3.10.4-1.fc21.x86_64.rpm              
+
+	$ chkconfig pmcd on 
+	$ service pmcd start 
+	$ chkconfig pmlogger on 
+	$ service pmlogger start
+
+$ ls -l  /etc/pcp
+total 20
+drwxr-xr-x. 2 root root 4096 Jul 11 20:43 pmcd
+drwxr-xr-x. 2 root root 4096 Jul 11 20:43 pmie
+drwxr-xr-x. 2 root root 4096 Jul 11 20:43 pmlogger
+drwxr-xr-x. 2 root root 4096 Jul 11 20:43 pmproxy
+drwxr-xr-x. 2 root root 4096 Jul 11 20:56 pmsnap
+
+
+2) install pmda -> Performance Metrics Domain Agents (PMDAs) -> nothing specific mentioned!!
+yum install sysstat for iostat
+
+3) $ less /etc/pcp/pmlogger/control -> localhost added for monitoring by default
+	LOCALHOSTNAME   y   n   PCP_LOG_DIR/pmlogger/LOCALHOSTNAME      -r -T24h10m -c config.default
+
+
+4) install optional gui 
+	$ yum install pcp-doc pcp-gui
+
+
+5) monitor a known data host like acme.com;
+-------------------------------
+Enable recording of metrics from remote host acme.com : 
+ 	$ echo acme.com n n PCP_LOG_DIR/pmlogger/ acme.com -r -T24h10m -c config. acme.com >> /etc/pcp/pmlogger/control 
+ 	$ service pmlogger restart
+ 	$  /usr/libexec/pcp/bin/pmlogger_check -V -C  -> to check if collection happends every 
+
+6) enable manage to identify dynamic hosts
+---------------------------------------------
+In dynamic environments manually configuring every host is not feasible, perhaps even impossible. 
+CP Manager ( pmmgr(1) , from the pcp-manager package) can be used instead of directly invoking 'pmlogger' and 'pmie' to auto-discover and auto-configure new collector hosts. 	
+
+	$ yum install pcp-manager
+	$ chkconfig pmmgr on 
+
+Discover use of the PCP pmcd service on the local network: 
+	$ pmfind -s pmcd
+		pcp://192.168.122.1:44321
+  		pcp://10.0.0.2:44321
+
+	$ pcp -h localhost
+	  	Performance Co-Pilot configuration on vijayrc:
+
+		 platform: Linux vijayrc 3.18.6-200.fc21.x86_64 #1 SMP Fri Feb 6 22:59:42 UTC 2015 x86_64
+		 hardware: 4 cpus, 1 disk, 1 node, 7898MB RAM
+		 timezone: EDT+4
+		 services: pmcd
+		     pmcd: Version 3.10.4-1, 6 agents, 1 client
+		     pmda: root[4] pmcd proc xfs linux mmv jbd2
+		 pmlogger: primary logger: /var/log/pcp/pmlogger/vijayrc/20150711.21.08
+
+7) commands : replace acme.com with any remote agent or localhost
+
+Live monitoring
+***************
+
+	Display all the enabled performance metrics on a host (use with -t to include a short description for each): 
+		$ pminfo -h acme.com
+
+	Display detailed information about a performance metric and its current values: 
+		$ pminfo -dfmtT disk.partitions.read -h acme.com
+
+	Monitor live disk write operations per partition with two second interval using fixed point notation (use -i instance to list only certain metrics and -r for raw values): 
+		$ pmval -t 2sec -f 3 disk.partitions.write -h acme.com
+
+	Monitor live CPU load, memory usage, and disk write operations per partition with two second interval using fixed width columns: 
+		$ pmdumptext -i -l 'kernel.all.load[1]' mem.util.used disk.partitions.write -h acme.com
+
+	Monitor system metrics in a top like window (this needs a large terminal): 
+		$ pmatop -h acme.com
+
+	Monitor system metrics in a sar like fashion with two second interval from two different hosts: 
+		$ pmstat -t 2sec -h acme1.com -h acme2.com
+
+	Monitor system metrics in an iostat like fashion with two second interval: 
+		$ pmiostat -t 2sec -h acme.com
+
+	Monitor performance metrics with a 'GUI application' with two second default interval from two different hosts. 
+	Use File->New Chart to select metrics to be included in a new view and use File->Open View to use a predefined view
+		$ pmchart -t 2sec -h acme1.com -h acme2.com
+
+Retrospective Performance Analysis
+*********************************
+
+	PCP archive logs are located under /var/log/pcp/pmlogger/ hostname , and the archive names indicate the date they cover. 
+	Archives are self-contained, and machine-independent so can be transfered to any machine for offline analysis.
+
+	Check the host and the time period an archive covers: 
+		$ pmdumplog -l acme.com /20140902
+
+	Check PCP configuration at the time when an archive was created: 
+		$ pcp -a acme.com /20140902
+
+	Display all enabled performance metrics at the time when an archive was created: 
+		$ pminfo -a acme.com /20140902
+
+	Display detailed information about a performance metric at the time when an archive was created: 
+		$ pminfo -df mem.freemem -a acme.com /20140902
+
+	Dump past disk write operations per partition in an archive using fixed point notation (use -i instance to list only certain metrics and -r for raw values): 
+		$ pmval -f 3 disk.partitions.write -a acme.com /20140902
+
+	Replay past disk write operations per partition in an archive with two second interval using fixed point notation between 9 AM and 10 AM (use full dates with syntax like @"2014-08-20 14:00:00" ): 
+		$ pmval -d -t 2sec -f 3 disk.partitions.write -S @09:00 -T @10:00 -a acme.com /20140902
+
+	Calculate average values of performance metrics in an archive between 9 AM / 10 AM using table like formatting including the time of minimum/maximum value and the actual minimum/maximum value: 
+		$ pmlogsummary -HlfiImM -S @09:00 -T @10:00 acme.com /20140902 disk.partitions.write mem.freemem
+
+	Dump past CPU load, memory usage, and disk write operations per partition in an archive averaged over 10 minute interval with fixed columns between 9 AM and 10 AM: 
+		$ pmdumptext -t 10m -i -l -S @09:00 -T @10:00 'kernel.all.load[1]' 'mem.util.used' 'disk.partitions.write' -a acme.com /20140902
+
+	Summarize differences in past performance metrics between two archives, comparing 2 AM / 3 AM in the first archive to 9 AM / 10 AM in the second archive 
+	(grep for '+' to quickly see values which were zero during the first period): 
+		$ pmdiff -S @02:00 -T @03:00 -B @09:00 -E @10:00 acme.com /20140902 acme.com /20140901
+
+	Replay past system metrics in an archive in a top like window starting 9 AM (this needs a large window): 
+		$ pmatop -S @09:00 -a acme.com /20140902
+
+	Dump past system metrics in a sar like fashion averaged over 10 minute interval in an archive between 9 AM and 10 AM: 
+		$ pmstat -t 10m -S @09:00 -T @10:00 -a acme.com /20140902
+
+	Dump past system metrics in an iostat(1) like fashion averaged over one hour interval in an archive: 
+		$ pmiostat -t 1h -a acme.com /20140902
+
+	Dump past system metrics in a free(1) like fashion at a specific historical time offset: 
+		$ pcp -a acme.com /20140902 -O @10:02 free
+
+	Replay performance metrics with a GUI application with two second default interval in an archive between 9 AM and 10 AM. 
+	Use File->New Chart to select metrics to be included in a new view and use File->Open View to use a predefined view: 
+		$ pmchart -t 2sec -S @09:00 -T @10:00 -a acme.com /20140902
+
+	Merge several archives as a new combined archive (see the manual page how to write configuration file to collect only certain metrics): 
+		$ pmlogextract <archive1> <archive2> <newarchive>\
+
+Visualizing iostat and sar Data
+********************************
+iostat and sar data can be imported as PCP archives which then allows inspecting and visualizing the data with PCP tools. The iostat2pcp(1) importer is in the pcp-import-iostat2pcp package and the sar2pcp(1) importer is in the pcp-import-sar2pcp package.
+
+Import iostat data to a new PCP archive and visualize it: 
+
+	$ iostat -t -x 2 > iostat.out 
+	$ iostat2pcp iostat.out iostat.pcp 
+	$ pmchart -t 2sec -a iostat.pcp
+
+	Import sar data from an existing sar archive to a new PCP archive and visualize it (sar logs are under /var/log/sysstat on Debian/Ubuntu): 
+
+	$ sar2pcp /var/log/sa/sa15 sar.pcp 
+	$ pmchart -t 2sec -a sar.pcp
+
+Process Level Performance Monitoring
+************************************
+PCP provides details of each running process via the standard PCP interfaces and tools on the localhost but due to security and performance considerations, most of the process related information is not stored in archive logs by default. Also for security reasons, only root can access some details of running processes of other users.
+Custom application instrumentation is possible with the Memory Mapped Value (MMV) PMDA.
+Live and Retrospective Process Monitoring
+
+
+Display all the available process related metrics: 
+	$ pminfo proc
+
+Monitor the number of open file descriptors of the process 1234: 
+	$ pmval -t 2sec 'proc.fd.count[1234]'
+
+Monitor the CPU time, memory usage (RSS), and the number of threads of the process 1234 ( -h local: is a workaround needed for the time being): 
+	$ pmdumptext -h local: -t 2sec 'proc.psinfo.utime[1234]' 'proc.memory.rss[1234]' 'proc.psinfo.threads[1234]'
+
+Display all the available process related metrics in an archive: 
+	$ pminfo proc -a acme.com /20140902
+
+Display the number of running processes on 2014-08-20 14:00: 
+	$ pmval -s 1 -S @"2014-08-20 14:00" proc.nprocs -a acme.com /20140820
+
+
+Monitoring “Hot” Processes with Hotproc
+***************************************
+
+It is also possible to monitor “hot” or “interesting” processes by name with PCP 3.10.5 or later, for example all processes of which command name is java or python . This monitoring of “hot” processes can also be enabled or disabled based on certain criterias or from the command line on the fly. The metrics will be available under the namespace hotproc .
+Configuring processes to be monitored contantly using the hotproc namespace can be done using the configuration file /var/lib/pcp/pmdas/proc/hotproc.conf - see the pmdaproc(1) manual page for details. This allows monitoring these processes regardless of their PIDs and also logging the metrics easily.
+
+Enable monitoring of all Java instances on the fly and display all the collected metrics: 
+
+# pmstore hotproc.control.config 'fname == "java"' 
+# pminfo -f hotproc
+Application Instrumentation
+
+Applications can be instrumented in the PCP world by using Memory Mapped Values (MMVs). pmdammv is a PMDA which exports application level performance metrics using memory mapped files. It offers an extremely low overhead instrumentation facility that is well-suited to long running, mission critical applications where it is desirable to have performance metrics and availability information permanently enabled.
+Application to be instrumented with MMV need to be PCP MMV aware, APIs are available for several languages including C, C++, Perl, and Python. Java applications may use the separate Parfait class library for enabling MMV.
+Instrumentation of unaltered Java applications is a known feature request and is planned for a not-too-distant release.
+See the Performance Co-Pilot Programmers Guide PDF for more information about application instrumentation.
+Performance Metrics Inference
+Performance Metrics Inference Engine ( pmie(1) ) can evaluate rules and generate alarms, run scripts, or automate system management tasks based on live or past performance metrics.
+
+To enable and start PMIE on Fedora/RHEL: 
+
+# chkconfig pmie on 
+# service pmie start
+
+To make sure PMIE is running on Debian/Ubuntu: 
+
+$ sudo update-rc.d pmie defaults 
+$ sudo service pmie restart
+To enable the monitoring host to run PMIE for collector hosts, add each host to the /etc/pcp/pmie/control configuration file.
+
+Enable monitoring of metrics from remote host acme.com : 
+# echo acme.com n PCP_LOG_DIR/pmie/ acme.com -c config. acme.com 
+
+# service pmie restart
+Some examples in plain English describing what could be done with PMIE:
+If the number of IP received packets exceeds a threshold run a script to adjust firewall rules to limit the incoming traffic
+If 3 out of 4 consecutive samples taken every minute of disk operations exceeds a threshold between 9 AM and 5 PM send an email and write a system log message
+If all hosts in a group have CPU load over a threshold for more than 10 minutes or they have more application processes running than a threshold limit generate an alarm and run a script to tune the application
+
+This example shows a PMIE script, checks its syntax, runs it against an archive, and prints a simple message if more than 5 GB of memory was in use between 9 AM and 10 AM using one minute sampling interval: 
+
+$ cat pmie.ex
+bloated = (  mem.util.used > 5 Gbyte )
+      -> print "%v memory used on %h!"
+
+$ pmie -C pmie.ex 
+$ pmie -t 1min -c pmie.ex -S @09:00 -T @10:00 -a acme.com /20140820
+
+PCP Web Services
+******************
+Performance Metrics Web Daemon ( pmwebd(1) ) is a front-end to both PMCD and PCP archives, providing a REST web service (over HTTP/JSON) suitable for use by web-based tools wishing to access performance data over HTTP. Custom applications can access all the available PCP information using this method, including custom metrics generated by custom PMDAs.
+
+To install the PCP web service on Fedora/RHEL: 
+
+# yum install pcp-webapi 
+# chkconfig pmwebd on 
+# service pmwebd start
+
+To install the PCP web service on Debian/Ubuntu: 
+
+$ sudo apt-get install pcp-webapi 
+$ sudo update-rc.d pmwebd defaults 
+$ sudo service pmwebd restart
+
+
+User Web Interface for Performance Metrics
+*******************************************
+Several browser interfaces for accessing PCP performance metrics are also available. These web interfaces make PCP metrics available via your choice of Grafana or Graphite .
+After installing the PCP web services daemon as described above, install the pcp-webjs package and then just point a browser toward http://localhost:44323 .
+Customizing and Extending PCP
+PCP PMDAs offer a way for administrators and developers to customize and extend the default PCP installation. The pcp-libs-devel package contains all the needed development related examples, headers, and libraries. New PMDAs can easily be added, below is a quick list of references for starting development:
+Some examples exist below /var/lib/pcp/pmdas/ - the simple, sample, and txmon PMDAs are easy to read PMDAs.
+The simple PMDA provides implementations in C, Perl and Python.
+A simple command line monitor tool is /usr/share/pcp/demos/pmclient (C language).
+Good initial Python monitor examples are /usr/libexec/pcp/bin/pcp/pcp-* (Fedora/RHEL) or /usr/lib/pcp/bin/pcp-* (Debian/Ubuntu).
+Slightly more complex examples are the pmiostat, pmatop, pmcollectl commands.
+The applications in the pcp-webjs source tree are helpful when developing new web applications.
+
+Additional Information
+**********************
+http://pcp.io/ - PCP home page
+http://pcp.io/presentations.html - PCP Presentations
+http://pcp.io/doc/pcp-users-and-administrators-guide.pdf - Performance Co-Pilot User's and Administrator's Guide PDF
+http://pcp.io/doc/pcp-programmers-guide.pdf - Performance Co-Pilot Programmer's Guide PDF
