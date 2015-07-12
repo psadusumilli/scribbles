@@ -1,0 +1,98 @@
+wget http://keepalived.org/software/keepalived-1.2.18.tar.gz
+yum -y install kernel-headers kernel-devel
+yum install openssl openssl-devel 
+
+Keepalived configuration
+------------------------
+Keepalived version       : 1.2.18
+Compiler                 : gcc
+Compiler flags           : -g -O2
+Extra Lib                : -lssl -lcrypto -lcrypt 
+Use IPVS Framework       : Yes
+IPVS sync daemon support : Yes
+IPVS use libnl           : No
+fwmark socket support    : Yes
+Use VRRP Framework       : Yes
+Use VRRP VMAC            : Yes
+SNMP support             : No
+SHA1 support             : No
+Use Debug flags          : No
+
+
+sudo su
+make && make install
+
+Make complete
+make -C keepalived install
+make[1]: Entering directory '/home/vijayrc/tools/keepalived-1.2.18/keepalived'
+install -d /usr/local/sbin
+install -m 700 ../bin/keepalived /usr/local/sbin/
+install -d /usr/local/etc/rc.d/init.d
+install -m 755 etc/init.d/keepalived.init /usr/local/etc/rc.d/init.d/keepalived
+install -d /usr/local/etc/sysconfig
+install -m 644 etc/init.d/keepalived.sysconfig /usr/local/etc/sysconfig/keepalived
+install -d /usr/local/etc/keepalived/samples
+install -m 644 etc/keepalived/keepalived.conf /usr/local/etc/keepalived/
+install -m 644 ../doc/samples/* /usr/local/etc/keepalived/samples/
+install -d /usr/local/share/man/man5
+install -d /usr/local/share/man/man8
+install -m 644 ../doc/man/man5/keepalived.conf.5 /usr/local/share/man/man5
+install -m 644 ../doc/man/man8/keepalived.8 /usr/local/share/man/man8
+make[1]: Leaving directory '/home/vijayrc/tools/keepalived-1.2.18/keepalived'
+make -C genhash install
+make[1]: Entering directory '/home/vijayrc/tools/keepalived-1.2.18/genhash'
+install -d /usr/local/bin
+install -m 755 ../bin/genhash /usr/local/bin/
+install -d /usr/local/share/man/man1
+install -m 644 ../doc/man/man1/genhash.1 /usr/local/share/man/man1
+make[1]: Leaving directory '/home/vijayrc/tools/keepalived-1.2.18/genhash'
+mkdir -p /usr/share/snmp/mibs/
+cp -f doc/VRRP-MIB /usr/share/snmp/mibs/
+cp -f doc/KEEPALIVED-MIB /usr/share/snmp/mibs/
+
+
+cd /etc/sysconfig
+ln -s /usr/local/etc/sysconfig/keepalived .
+cd /etc/rc3.d/
+ln -s /usr/local/etc/rc.d/init.d/keepalived S100keepalived
+cd /etc/init.d/
+ln -s /usr/local/etc/rc.d/init.d/keepalived .
+
+cd /usr/local/etc/keepalived
+cp keepalived.conf keepalived.conf.bak
+
+machine 1:
+vrrp_instance VI_1 {
+        interface eth0
+        state MASTER
+        virtual_router_id 51
+        priority 101
+        authentication {
+            auth_type PASS
+            auth_pass Add-Your-Password-Here
+        }
+        virtual_ipaddress {
+                202.54.1.1/29 dev eth1
+        }
+}
+
+
+machine2:
+vrrp_instance VI_1 {
+        interface eth0
+        state MASTER
+        virtual_router_id 51
+        priority 100
+        authentication {
+            auth_type PASS
+            auth_pass Add-Your-Password-Here
+        }
+        virtual_ipaddress {
+                202.54.1.1/29 dev eth1
+        }
+}
+
+tail -f /var/log/messages
+
+
+/etc/init.d/keepalived start
