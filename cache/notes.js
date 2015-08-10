@@ -79,7 +79,8 @@ Relative newcomers to this space, and worthy of watching closely are Microsoft a
 'Why would I want an In Memory Data Grid? '
 Let’s compare this with our old friend the traditional relational database:
 	1 Performance – using RAM is faster than using disk.  No need to try and predict what data will be used next.  It’s already in memory to use.
-	2 Data Structure – using a key/value store allows greater flexibility for the application developer.  The data model and application code are inextricably linked.  More so than a relational structure.
+	2 Data Structure – using a key/value store allows greater flexibility for the application developer.  The data model and application code are inextricably linked.  
+						More so than a relational structure.
 	3 Operations – Scalability and resiliency are easy to provide and maintain.  Software / hardware upgrades can be performed non-disruptively.
 
 'How does an In Memory Data Grid map to real business benefits?'
@@ -122,3 +123,48 @@ There are also some tough decisions you may need to make regarding data consiste
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 HAZELCAST
 **********
+Hazelcast® is an open source in-memory data grid based on Java. It is also the name of the company developing the product.
+
+The primary capabilities that Hazelcast provides include:
+	'Elasticity' means that Hazelcast clusters can grow capacity simply by adding new nodes.
+
+	'Redundancy' means that you have great flexibility when you configure Hazelcast clusters for data replication policy (which defaults to one synchronous backup copy). 
+	To support these capabilities, Hazelcast has a concept of members; Members are JVMs that join a Hazelcast cluster. 
+	A cluster provides a single extended environment where data can be synchronized between (and processed by) members of the cluster.
+
+toplogies
+*********
+	'embdedded'
+		hazelcast node is embedded in app jvm
+	'client plus member'
+		hazelcast nodes are part of a seperate process	
+
+In production applications, the Hazelcast client should be reused between threads and operations. It is
+designed for multithreaded operation, and creation of a new Hazelcast client is relatively expensive, as it
+handles cluster events, heartbeating, etc., so as to be transparent to the user.
+
+'failover'
+In the case of a hard failure (e.g. JVM crash or kernel panic), Hazelcast has recovery and failover capabilities
+to prevent data loss. In the worst case, there is always at least one synchronous backup of every piece of data
+(unless that was explicitly disabled), so the loss of a single member will never cause data loss.
+
+Hazelcast provides a certain amount of control over how data is replicated. The default is 1 synchronous backup. 
+For data structures such as IMap and IQueue, this can be configured using the config parameters backup-count and async-backup-count. 
+These parameters provide additional backups, but at the cost of higher memory consumption (each backup consumes memory equivalent to the size of the original data structure). 
+The asynchronous option is really designed for low-latency systems where some very small window of data loss is preferable over increased write latency.
+
+'Serialization'
+Hazelcast’s IMap provides the ability to store the data in memory in several different ways. By default,
+Hazelcast serializes objects to byte arrays as they are stored, and deserializes them as they are read, which
+simplifies synchronization between Hazelcast nodes. However, this is not as performant as some applications
+would like because a lot of CPU time can be spent serializing and deserializing.
+To compensate for this, Hazelcast provides two other possible storage strategies controlled by the in-memory-
+format setting. They allow values (but not keys) to be stored in the following formats:
+	1.	BINARY (the default): Values are serialized and deserialized immediately.
+	2.	OBJECT: Values are stored locally as objects, and are only serialized when moving to a different node.
+	3.	CACHED: The values are stored in binary-format, but on first access are deserialized and additionally stored as objects.
+
+Supports JCache(JSR 107), a java standard	
+'CAP'
+Hazelcast will give up Consistency (“C”) and remain Available (“A”) whilst Partitioned (“P”).
+However, unlike some NoSQL implementations, C is not given up unless a network partition occurs.
