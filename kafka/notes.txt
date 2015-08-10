@@ -32,29 +32,35 @@ bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-
 
 PRINCIPLES:
 **********
-topic is a logical unit for creation/consumption of messages
-topic is made up of partitions, an append-only,immutable commit logs
+'topic' is a logical unit for creation/consumption of messages
+topic is made up of 'partitions', an append-only,immutable commit logs
+'producers' select a partition to dump a message based on their distribution choice.
 messages in partitions are retained based on retention policies
 1 complete partition per server
 all partitions are replicated across servers
 1 partition in a server is leader handling all read/writes, others passively replicated for failover
 
-producers select a partition to dump a message
-
-consumers read from partitions using 'offset', just a counter on where they are in the log
+'consumers' read from partitions using 'offset', just a counter on where they are in the log
 consumers can read multiple times from same parition by resetting the offset
 consumers are grouped together into groups
 
 only one consumer is guranteed to receive a message in a group, no duplicate receipt
-point: if all consumers belong to same group, they are load balanced within group for every message
-broadcast: if all consumers belong to different groups , they are distributed across groups for every message
+'point': if all consumers belong to same group, they are load balanced within group for every message
+'broadcast': if all consumers belong to different groups , they are distributed across groups for every message
+
 1 partition/1 consumer always -> strong ordering
 
-Messages sent by a producer to a particular topic partition will be appended in the order they are sent. That is, if a message M1 is sent by the same producer as a message M2, and M1 is sent first, then M1 will have a lower offset than M2 and appear earlier in the log.
+Messages sent by a producer to a particular topic partition will be appended in the order they are sent. 
+That is, if a message M1 is sent by the same producer as a message M2, and M1 is sent first, then M1 will have a lower offset than M2 and appear earlier in the log.
 A consumer instance sees messages in the order they are stored in the log.
 For a topic with replication factor N, we will tolerate up to N-1 server failures without losing any messages committed to the log.
+there cannot be more consumer instances than partitions.
 
-
+GIST
+****
+topic -> 
+	'Parallelism' - N partitions [1 partition/server, 1 partition/consumer (strong ordering)]
+	'Replication' - Each partition in N is replicated across N servers with one as leader for R/W, other just Read
 
 
 
