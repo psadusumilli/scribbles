@@ -15,4 +15,4 @@ notes/samples while trying out, contains simple code samples on
 * play
 
 
-![--](http://www.my-walls.net/wallpapers/2012/12/Programmer-Coder-Admin-1200x3200.jpg)
+![--](http://vijayrc.com/vectorclocks/static/images/monkey.jpg)
