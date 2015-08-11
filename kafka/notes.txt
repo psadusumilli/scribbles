@@ -13,7 +13,7 @@ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
 bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning
 
 #multi-node 
- 
+----------- 
 config/server-1.properties:
     broker.id=1
     port=9093
@@ -28,6 +28,25 @@ bin/kafka-server-start.sh config/server-1.properties &
 bin/kafka-server-start.sh config/server-2.properties &
 bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic my-replicated-topic
 bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic
+	topic:my-replicated-topic	PartitionCount:1	ReplicationFactor:3	Configs:
+		Topic: my-replicated-topic	Partition: 0	Leader: 1	Replicas: 1,2,0	Isr: 1,2,0
+	"leader" is the node responsible for all reads and writes for the given partition. Each node will be the leader for a randomly selected portion of the partitions.
+	"replicas" is the list of nodes that replicate the log for this partition regardless of whether they are the leader or even if they are currently alive.
+	"isr" is the set of "in-sync" replicas. This is the subset of the replicas list that is currently alive and caught-up to the leader.
+
+produce messages to one broker 
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic my-replicated-topic
+
+#test failover
+--------------
+ps -ef | grep server-1.properties
+kill -9 <pid>
+
+bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic
+Topic:my-replicated-topic	PartitionCount:1	ReplicationFactor:3	Configs:
+	Topic: my-replicated-topic	Partition: 0	Leader: 2	Replicas: 1,2,0	Isr: 2,0
+
+
 ---------------------------------------------------------------------------------------------------------------------
 
 PRINCIPLES:
@@ -62,10 +81,53 @@ topic ->
 	'Parallelism' - N partitions [1 partition/server, 1 partition/consumer (strong ordering)]
 	'Replication' - Each partition in N is replicated across N servers with one as leader for R/W, other just Read
 
+---------------------------------------------------------------------------------------------------------------------
 
+ARCHITECTURE
+**************
+Persistence:
+-------------
+The key fact about disk performance is that the throughput of hard drives has been diverging from the latency of a disk seek for the last decade. 
+As a result the performance of linear writes on a JBOD configuration with six 7200rpm SATA RAID-5 array is about 600MB/sec but the performance of random writes is only about 100k/sec—a difference of over 6000X. 
+These linear reads and writes are the most predictable of all usage patterns, and are heavily optimized by the operating system. 
+A modern operating system provides read-ahead and write-behind techniques that prefetch data in large block multiples and group smaller logical writes into large physical writes. 
 
+All disk reads and writes will go through the disk cache in RAM.
+In-process memory cache like JVM heap suffer from big/many objects and GC, so pagecache looks better.
+Disk cache will stay warm even if the service is restarted, whereas the in-process cache will need to be rebuilt in memory 
 
+Constant time O(1)
+------------------
+Traditional messagsing systems use B-tree O(LogN) which coupled with disk speed (say 10ms a pop) is pretty slow.
+A simple write-at-head, read-at-tail without blocking each other gives O(N)
+help utlilize cheap slow-seek drives
 
+Efficiency
+----------
+Once poor disk access patterns have been eliminated, there are two common causes of inefficiency in this type of system: 
+	too many small I/O operations, and excessive byte copying.
 
+'solution: batch copy - too many io ops'
+To avoid this, our protocol is built around a "message set" abstraction that naturally groups messages together. 
+This allows network requests to group messages together and amortize the overhead of the network roundtrip rather than sending a single message at a time. 
+The server in turn appends chunks of messages to its log in one go, and the consumer fetches large linear chunks at a time.	
 
+'solution: custom binary format - '
+client and server share common binary format
+The message log maintained by the broker is itself just a directory of files, each populated by a sequence of message sets that have been written to disk in the same format used by the producer and consumer.
+Maintaining this common format allows optimization of the most important operation: network transfer of persistent log chunks. 
+Modern unix operating systems offer a highly optimized code path for transferring data out of pagecache to a socket; in Linux this is done with the 'sendfile' system call.
 
+To understand the impact of sendfile, it is important to understand the common data path for transfer of data from file to socket:
+	The operating system reads data from the disk into pagecache in kernel space
+	The application reads the data from kernel space into a user-space buffer
+	The application writes the data back into kernel space into a socket buffer
+	The operating system copies the data from the socket buffer to the NIC buffer where it is sent over the network
+
+This is clearly inefficient, there are four copies and two system calls. 
+Using sendfile, this re-copying is avoided by allowing the OS to send the data from pagecache to the network directly. 
+So in this optimized path, only the final copy to the NIC buffer is needed.
+
+We expect a common use case to be multiple consumers on a topic.
+Using the zero-copy optimization above, data is copied into pagecache exactly once and reused on each consumption instead of being stored in memory and copied out to kernel space every time it is read. 
+This combination of 'pagecache and sendfile' means that on a Kafka cluster where the consumers are mostly caught up you will see no read activity on the disks whatsoever as they will be serving data entirely from cache.
