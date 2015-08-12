@@ -131,3 +131,31 @@ So in this optimized path, only the final copy to the NIC buffer is needed.
 We expect a common use case to be multiple consumers on a topic.
 Using the zero-copy optimization above, data is copied into pagecache exactly once and reused on each consumption instead of being stored in memory and copied out to kernel space every time it is read. 
 This combination of 'pagecache and sendfile' means that on a Kafka cluster where the consumers are mostly caught up you will see no read activity on the disks whatsoever as they will be serving data entirely from cache.
+
+Compression:
+-----------
+To save network io cost, efficient compression requires compressing multiple messages together rather than compressing each message individually.
+Kafka supports this by allowing recursive message sets. A batch of messages can be clumped together compressed and sent to the server in this form. 
+This batch of messages will be written in compressed form and will remain compressed in the log and will only be decompressed by the consumer.
+gzip and snappy
+
+producer
+--------
+Producers always talk to Brokers who abtract everything like which partition is the leader, which server is alive.
+But producer cna do the partition mechanism and dump in any partition they want.
+'Batching' is one of the big drivers of efficiency, and to enable batching the Kafka producer will attempt to accumulate data in memory and to send out larger batches in a single request. 
+The batching can be configured to accumulate no more than a fixed number of messages and to wait no longer than some fixed latency bound (say 64k or 10 ms).
+
+consumer:
+---------
+'Pull based' consuming giving control to consumers for batch pulls
+advantage of a pull-based system is that it lends itself to aggressive batching of data sent to the consumer.
+The deficiency of a naive pull-based system is that if the broker has no data the consumer may end up polling in a tight loop, effectively busy-waiting for data to arrive. 
+To avoid this we have parameters in our pull request that allow the consumer request to block in a "long poll" waiting until data arrives 
+(and optionally waiting until a given number of bytes is available to ensure large transfer sizes).
+
+'No message acknowedgement' mechanism which leads to inefficiency and lost messages tracking. 
+Just track the int offset number provided by consumer
+
+A consumer can deliberately rewind back to an old 'offset' and re-consume data. 
+This violates the common contract of a queue, but turns out to be an essential feature for many consumers
