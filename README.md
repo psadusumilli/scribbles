@@ -13,6 +13,13 @@ notes/samples while trying out, contains simple code samples on
 * scala
 * data structures and algorithms
 * play
+* druid
+* elasticsearch
+* security
+* hadoop
+* storm
+* js
+* 101
 
 
 ![--](http://vijayrc.com/vectorclocks/static/images/monkey.jpg)
