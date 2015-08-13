@@ -184,4 +184,28 @@ For Kafka node liveness or being in 'sync' has two conditions
 	A node must be able to maintain its session with ZooKeeper (via ZooKeeper heartbeat mechanism)
 	If it is a slave it must replicate the writes happening on the leader and not fall "too far" behind
  
-A message is considered "committed" when all in sync replicas for that partition have applied it to their log.	
+Quorum
+------
+A message is considered "committed" when all in sync  'ISR' replicas for that partition have applied it to their log.	
+ 
+In general, for a quorum :
+ Let say we have 2f+1 replicas. 
+ If f+1 replicas must receive a message prior to a commit being declared by the leader, 
+ and if we elect a new leader by electing the follower with the most complete log from at least f+1 replicas, then, with no more than f failures, 
+ the leader is guaranteed to have all committed messages. 
+ This is because among any f+1 replicas, there must be at least one replica that contains all committed messages.
+
+ To tolerate 1 failure requires 3 copies of the data, 
+ and to tolerate 2 failures requires 5 copies of the data. 
+ In our experience having only enough redundancy to tolerate a single failure is not enough for a practical system, 
+ but doing every write five times, with 5x the disk space requirements and 1/5th the throughput, is not very practical for large volume data problems. 
+
+ Kafka takes a slightly different approach to choosing its quorum set. Instead of majority vote, 
+ Kafka dynamically maintains a set of in-sync replicas (ISR) that are caught-up to the leader. 
+ Only members of this set are eligible for election as leader. 
+ A write to a Kafka partition is not considered committed until all in-sync replicas have received the write. 
+ This ISR set is persisted to ZooKeeper whenever it changes. 
+ Because of this, any replica in the ISR is eligible to be elected leader.
+ This is an important factor for Kafka usage model where there are many partitions and ensuring leadership balance is important. 
+ With this ISR model and f+1 replicas, a Kafka topic can tolerate f failures without losing committed messages.
+
