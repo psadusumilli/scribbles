@@ -19,7 +19,7 @@ notes/samples while trying out, contains simple code samples on
 * hadoop
 * storm
 * js
-* 101
+* kafka
 
 
 ![--](http://vijayrc.com/vectorclocks/static/images/monkey.jpg)
