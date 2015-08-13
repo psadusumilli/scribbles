@@ -132,6 +132,7 @@ We expect a common use case to be multiple consumers on a topic.
 Using the zero-copy optimization above, data is copied into pagecache exactly once and reused on each consumption instead of being stored in memory and copied out to kernel space every time it is read. 
 This combination of 'pagecache and sendfile' means that on a Kafka cluster where the consumers are mostly caught up you will see no read activity on the disks whatsoever as they will be serving data entirely from cache.
 
+
 Compression:
 -----------
 To save network io cost, efficient compression requires compressing multiple messages together rather than compressing each message individually.
@@ -154,8 +155,33 @@ The deficiency of a naive pull-based system is that if the broker has no data th
 To avoid this we have parameters in our pull request that allow the consumer request to block in a "long poll" waiting until data arrives 
 (and optionally waiting until a given number of bytes is available to ensure large transfer sizes).
 
-'No message acknowedgement' mechanism which leads to inefficiency and lost messages tracking. 
+'No message acknowledgement' mechanism which leads to inefficiency and lost messages tracking. 
 Just track the int offset number provided by consumer
 
 A consumer can deliberately rewind back to an old 'offset' and re-consume data. 
 This violates the common contract of a queue, but turns out to be an essential feature for many consumers
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Message Semantics
+****************
+In general, in any messaging system, the following Semantics are possible.
+'At most once'—Messages may be lost but are never redelivered.
+'At least once'—Messages are never lost but may be redelivered.
+'Exactly once'—this is what people actually want, each message is delivered once and only once.
+
+Kafka guarantees 'at-least-once' delivery by default.
+But allows the user to implement 'at most once' delivery by disabling retries on the producer and committing its offset prior to processing a batch of messages. 
+'Exactly-once delivery' requires co-operation with the destination storage system but Kafka provides the offset which makes implementing this straight-forward
+
+Replication
+***********
+'X' Topic can have 'Y' Partitions across 'Z' Brokers
+For X, Y > Z
+Only one Leader handling R/W in Y partitions
+Leader chooses the ordering of values provided to it.
+Followers are just like any consumer feeding from leader
+
+For Kafka node liveness or being in 'sync' has two conditions
+	A node must be able to maintain its session with ZooKeeper (via ZooKeeper heartbeat mechanism)
+	If it is a slave it must replicate the writes happening on the leader and not fall "too far" behind
+ 
+A message is considered "committed" when all in sync replicas for that partition have applied it to their log.	
