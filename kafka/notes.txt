@@ -200,12 +200,23 @@ In general, for a quorum :
  In our experience having only enough redundancy to tolerate a single failure is not enough for a practical system, 
  but doing every write five times, with 5x the disk space requirements and 1/5th the throughput, is not very practical for large volume data problems. 
 
- Kafka takes a slightly different approach to choosing its quorum set. Instead of majority vote, 
- Kafka dynamically maintains a set of in-sync replicas (ISR) that are caught-up to the leader. 
+ 'ISR'
+ Kafka takes a slightly different approach to choosing its quorum set. 
+ Instead of majority vote, Kafka dynamically maintains a set of in-sync replicas (ISR) that are caught-up to the leader. 
  Only members of this set are eligible for election as leader. 
  A write to a Kafka partition is not considered committed until all in-sync replicas have received the write. 
  This ISR set is persisted to ZooKeeper whenever it changes. 
  Because of this, any replica in the ISR is eligible to be elected leader.
  This is an important factor for Kafka usage model where there are many partitions and ensuring leadership balance is important. 
- With this ISR model and f+1 replicas, a Kafka topic can tolerate f failures without losing committed messages.
+ With this ISR model and 'f+1' replicas, a Kafka topic can tolerate 'f' failures without losing committed messages.
+ 
+ 'isr failures'
+ A failed ISR must fully re-sync again even if it lost unflushed data in its crash.
+ In case of all ISR failures
+	 1 Wait for a replica in the ISR to come back to life and choose this replica as the leader (hopefully it still has all its data).
+	 2 Choose the first replica (not necessarily in the ISR) that comes back to life as the leader.
+ 
+ Log Compaction
+ ***************
 
+ 
