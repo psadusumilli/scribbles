@@ -215,8 +215,27 @@ In general, for a quorum :
  In case of all ISR failures
 	 1 Wait for a replica in the ISR to come back to life and choose this replica as the leader (hopefully it still has all its data).
 	 2 Choose the first replica (not necessarily in the ISR) that comes back to life as the leader.
- 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
  Log Compaction
  ***************
+ensures that Kafka will always retain at least the 'last known value for each message key' within the log of data for a single topic partition.
+Log compaction is a mechanism to give finer-grained per-record retention, rather than the coarser-grained time-based retention. 
+The idea is to selectively remove records where we have a more recent update with the same primary key. 
+This way the log is guaranteed to have at least the last state for each key.
+This retention policy can be set per-topic, so a single cluster can have some topics where retention is enforced by size or time and other topics where retention is enforced by compaction.
 
- 
+compaction happens at older offsets at tail end of log.
+if say 10, 21, 32 got compacted, 32 will be returned for any call to 10|21|32
+
+Compaction also allows for deletes. A message with a key and a null payload will be treated as a delete from the log. 
+The compaction is done in the background by periodically recopying log segments. 
+
+Cleaning does not block reads and can be throttled to use no more than a configurable amount of I/O throughput to avoid impacting producers and consumers
+
+The log cleaner is disabled by default. To enable it set the server config
+  log.cleaner.enable=true
+This will start the pool of cleaner threads. To enable log cleaning on a particular topic you can add the log-specific property
+  log.cleanup.policy=compact
+This can be done either at topic creation time or using the alter topic command.
