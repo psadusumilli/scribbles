@@ -33,7 +33,7 @@ class ListenerThread extends Thread {
         while (true) {
 
             // our canned response for now
-            ByteBuffer resp = ByteBuffer.wrap(new String("got it\n").getBytes());
+            ByteBuffer resp = ByteBuffer.wrap("got it\n".getBytes());
             try {
                 // loop over all the sockets that are ready for some activity
                 while (this.sel.select() > 0) {
@@ -41,6 +41,9 @@ class ListenerThread extends Thread {
                     Iterator i = keys.iterator();
                     while (i.hasNext()) {
                         SelectionKey key = (SelectionKey)i.next();
+                        /**
+                         * accept client connection
+                         */
                         if (key.isAcceptable()) {
                             // this means that a new client has hit the port our main
                             // socket is listening on, so we need to accept the  connection
@@ -53,6 +56,10 @@ class ListenerThread extends Thread {
                             SocketChannel ch = sch.accept();
                             ch.configureBlocking(false);
                             ch.register(this.sel, SelectionKey.OP_READ);
+
+                            /**
+                             * reading request from client
+                             */
                         } else if (key.isReadable()) {
                             // one of our client sockets has received a command and
                             // we're now ready to read it in
@@ -69,6 +76,10 @@ class ListenerThread extends Thread {
                             // for writing since we'll want to write something to it
                             // on the next go-around
                             ch.register(this.sel, SelectionKey.OP_WRITE);
+
+                            /**
+                             * write response to client
+                             */
                         } else if (key.isWritable()) {
                             // we are ready to send a response to one of the client sockets
                             // we had read a command from previously
