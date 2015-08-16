@@ -1,3 +1,12 @@
+
+reference:
+**********
+http://kafka.apache.org/documentation.html
+https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines
+http://www.confluent.io/blog/how-to-choose-the-number-of-topicspartitions-in-a-kafka-cluster/
+
+
+
 QUICKIE:
 ********
 
@@ -48,7 +57,6 @@ Topic:my-replicated-topic	PartitionCount:1	ReplicationFactor:3	Configs:
 
 
 ---------------------------------------------------------------------------------------------------------------------
-
 PRINCIPLES:
 **********
 'topic' is a logical unit for creation/consumption of messages
@@ -81,8 +89,8 @@ topic ->
 	'Parallelism' - N partitions [1 partition/server, 1 partition/consumer (strong ordering)]
 	'Replication' - Each partition in N is replicated across N servers with one as leader for R/W, other just Read
 
----------------------------------------------------------------------------------------------------------------------
 
+---------------------------------------------------------------------------------------------------------------------
 ARCHITECTURE
 **************
 Persistence:
@@ -138,12 +146,12 @@ Compression:
 To save network io cost, efficient compression requires compressing multiple messages together rather than compressing each message individually.
 Kafka supports this by allowing recursive message sets. A batch of messages can be clumped together compressed and sent to the server in this form. 
 This batch of messages will be written in compressed form and will remain compressed in the log and will only be decompressed by the consumer.
-gzip and snappy
+'gzip and snappy'
 
 producer
 --------
-Producers always talk to Brokers who abtract everything like which partition is the leader, which server is alive.
-But producer cna do the partition mechanism and dump in any partition they want.
+Producers always talk to Brokers who abstract everything like which partition is the leader, which server is alive.
+But producer can do the partition mechanism and dump in any partition they want.
 'Batching' is one of the big drivers of efficiency, and to enable batching the Kafka producer will attempt to accumulate data in memory and to send out larger batches in a single request. 
 The batching can be configured to accumulate no more than a fixed number of messages and to wait no longer than some fixed latency bound (say 64k or 10 ms).
 
@@ -171,6 +179,7 @@ In general, in any messaging system, the following Semantics are possible.
 Kafka guarantees 'at-least-once' delivery by default.
 But allows the user to implement 'at most once' delivery by disabling retries on the producer and committing its offset prior to processing a batch of messages. 
 'Exactly-once delivery' requires co-operation with the destination storage system but Kafka provides the offset which makes implementing this straight-forward
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Replication
 ***********
@@ -217,9 +226,8 @@ In general, for a quorum :
 	 2 Choose the first replica (not necessarily in the ISR) that comes back to life as the leader.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
- Log Compaction
- ***************
+Log Compaction
+***************
 ensures that Kafka will always retain at least the 'last known value for each message key' within the log of data for a single topic partition.
 Log compaction is a mechanism to give finer-grained per-record retention, rather than the coarser-grained time-based retention. 
 The idea is to selectively remove records where we have a more recent update with the same primary key. 
@@ -349,7 +357,135 @@ Note that each stream that createMessageStreamsByFilter returns may iterate over
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Network Layer
 **************
-The network layer is a fairly straight-forward NIO server. 
+The network layer is a fairly straight-forward 'NIO server'. 
 The sendfile implementation is done by giving the 'MessageSet' interface a writeTo method. 
 This allows the file-backed message set to use the more efficient 'transferTo' implementation instead of an in-process buffered write. 
 The threading model is a single acceptor thread and N processor threads which handle a fixed number of connections each.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Messages|Log
+*************
+Messages consist of a fixed-size header and variable length opaque byte array payload. 
+The header contains a format version and a CRC32 checksum to detect corruption or truncation.
+The MessageSet interface is simply an iterator over messages with specialized methods for bulk reading and writing to an NIO Channel.
+On-disk format of a message
+
+Mesage of 'n 'size would contain
+message length : 4 bytes (value: 1+4+n) 
+"magic" value  : 1 byte
+crc            : 4 bytes
+payload        : n bytes
+
+Each log file is named with the offset of the first message it contains. So the first file created will be 00000000000.kafka.
+Each additional file will have an integer name roughly 'S' bytes from the previous file where 'S' is the max log file size given in the configuration.
+
+1 Message-id
+-------------
+The use of the message offset as the message id is unusual. 
+Our original idea was to use a GUID generated by the producer, and maintain a mapping from GUID to offset on each broker. 
+But since a consumer must maintain an ID for each server, the global uniqueness of the GUID provides no value. 
+Furthermore the complexity of maintaining the mapping from a random id to an offset requires a heavy weight index structure which must be synchronized with disk, essentially requiring a full persistent random-access data structure. 
+Thus to simplify the lookup structure we decided to use a simple per-partition atomic counter which could be coupled with the partition id and node id to uniquely identify a message
+
+2 Writes
+--------
+The log allows serial appends which always go to the last file. This file is rolled over to a fresh file when it reaches a configurable size (say 1GB). 
+The log takes two configuration parameter .
+	'M' which gives the number of messages to write before forcing the OS to flush the file to disk, 
+	'S' which gives a number of seconds after which a flush is forced. 
+This gives a durability guarantee of losing at most M messages or S seconds of data in the event of a system crash.
+
+3 Reads
+-------
+Reads are done by giving the 64-bit logical offset of a message and an S-byte max chunk size. 
+This will return an iterator over the messages contained in the S-byte buffer. S is intended to be larger than any single message, 
+but in the event of an abnormally large message, the read can be retried multiple times, each time doubling the buffer size, until the message is read successfully
+The following is the format of the results sent to the consumer.
+
+	MessageSetSend (fetch result)
+	------------------------------
+	total length     : 4 bytes
+	error code       : 2 bytes
+	message 1        : x bytes
+	...
+	message n        : x bytes
+
+	MultiMessageSetSend (multiFetch result)
+	----------------------------------------
+	total length       : 4 bytes
+	error code         : 2 bytes
+	messageSetSend 1
+	...
+	messageSetSend n
+
+4 deletes
+----------
+Data is deleted one log segment at a time. 
+The log manager allows pluggable delete policies to choose which files are eligible for deletion. 
+The current policy deletes any log with a modification time of more than N days ago, though a policy which retained the last N GB could also be useful. 
+To avoid locking reads while still allowing deletes that modify the segment list we use a 'copy-on-write' style segment list implementation that provides consistent views to allow a binary search to proceed on an immutable static snapshot view of the log segments while deletes are progressing.	
+copy-on-write is a copy made before modification, so that reads can use it until modification is done.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Distribution:
+*************
+
+1 How many partitions?
+---------------------
+A rough formula for picking the number of partitions is based on throughput. 
+For a single partition, if throughput is 'p' and consumption is 'c', target cluster throughput is 't'
+then you need to have at least 'max(t/p, t/c)' partitions
+The per-partition throughput 'p' that one can achieve on the producer depends on configurations such as the 
+	'batching size, compression codec, type of acknowledgement, replication factor'.
+
+Though number of partitions can be increased in future, it causes issues because messages were previously partitioned using 'hash(key)%no_of_partitions'
+Now on increasing, they get disordered, so its best to add a little more partitions than required to anticipate load for 3-4 ysrs ahead.
+
+'More Partitions Requires More Open File Handles'
+Each partition maps to a directory in the file system in the broker. Within that log directory, there will be two files (one for the index and another for the actual data) per log segment. 
+Currently, in Kafka, each broker opens a file handle of both the index and the data file of every log segment. 
+So, the more partitions, the higher that one needs to configure the open file handle limit in the underlying operating system. 
+
+'more partitions leads to unavailability'
+However, when a broker is shut down uncleanly (e.g., kill -9), the observed unavailability could be proportional to the number of partitions. 
+Suppose that a broker has a total of 2000 partitions, each with 2 replicas. Roughly, this broker will be the leader for about 1000 partitions. 
+When this broker fails uncleanly, all those 1000 partitions become unavailable at exactly the same time. 
+Suppose that it takes 5 ms to elect a new leader for a single partition. It will take up to 5 seconds to elect the new leader for all 1000 partitions. 
+So, for some partitions, their observed unavailability can be 5 seconds plus the time taken to detect the failure.
+
+'more partition leads to more e2e latency'
+a published message is accepted only if all ISRs are committed through replication, leading to more e2e latency.
+As a rule of thumb, if you care about latency, 
+its probably a good idea to limit the number of partitions per broker 
+	to '100 x b x r', 
+where 'b' is the number of brokers in a Kafka cluster and 
+	  'r' is the replication factor.
+
+'more partitions leads to more client memory'
+'producers'
+If one increases the number of partitions, message will be accumulated in more partitions in the producer. 
+The aggregate amount of memory used may now exceed the configured memory limit. When this happens, the producer has to either block or drop any new message, neither of which is ideal. 
+To prevent this from happening, one will need to reconfigure the producer with a larger memory size.	  
+'consumer'
+The consumer fetches a batch of messages per partition. The more partitions that a consumer consumes, the more memory it needs. 
+
+2 How many consumers?
+----------------------
+1 consumer (even in a group) can only consume messages from 1 partition (strong ordering)
+
+
+3 offset-tracking
+-----------------
+Older kafka used to store offsets in ZooKeeper.
+
+The high-level consumer tracks the maximum offset it has consumed in each partition and periodically commits its offset vector so that it can resume from those offsets in the event of a restart. 
+Kafka provides the option to 'store all the offsets for a given consumer group in a designated broker (for that group) called the offset manager'
+The high-level consumer handles this automatically. If you use the simple consumer you will need to manage offsets manually. 
+This is currently unsupported in the Java simple consumer which can only commit or fetch offsets in ZooKeeper.
+
+When the offset manager receives an 'OffsetCommitRequest', it appends the request to a special compacted Kafka topic named '__consumer_offsets'. 
+The offset manager sends a successful offset commit response to the consumer only after all the replicas of the offsets topic receive the offsets.
+
+4 ZooKeeper Directories
+------------------------
+Broker Node Registry => /brokers/ids/[0...N] --> host:port (ephemeral node)
+Broker Topic Registry => /brokers/topics/[topic]/[0...N] --> nPartions (ephemeral node)
