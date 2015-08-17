@@ -516,7 +516,7 @@ Each consumer does the following during rebalancing:
         (we may need to re-try this until the original partition owner releases its ownership)
 
 
- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Operations:
 ***********
 
@@ -611,3 +611,117 @@ Just specify the extra replicas in the custom reassignment json file and use it 
 Then, use the json file with the --execute option to start the reassignment process-
 > bin/kafka-reassign-partitions.sh --zookeeper localhost:2181 --reassignment-json-file increase-replication-factor.json --execute
 Current partition replica assignment
+
+
+8 Datacenters
+---------------
+Some deployments will need to manage a data pipeline that spans multiple datacenters. 
+Our recommended approach to this is to deploy a local Kafka cluster in each datacenter with application instances in each datacenter,
+ interacting only with their local cluster and mirroring between clusters 
+It is generally not advisable to run a single Kafka cluster that spans multiple datacenters over a high-latency link. 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Kafka Configuration
+********************
+
+The most important 'producer' configurations control
+	compression
+	sync vs async production
+	batch size (for async producers)
+The most important 'consumer' configuration is the 
+	fetch size
+
+LinkedIn Server Config
+--------------------------------------
+		# Replication configurations
+		num.replica.fetchers=4
+		replica.fetch.max.bytes=1048576
+		replica.fetch.wait.max.ms=500
+		replica.high.watermark.checkpoint.interval.ms=5000
+		replica.socket.timeout.ms=30000
+		replica.socket.receive.buffer.bytes=65536
+		replica.lag.time.max.ms=10000
+		replica.lag.max.messages=4000
+
+		controller.socket.timeout.ms=30000
+		controller.message.queue.size=10
+
+		# Log configuration
+		num.partitions=8
+		message.max.bytes=1000000
+		auto.create.topics.enable=true
+		log.index.interval.bytes=4096
+		log.index.size.max.bytes=10485760
+		log.retention.hours=168
+		log.flush.interval.ms=10000
+		log.flush.interval.messages=20000
+		log.flush.scheduler.interval.ms=2000
+		log.roll.hours=168
+		log.retention.check.interval.ms=300000
+		log.segment.bytes=1073741824
+
+		# ZK configuration
+		zookeeper.connection.timeout.ms=6000
+		zookeeper.sync.time.ms=2000
+
+		# Socket server configuration
+		num.io.threads=8
+		num.network.threads=8
+		socket.request.max.bytes=104857600
+		socket.receive.buffer.bytes=1048576
+		socket.send.buffer.bytes=1048576
+		queued.max.requests=16
+		fetch.purgatory.purge.interval.requests=100
+		producer.purgatory.purge.interval.requests=100	
+
+	-Xms4g -Xmx4g -XX:PermSize=48m -XX:MaxPermSize=48m -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35	
+
+For reference, here are the stats on one of LinkedIn busiest clusters (at peak): 
+	- 15 brokers - 15.5k partitions (replication factor 2) 
+	- 400k messages/sec in - 70 MB/sec inbound, 400 MB/sec+ outbound 
+The tuning looks fairly aggressive, but all of the brokers in that cluster have a 90% GC pause time of about 21ms, and they are doing less than 1 young GC per second.
+
+Hardware
+--------
+We are using 'dual quad-core Intel Xeon machines with 24GB of memory.'
+You need sufficient memory to buffer active readers and writers. 
+You can do a back-of-the-envelope estimate of memory needs by assuming you want to be able to buffer for 30 seconds and compute your memory need as write_throughput*30.
+The disk throughput is important. We have '8x7200 rpm SATA drives'. In general disk throughput is the performance bottleneck, and more disks is more better. 
+
+OS
+---
+Linux or Solaris:
+2 configurations that may be important:
+	We upped the number of file descriptors since we have lots of topics and lots of connections.
+	We upped the max socket buffer size to enable high-performance data transfer between data centers
+
+Disks and Filesystem
+----------------------
+Gist: either app balancing or let RAID do balancing
+
+We recommend using multiple drives to get good throughput and not sharing the same drives used for Kafka data with application logs or other OS filesystem activity to ensure good latency. 
+As of 0.8 you can either RAID these drives together into a single volume or format and mount each drive as its own directory. 
+Since Kafka has replication the redundancy provided by RAID can also be provided at the application level. This choice has several tradeoffs.
+If you configure multiple data directories partitions will be assigned round-robin to data directories. 
+Each partition will be entirely in one of the data directories. 
+If data is not well balanced among partitions this can lead to load imbalance between disks.
+
+RAID can potentially do better at balancing load between disks (although it doesnt always seem to) because it balances load at a lower level. 
+The primary downside of RAID is that it is usually a big performance hit for write throughput and reduces the available disk space.
+
+Another potential benefit of RAID is the ability to tolerate disk failures. 
+However our experience has been that rebuilding the RAID array is so I/O intensive that it effectively disables the server, so this does not provide much real availability improvement.
+
+Application vs. OS Flush Management
+-----------------------------------
+
+Kafka always immediately writes all data to the filesystem and supports the ability to configure the flush policy that controls when data is forced out of the OS cache and onto disk using the and flush. 
+This flush policy can be controlled to force data to disk after a period of time or after a certain number of messages has been written. 
+There are several choices in this configuration.
+'We recommend using the default flush settings which disable application fsync entirely'. 
+This means relying on the background flush done by the OS and Kafka own background flush.
+
+Monitoring
+----------
+Kafka uses Yammer Metrics for metrics reporting in both the server and the client. This can be configured to report stats using pluggable stats reporters to hook up to your monitoring system.
+The easiest way to see the available metrics to fire up jconsole and point it at a running kafka client or server; this will all browsing all metrics with JMX.
