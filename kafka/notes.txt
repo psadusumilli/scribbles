@@ -471,6 +471,7 @@ The consumer fetches a batch of messages per partition. The more partitions that
 2 How many consumers?
 ----------------------
 1 consumer (even in a group) can only consume messages from 1 partition (strong ordering)
+consumer group has a unique id shared among them.
 
 
 3 offset-tracking
@@ -487,5 +488,126 @@ The offset manager sends a successful offset commit response to the consumer onl
 
 4 ZooKeeper Directories
 ------------------------
-Broker Node Registry => /brokers/ids/[0...N] --> host:port (ephemeral node)
-Broker Topic Registry => /brokers/topics/[topic]/[0...N] --> nPartions (ephemeral node)
+{desc => znode dir --> has this}(ephemeral|permanent)
+'Broker Node Registry' => /brokers/ids/[0...N] --> host:port (ephemeral node)
+'Broker Topic Registry' => /brokers/topics/[topic]/[0...N] --> nPartions (ephemeral node)
+'Consumer id registry' => /consumers/[group_id]/ids/[consumer_id] --> {"topic1": #streams, ..., "topicN": #streams} (ephemeral node)
+'Consumer offset registry' => /consumers/[group_id]/offsets/[topic]/[broker_id-partition_id] --> offset_counter_value ((persistent node) //if stored in zookeeper
+'Partition Owner registry' => /consumers/[group_id]/owners/[topic]/[broker_id-partition_id] --> consumer_node_id (ephemeral node) //consumer(group) owning partition
+
+5 Consumer rebalancing algorithm
+---------------------------------
+The consumer rebalancing algorithms allows all the consumers in a group to come into consensus on which consumer is consuming which partitions. 
+Consumer rebalancing is triggered on each addition or removal of both broker nodes and other consumers within the same group. 
+For a given topic and a given consumer group, broker partitions are divided evenly among consumers within the group. 
+A partition is always consumed by a single consumer.
+
+Each consumer does the following during rebalancing:
+
+   1. For each topic T that Ci subscribes to 
+   2.   let PT be all partitions producing topic T
+   3.   let CG be all consumers in the same group as Ci that consume topic T
+   4.   sort PT (so partitions on the same broker are clustered together)
+   5.   sort CG
+   6.   let i be the index position of Ci in CG and let N = size(PT)/size(CG)
+   7.   assign partitions from i*N to (i+1)*N - 1 to consumer Ci
+   8.   remove current entries owned by Ci from the partition owner registry
+   9.   add newly assigned partitions to the partition owner registry
+        (we may need to re-try this until the original partition owner releases its ownership)
+
+
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Operations:
+***********
+
+1 Topics and partitions
+------------------------
+Topics are added and modified using the topic tool shown below, if topics are added dynamically with a message sent to a non-existent topic, default configs should be solid
+ 	> bin/kafka-topics.sh --zookeeper zk_host:port/chroot --create --topic my_topic_name --partitions 20 --replication-factor 3 --config x=y
+ 	> bin/kafka-topics.sh --zookeeper zk_host:port/chroot --alter --topic my_topic_name --partitions 40 
+
+There are several impacts of the partition count. First 'each partition must fit entirely on a single server'. 
+So if you have 20 partitions the full data set (and read and write load) will be handled by no more than 20 servers (no counting replicas
+
+'To add configs:'	
+	> bin/kafka-topics.sh --zookeeper zk_host:port/chroot --alter --topic my_topic_name --config x=y
+'To remove a config:'
+ 	> bin/kafka-topics.sh --zookeeper zk_host:port/chroot --alter --topic my_topic_name --deleteConfig x
+'And finally deleting a topic:'
+ 	> bin/kafka-topics.sh --zookeeper zk_host:port/chroot --delete --topic my_topic_name
+'Topic deletion option is disabled by default. To enable it set the server config'
+	delete.topic.enable=true
+
+Kafka does not currently support reducing the number of partitions for a topic or changing the replication factor.
+
+2 shutdown
+-----------
+'graceful shutdown'
+The Kafka cluster will automatically detect any broker shutdown or failure and elect new leaders for the partitions on that machine. 
+When a server is stopped gracefully it has two optimizations it will take advantage of:
+'controlled.shutdown.enable=true'
+ a)	It will sync all its logs to disk to avoid needing to do any log recovery when it restarts (i.e. validating the checksum for all messages in the tail of the log). 
+ 	Log recovery takes time so this speeds up intentional restarts.
+ b)	It will migrate any partitions the server is the leader for to other replicas prior to shutting down. 
+ 	This will make the leadership transfer faster and minimize the time each partition is unavailable to a few milliseconds.
+Balancing leadership
+
+'crashes'
+Whenever a broker stops or crashes leadership for that broker partitions transfers to other replicas. 
+This means that by default when the broker is restarted it will only be a follower for all its partitions, meaning it will not be used for client reads and writes.
+To avoid this imbalance, Kafka has a notion of 'preferred replicas'. 
+If the list of replicas for a partition is 1,5,9 then node 1 is preferred as the leader to either node 5 or 9 because it is earlier in the replica list. You can have the Kafka cluster try to restore leadership to the restored replicas by running the command:
+
+ > bin/kafka-preferred-replica-election.sh --zookeeper zk_host:port/chroot
+Since running this command can be tedious you can also configure Kafka to do this automatically by setting the following configuration:
+    auto.leader.rebalance.enable=true
+
+3 mirroring
+-----------
+Different from a replication as offset numbers are retained.
+muliple clusters can be mirrored into a single cluster
+
+> bin/kafka-run-class.sh kafka.tools.MirrorMaker
+       --consumer.config consumer-1.properties --consumer.config consumer-2.properties 
+       --producer.config producer.properties --whitelist my-topic
+
+
+4 checking consumer offsets
+---------------------------
+ > bin/kafka-run-class.sh kafka.tools.ConsumerOffsetChecker --zkconnect localhost:2181 --group test
+Group           Topic                          Pid Offset          logSize         Lag             Owner
+my-group        my-topic                       0   0               0               0               test_jkreps-mn-1394154511599-60744496-0
+my-group        my-topic                       1   0               0               0               test_jkreps-mn-1394154521217-1a0be913-0
+
+
+5 expanding cluster
+--------------------
+Adding servers to a Kafka cluster is easy, just assign them a unique broker id and start up Kafka on your new servers. 
+However these new servers will not automatically be assigned any data partitions, so unless partitions are moved to them they wont be doing any work until new topics are created. So usually when you add machines to your cluster you will want to migrate some existing data to these machines.
+The process of migrating data is manually initiated but fully automated. Under the covers what happens is that Kafka will add the new server as a follower of the partition it is migrating and allow it to fully replicate the existing data in that partition. When the new server has fully replicated the contents of this partition and joined the in-sync replica one of the existing replicas will delete their partitions data.
+
+The partition reassignment tool can be used to move partitions across brokers. 
+An ideal partition distribution would ensure even data load and partition sizes across all brokers. 
+In 0.8.1, the partition reassignment tool does not have the capability to automatically study the data distribution in a Kafka cluster and move partitions around to attain an even load distribution. 
+As such, the admin has to figure out which topics or partitions should be moved around.
+
+The partition reassignment tool can run in 3 mutually exclusive modes -
+--generate: In this mode, given a list of topics and a list of brokers, the tool generates a candidate reassignment to move all partitions of the specified topics to the new brokers. This option merely provides a convenient way to generate a partition reassignment plan given a list of topics and target brokers.
+--execute: In this mode, the tool kicks off the reassignment of partitions based on the user provided reassignment plan. (using the --reassignment-json-file option). This can either be a custom reassignment plan hand crafted by the admin or provided by using the --generate option
+--verify: In this mode, the tool verifies the status of the reassignment for all partitions listed during the last --execute. The status can be either of successfully completed, failed or in progress
+
+6 shrinking cluster
+-------------------
+no special tool, use the above partition reassignment tool.
+
+7 increasing replication
+-------------------------
+Increasing the replication factor of an existing partition is easy. 
+Just specify the extra replicas in the custom reassignment json file and use it with the --execute option to increase the replication factor of the specified partitions.
+
+> cat increase-replication-factor.json
+{"version":1,
+ "partitions":[{"topic":"foo","partition":0,"replicas":[5,6,7]}]}
+Then, use the json file with the --execute option to start the reassignment process-
+> bin/kafka-reassign-partitions.sh --zookeeper localhost:2181 --reassignment-json-file increase-replication-factor.json --execute
+Current partition replica assignment
