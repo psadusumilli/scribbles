@@ -119,3 +119,36 @@ create /mynode node1
 
 
 $ bin/zkServer.sh stop
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Admin Guide
+************
+JDK 6+
+minimum 3 servers. At Yahoo!, ZooKeeper is usually deployed on dedicated RHEL boxes, with dual-core processors, 2GB of RAM, and 80GB IDE hard drives.
+heap is needed, since znodes are read from memory, Be conservative - use a maximum heap size of 3GB for a 4GB machine.
+tolerate the failure of 'F' machines, you should count on deploying '2xF+1' machines. 
+dont share zookeeper with other software
+
+zk provides durability by writing to log files sequentially, without seeking.
+sharing your log device with other processes can cause seeks and contention, which in turn can cause multi-second delays.
+
+A ZooKeeper server will not remove old snapshots and log files when using the default configuration
+Automatic purging of the snapshots and corresponding transaction logs was introduced in version 3.4.0 
+	and can be enabled via the following configuration parameters autopurge.snapRetainCount and autopurge.purgeInterval
+
+Monitor your ZK processes with tools like daemontools SMF, nagios 	
+
+
+Minimum Configuration
+-----------------------
+'clientPort':
+The port to listen for client connections; that is, the port that clients attempt to connect to.
+
+'dataDir':
+The location where ZooKeeper will store the in-memory database snapshots and, unless specified otherwise, the transaction log of updates to the database.
+Be careful where you put the transaction log. A dedicated transaction log device is key to consistent good performance. 
+Putting the log on a busy device will adversely effect performance.
+
+'tickTime':
+The length of a single tick, which is the basic time unit used by ZooKeeper, as measured in milliseconds. 
+It is used to regulate heartbeats, and timeouts. For example, the minimum session timeout will be two ticks.
