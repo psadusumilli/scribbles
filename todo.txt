@@ -24,51 +24,22 @@ Distributed Computing
 Spock - testing
 Gatling - performace
 
-#!/bin/bash
- 
-#customer/site owner/service provider
-domain=$1
-key_password=$2
-store_password=$3
-commonname=$domain
 
-#certificate authority
-ca_cert=dep-ca-non-prod.crt
-ca_key=dep-ca-non-prod.key
-ca_seq_file=dep-ca-non-prod.seq
-ca_password=XXXXXXXXXX
 
-#company details
-country=US
-state=GA
-locality=Fulton
-organization=ThoughtWorks
-organizationalunit=Software Engineering
-email=cse.dep@vijayrc.com
- 
-printf "\n\ngenerating key request for $domain..\n\n."
-openssl genrsa -des3 -passout pass:$key_password -out $domain.key 2048 -noout
-printf "\n\nremoving passphrase from key"
-openssl rsa -in $domain.key -passin pass:$key_password -out $domain.key
-printf "\n\n-------consumer key--------"
-cat $domain.key
- 
-printf "\n\ncreating csr..\n\n"
-openssl req -new -key $domain.key -out $domain.csr -passin pass:$key_password -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-printf "-------consumer csr--------"
-cat $domain.csr
+ServerLimit 16
+StartServers 2
+MaxClients 200
+MinSpareThreads 25
+MaxSpareThreads 75
+ThreadsPerChild 25
+First of all, whenever an apache is started, it will start 2 child processes which is determined by StartServers parameter. Then each process will start 25 threads determined by ThreadsPerChild parameter so this means 2 process can service only 50 concurrent connections/clients i.e. 25x2=50. Now if more concurrent users comes, then another child process will start, that can service another 25 users. But how many child processes can be started is controlled by ServerLimit parameter, this means that in the configuration above, I can have 16 child processes in total, with each child process can handle 25 thread, in total handling 16x25=400 concurrent users. But if number defined in MaxClients is less which is 200 here, then this means that after 8 child processes, no extra process will start since we have defined an upper cap of MaxClients. This also means that if I set MaxClients to 1000, after 16 child processes and 400 connections, no extra process will start and we cannot service more than 400 concurrent clients even if we have increase the MaxClient parameter. In this case, we need to also increase ServerLimit to 1000/25 i.e. MaxClients/ThreadsPerChild=40 So this is the optmized configuration to server 1000 clients
 
-printf "\n\ncreating customer certificate for CSR..\n\n."
-openssl x509 -req -days 365 -in $domain.csr -CA $ca_cert -CAkey $ca_key -CAcreateserial -CAserial $ca_seq_file -out $domain.crt -passin pass:$ca_password
-printf "---customer certificate----"
-cat $domain.crt
-
-printf "\n\nimporting into keystore...\n\n"
-openssl pkcs12 -export -in $domain.crt -inkey $domain.key -certfile $domain.crt -name $domain -out $domain.p12 -password pass:$key_password
-keytool -importkeystore -srckeystore $domain.p12 -srcstoretype pkcs12 -srcstorepass $key_password -destkeystore $domain.jks -deststoretype JKS -storepass $store_password -keypass $key_password -noprompt
-
-printf "\n\n---consumer jks ready----\n\n"
-keytool -list -v -keystore $domain.jks -alias $domain -storepass $store_password
-
-tar -cf $domain.tar $domain.jks $domain.crt $domain.key dep-rio-non-prod-client.jks
-printf "\n\narchived for consumer = $domain.tar"
+<IfModule mpm_worker_module>
+    ServerLimit          40
+    StartServers          2
+    MaxClients          1000
+    MinSpareThreads      25
+    MaxSpareThreads      75 
+    ThreadsPerChild      25
+    MaxRequestsPerChild   0
+</IfModule>
