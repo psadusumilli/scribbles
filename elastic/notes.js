@@ -21,32 +21,81 @@ curl -X GET http://localhost:9200/
 -------------------------------------------------------------------------------------------------------------------------------------------
 #2 CONCEPTS:
 ------------
-A "node" is one jvm, which automatically forms a single-node cluster 
-Multiple nodes can be run on a single machine.
+cluster
+  |=> 1-* node
+    |=> 1-* index (database) 
 
-"cluster"
+      //physical
+      |=> 1-* shards (primary|replica) (spread across many nodes)
+          |=> segments   
+
+      //logical    
+      |=> 1-* types(table)
+        |=> 1-1 document (row) (mapping gives the document schema)
+          |=> 1-* field (column)
+
+
+
+2.1 A "node" is one jvm, which automatically forms a single-node cluster 
+Multiple nodes can be run on a single machine.
+  
+2.2 "cluster"
 bunch of interconnected nodes. default cluster name is elasticsearch.
 the node names are picked from the Marvel characters, can be overridden by 
-  ./elasticsearch --cluster.name my_cluster_name --node.name my_node_name'
-starting another node, will ping and join it, forming a two node cluster
+  ./elasticsearch --cluster.name my_cluster_name --node.name my_node_name
+'starting another node, will ping and join it, forming a two node cluster'
+
+2.3 "index"
+Similar to database containing many "types" 
+It is a logical mapping of primary shards and their replica shards
+
+2.4 "type"
+A type is like a table in a relational database. 
+Each type has a list of "fields that can be specified for documents" of that type. 
+The "mapping" defines how each field in the document is analyzed.
+
+2.5 "mapping"
+A mapping is like a schema definition in a relational database. 
+Each index has a mapping, which defines each type within the index, plus a number of index-wide settings. 
+A mapping can either be defined explicitly, or it will be generated automatically when a document is indexed.
+
+2.6 "shards" are for partitioning data across nodes.
+A shard is a single Lucene instance. 
+It is a low-level “worker” unit which is managed automatically by elasticsearch. 
+Elasticsearch distributes shards amongst all nodes in the cluster, 
+and can move shards automatically from one node to another in the case of node failure, or the addition of new nodes.
+    
+  2.6.1 "Primary shard"
+  Each document is stored in a single primary shard. 
+  When you index a document, it is indexed first on the primary shard, then on all replicas. 
+  By default, an index has 5 primary shards. 
+
+  2.6.2 "replica shard"
+  Each primary shard can have zero or more replicas. A replica is a copy of the primary shard, and has two purposes:
+
+  'increase failover': a replica shard can be promoted to a primary shard if the primary fails
+  'increase performance': get and search requests can be handled by primary or replica shards. 
+  By default, each primary shard has one replica, but the number of replicas can be changed dynamically on an existing index. 
+  A replica shard will never be started on the same node as its primary shard.
+
+2.7 "document"
+A document is a JSON document which is stored in elasticsearch. 
+It is like a row in a table in a relational database. 
+Each document is stored in an index and has a type and an id.
+
+2.8 "field"
+A document contains a list of fields, or key-value pairs. 
+The value can be a simple (scalar) value (eg a string, integer, date), or a nested structure like an array or an object. 
+A field is similar to a column in a table in a relational database.
 
 
-"shards" are for partitioning data across nodes
-"replications" are duplicating shards across nodes
-default is 5 shards * 1 replica each = 10 shards per index
-library is the "index", book is a "type"
-
-Relational DB  ->Databases->Tables->Rows->Columns
-Elasticsearch  ->Indices->Types->Documents->Fields
-
-Lucene is doing the heavy lifting.
-
+-------------------------------------------------------------------------------------------------------------------------
 Cluster has a state which is shared across all nodes like "mappings", "routing table"
 When a search query is executed,
   1) a coordinator shard first picks it up 
   2) elasticsearch query is converted into lucene query
-  3) 
 
+library is the "index", book is a "type"
 make 4 shards of a new index named 'library'  - s1, s2, s3, s4  
 
   curl -XPUT http://localhost:9200/library -d '{"index.number_of_shards":4}'

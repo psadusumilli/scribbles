@@ -18,7 +18,7 @@ It comes with off-the-shelf support for implementing consensus, group management
  	You can use ZooKeeper to centrally store and manage the configuration of your distributed system. 
  	This means that any new nodes joining will pick up the up-to-date centralized configuration from ZooKeeper as soon as they join the system.	
 
-client-server-ensemble
+'client-server-ensemble'
 ------------------------
 ZooKeeper follows a simple 'client-server model' where clients are nodes (i.e., machines) that make use of the service, and servers are nodes that provide the service. 
 A collection of ZooKeeper servers forms a ZooKeeper 'ensemble'. 
@@ -29,7 +29,7 @@ The ZooKeeper server in question responds with an acknowledgment of the ping, in
 When the client doesnt receive an acknowledgment from the server within the specified time, 
 the client connects to another server in the ensemble, and the client session is transparently transferred over to the new ZooKeeper server.
 
-znode
+'znode'
 ------
 ZooKeeper has a file system-like data model composed of znodes. 
 Think of znodes (ZooKeeper data nodes) as files in a traditional UNIX-like system, except that they can have child nodes. 
@@ -42,7 +42,7 @@ Each ZooKeeper server also maintains a 'transaction log on the disk', which logs
 This transaction log is also the most performance critical part of ZooKeeper because a ZooKeeper server must sync transactions to disk before it returns a successful response. 
 The default maximum size of data that can be stored in a znode is 1 MB
 
-reads/writes
+'reads/writes'
 ------------
 'Read' is always between any 1 server in ensemble and client
 'Write' is given to 1 leader who in turn writes to a 'quorum' of 'N' servers. 
@@ -56,6 +56,12 @@ reads/writes
 
 higher nodes is too much quorum,so chatty,so high latency for every write. (kafka offset commits r slower)
 adding more servers does not increase read performance, as it read is always between 1 server and client.
+
+'logs'
+------
+As changes are made to the znodes these changes are appended to a 'transaction log'.
+Occasionally, when a log grows large ('snapCount', a 'snapshot' of the current state of all znodes will be written to the filesystem. 
+This snapshot supercedes all previous logs.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Quickie - 3 node cluster
@@ -125,17 +131,15 @@ Admin Guide
 ************
 JDK 6+
 minimum 3 servers. At Yahoo!, ZooKeeper is usually deployed on dedicated RHEL boxes, with dual-core processors, 2GB of RAM, and 80GB IDE hard drives.
-heap is needed, since znodes are read from memory, Be conservative - use a maximum heap size of 3GB for a 4GB machine.
+
+heap is needed, since znodes are read from memory, Be conservative - 'use a maximum heap size of 3GB for a 4GB machine'.
 tolerate the failure of 'F' machines, you should count on deploying '2xF+1' machines. 
 dont share zookeeper with other software
-
 zk provides durability by writing to log files sequentially, without seeking.
 sharing your log device with other processes can cause seeks and contention, which in turn can cause multi-second delays.
-
 A ZooKeeper server will not remove old snapshots and log files when using the default configuration
 Automatic purging of the snapshots and corresponding transaction logs was introduced in version 3.4.0 
 	and can be enabled via the following configuration parameters autopurge.snapRetainCount and autopurge.purgeInterval
-
 Monitor your ZK processes with tools like daemontools SMF, nagios 	
 
 
@@ -152,3 +156,56 @@ Putting the log on a busy device will adversely effect performance.
 'tickTime':
 The length of a single tick, which is the basic time unit used by ZooKeeper, as measured in milliseconds. 
 It is used to regulate heartbeats, and timeouts. For example, the minimum session timeout will be two ticks.
+
+optional configuration
+-----------------------
+'dataLogDir': 
+location to store transaction logs, so that 'dataDir' contains only the snapshots
+
+'maxClientCnxns':
+max connection per IP to a server to prevent DOS attacks. 60 default
+
+'leaderServes' : true default where leader also serves clients, can be turned off where it takes care of coordination work only
+	
+When running zkServer.sh autocreate can be disabled by setting the environment variable 'ZOO_DATADIR_AUTOCREATE_DISABLE to 1.'
+this will stop creating invalid datadirs
+
+NIO/Netty
+----------
+NIO is the default client/server communication subsystem. 
+Its threading model comprises 1 'acceptor thread', 1-N 'selector' threads and 0-M socket I/O 'worker' threads. 
+In the request processing pipeline the system can be configured to process multiple read request at once while maintaining the same consistency guarantee (same-session read-after-write). 
+The Commit Processor threading model comprises 1 main thread and 0-N worker threads.
+Post 3.4, Netty is used instead of directly using NIO APIs.
+
+Admin server
+-------------
+ZK has a admin server,an embedded Jetty server that provides an HTTP interface to the four letter word commands. 
+By default, the server is started on port 8080, and commands are issued by going to the URL "/commands/[command name]", e.g., http://localhost:8080/commands/stat
+http://localhost:8080/commands
+
+4 letter Commands
+------------------
+ZooKeeper responds to a small set of commands. Each command is composed of four letters. You issue the commands to ZooKeeper via telnet or nc, at the client port.
+
+conf: New in 3.3.0: Print details about serving configuration.
+cons: New in 3.3.0: List full connection/session details for all clients connected to this server. Includes information on numbers of packets received/sent, session id, operation latencies, last operation performed, etc...
+crst: New in 3.3.0: Reset connection/session statistics for all connections.
+dump: Lists the outstanding sessions and ephemeral nodes. This only works on the leader.
+envi: Print details about serving environment
+ruok: Tests if server is running in a non-error state. The server will respond with imok if it is running. Otherwise it will not respond at all.
+		A response of "imok" does not necessarily indicate that the server has joined the quorum, just that the server process is active and bound to the specified client port. Use "stat" for details on state wrt quorum and client connection information.
+
+srst: Reset server statistics.
+srvr: New in 3.3.0: Lists full details for the server.
+stat: Lists brief details for the server and connected clients.
+wchs: New in 3.3.0: Lists brief information on watches for the server.
+wchc: New in 3.3.0: Lists detailed information on watches for the server, by session. 
+		This outputs a list of sessions(connections) with associated watches (paths). 
+		Note, depending on the number of watches this operation may be expensive (ie impact server performance), use it carefully.
+
+wchp: New in 3.3.0: Lists detailed information on watches for the server, by path. 
+		This outputs a list of paths (znodes) with associated sessions. 
+		Note, depending on the number of watches this operation may be expensive (ie impact server performance), use it carefully.
+
+mntr:  New in 3.4.0: Outputs a list of variables that could be used for monitoring the health of the cluster.
