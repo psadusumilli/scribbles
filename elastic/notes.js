@@ -64,6 +64,7 @@ A shard is a single Lucene instance.
 It is a low-level “worker” unit which is managed automatically by elasticsearch. 
 Elasticsearch distributes shards amongst all nodes in the cluster, 
 and can move shards automatically from one node to another in the case of node failure, or the addition of new nodes.
+1 whole shard must reside in a node, no partials anywhere. 
     
   2.6.1 "Primary shard"
   Each document is stored in a single primary shard. 
@@ -154,8 +155,8 @@ It doesn’t join the cluster itself, but simply forwards requests to a node in 
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------
-#3 DISTRIBUTED:
----------------
+#3 DISTRIBUTED DOCUMENT STORE:
+-------------------------------
 
 Elasticsearch tries hard to hide the complexity of distributed systems. 
 
@@ -235,8 +236,9 @@ Also, in case auto-discovery doesnt work, most probable reason is because the ne
 Number of Primary shards cannot be changed, decides the max amt of data stored.
 Number of replica shards can be changed runtime, decides the max read throughput
 
+How many nodes:
+===============
 Minimum nodes= 3 - splitbrain 2
---------------------------------
 If u have 2 node, say master M1 and slave S2
 then suppose M1 is drunk
 S2 promotes to master M2 since no other option exists
@@ -246,9 +248,46 @@ so split brain
 Say if u have 3 nodes,M1, S2, S3
 S2->M2 when M1 is drinking in bar
 M1 comes back, but S3 will vouch for M2 now..saying ' u got drunk..M1'
+if you have 'N nodes, then by convention, N/2+1 nodes should be masters for fail-over' mechanisms.
+
+How many shards?
+================
+A shard is not free. 
+A shard is a Lucene index under the covers, which uses file handles, memory, and CPU cycles.
+Every search request needs to hit a copy of every shard in the index. 
+That’s fine if every shard is sitting on a different node, but not if many shards have to compete for the same resources.
+
+shard number should be derived by performance baselining.
+  1 Create a cluster consisting of a single server, with the hardware that you are considering using in production.
+  2 Create an index with the same settings and analyzers that you plan to use in production, but with only 1 primary shard and 0 replicas.
+  3 Fill it with real documents (or as close to real as you can get).
+  4 Run real queries and aggregations (or as close to real as you can get).
+
+Say 1 million records is the max in 1 shard to give a latency < 0.1 second
+so if total record count is 100 million, we need 100 shards
+
+Once you define the capacity of a single shard, it is easy to extrapolate that number to your whole index. 
+Take the total amount of data that you need to index, plus some extra for future growth, and divide by the capacity of a single shard. 
+The result is the number of primary shards that you will need.
 
 
-if you have N nodes, then by convention, N/2+1 nodes should be masters for fail-over mechanisms.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -342,6 +381,15 @@ GET /_search?size=5&from=5
 GET /_search?size=5&from=10
   
 "multi-index" search can go across multiple shards of different types, but the mechanisms are still the same.
+
+
+
+
+
+
+
+
+
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
