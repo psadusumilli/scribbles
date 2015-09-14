@@ -88,12 +88,15 @@ A document contains a list of fields, or key-value pairs.
 The value can be a simple (scalar) value (eg a string, integer, date), or a nested structure like an array or an object. 
 A field is similar to a column in a table in a relational database.
 
+2.9 "segments"
+Lucence index is made of immutable "segments" (never deleted just a flag to indicate deletion, lot of compression happens in segments)
+"Near Real Time", elasticsearch buffers incoming documents for 1 sec and then creates the lucene segments 
+Elasticsearch merges the buffered segments before persisting.
+
 
 -------------------------------------------------------------------------------------------------------------------------
-Cluster has a state which is shared across all nodes like "mappings", "routing table"
-When a search query is executed,
-  1) a coordinator shard first picks it up 
-  2) elasticsearch query is converted into lucene query
+QUICKIE
+********
 
 library is the "index", book is a "type"
 make 4 shards of a new index named 'library'  - s1, s2, s3, s4  
@@ -146,13 +149,17 @@ Then it can forward requests directly to the correct node.
 The lighter-weight transport client can be used to send requests to a remote cluster. 
 It doesn’t join the cluster itself, but simply forwards requests to a node in the cluster.
 
+
+
+
+
 -------------------------------------------------------------------------------------------------------------------------------------------
 #3 DISTRIBUTED:
 ---------------
 
 Elasticsearch tries hard to hide the complexity of distributed systems. 
 
-"master" node does create/delete index or node.
+"master" node is sole entity to create/delete index or other nodes.
 master node need not be used for search
 all nodes know where the data is and route the client
 all nodes can talk to each other
@@ -175,17 +182,6 @@ curl -XGET http://localhost:9200/_cluster/health
   "number_of_pending_tasks":0
 }
 
-"index" is just a logical namespace that points to one or more physical shards
-
-Each "Shard" is a Lucence index containing the inverted index (word1 -[doc1, doc2, doc3], word2 - [doc2, doc4], ...)
-Max number of docs in  index is 2,147,483,519 (= Integer.MAX_VALUE - 128) 
-
-Lucence index is made of immutable "segments" (never deleted just a flag to indicate deletion, lot of compression happens in segments)
-"Near Real Time", elasticsearch buffers incoming documents for 1 sec and then creates the lucene segments 
-Elasticsearch merges the buffered segments before persisting.
-shards can be "primary" or "replica"
-The number of "primary" shards can be set only during index creation and cannot be changed later unlike the "replica" shards.
-
 Adding a 'node', start another elastic instance in the same machine, it will run on ports 9301, 9201
 
  curl -XGET http://localhost:9200/_cluster/health
@@ -205,6 +201,55 @@ Adding a 'node', start another elastic instance in the same machine, it will run
 
 on a 'node failover', the replicas get promoted to primary status instanteously.
 on getting the node back, the old indexes are updated with the changes that happened during its downtime.
+
+
+3.1 Adding a node in a networked setting
+-------------------------------------
+It is usually handled automatically. If autodiscovery doesnt work. Edit the elastic search config file, by enabling unicast discovery
+
+Node 1:
+
+    cluster.name: mycluster
+    node.name: "node1"
+    node.master: true
+    node.data: true
+    discovery.zen.ping.multicast.enabled: false
+    discovery.zen.ping.unicast.hosts: ["node1.example.com"]
+Node 2:
+
+    cluster.name: mycluster
+    node.name: "node2"
+    node.master: false
+    node.data: true
+    discovery.zen.ping.multicast.enabled: false
+    discovery.zen.ping.unicast.hosts: ["node1.example.com"]
+
+and so on for node 3,4,5. 
+Make node 1 master, and the rest only as data nodes.
+They may or may not be data nodes, though.
+
+Also, in case auto-discovery doesnt work, most probable reason is because the network doesnt allow it (and therefore disabled). 
+
+3.2 Scaling
+------------
+Number of Primary shards cannot be changed, decides the max amt of data stored.
+Number of replica shards can be changed runtime, decides the max read throughput
+
+Minimum nodes= 3 - splitbrain 2
+--------------------------------
+If u have 2 node, say master M1 and slave S2
+then suppose M1 is drunk
+S2 promotes to master M2 since no other option exists
+M1 comes back, see M2, thinks M2 misbehaved and he drink 2 much that night
+so split brain 
+
+Say if u have 3 nodes,M1, S2, S3
+S2->M2 when M1 is drinking in bar
+M1 comes back, but S3 will vouch for M2 now..saying ' u got drunk..M1'
+
+
+if you have N nodes, then by convention, N/2+1 nodes should be masters for fail-over mechanisms.
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 #4 DOCUMENT:
@@ -259,6 +304,8 @@ bulk payloads consume memory, 5-15MB is safe
 -----------------------------------
 "default sharding" => shard = hash(doc_id) % number_of_shards
 
+When sending requests, it is good practice to round-robin through all the nodes in the cluster, in order to spread the load.
+
 A) "update/create doc"
 ---------------------
 whenever doc says doc1 is updated,
@@ -269,7 +316,11 @@ whenever doc says doc1 is updated,
 
 The above process is "sync", it can be "async" which does not gurantee replica synch up (not advised)
 "consistency"
+
+**************************************************
 quorum -> ((primary + number_of_replicas)/ 2) + 1
+
+**************************************************
 if a quorum is reached among primary and replicas, the change (CRUD) is marked as success.
 
 
@@ -281,6 +332,7 @@ whenever doc says doc1 is updated,
 "timeout" can control how long to wait for an operation.
 
 C) "partial update"
+--------------------
   1) master node determines which primary shard (say s1 in node n1)
   2) if some process has already updated after its retrieval, it retries step 3 up to retry_on_conflict times, before giving up.
 
