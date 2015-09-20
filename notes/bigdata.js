@@ -1,8 +1,8 @@
 Big Data
 #########
 
-CHAP1
-*****
+CHAP1-Introduction
+********************
 'Incremental Arch': crud complex systems
 'Lambda Arch': wipe and start over - batch, speed, serving layers
 
@@ -61,8 +61,54 @@ Trends
 	messaging - reliable data movement - kafka
 	nosql dbs - all are unique
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP2-Batch Layer-Data model
+******************************
+properties of data;
+	'raw': 	Storing raw data is hugely valuable because you rarely know in advance all the questions you want answered. 
+			By keeping the rawest data possible, you maximize your ability to obtain new insights, 
+			whereas summarizing, overwriting, or deleting information limits what your data can tell you 
+			(facebook-> friend, unfriend events -> then calculate derived data like current number of friends)
+			some 'semantic normalization' (name/location standardization) can happen on data
 
+	'immutable': 
+			safe from human errors
+			facts stored based on time dimension 
+			can replay 
 
+	'eternally true': 
+			that is, a piece of data, once true, must always be true.		
 
+fact-based
+-----------
+Is queryable at any time in its history
+Tolerates human errors
+Handles partial information
+Has the advantages of both normalized (master) and denormalized forms (batch views)
 
+graph schema
+------------
+	with nodes, edges and properties give the relations between facts
+	implement an enforceable schema using a 'serialization framework'
 
+serialization framework
+-----------------------
+	enforces the data schema across lanugages
+	tools like Thrift, Avro etc can enforce some validation on required fields and types.
+	rich validation would need to duplicated across multiple languages if done
+	or validtion can be first stage in batch processing.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP4- Batch Layer-Data Persistence
+************************************
+Write in bulk, read many
+must be scalable, immutable, compressible.
+	
+'key-value stores': 
+		meant for random crud, does not work out for immutable data
+'distributed filesystems' : linear storage of data across many machines. 
+		The operations you can do with a distributed filesystem are often more limited than you can do with a regular filesystem. 
+		For instance, you may not be able to write to the middle of a file or even modify a file at all after creation
+		eg 'HDFS' 
+			file split into datanodes (64-256 MB blocks) and namenodes to track 'block-file' mapping.
+		vertical partitioning can help (splitting facts data by say person-age/date/)	
