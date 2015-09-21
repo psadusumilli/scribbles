@@ -1,7 +1,7 @@
 Big Data
 #########
 
-CHAP1-Introduction
+CHAP 1 -Introduction
 ********************
 'Incremental Arch': crud complex systems
 'Lambda Arch': wipe and start over - batch, speed, serving layers
@@ -62,7 +62,7 @@ Trends
 	nosql dbs - all are unique
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CHAP2-Batch Layer-Data model
+CHAP 2|3 -Batch Layer-Data model
 ******************************
 properties of data;
 	'raw': 	Storing raw data is hugely valuable because you rarely know in advance all the questions you want answered. 
@@ -98,9 +98,11 @@ serialization framework
 	rich validation would need to duplicated across multiple languages if done
 	or validtion can be first stage in batch processing.
 
+illustration with Thrift - no notes
+	nodes, edges and properties modelled usinf thrift 'types,union and struct'
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-CHAP4- Batch Layer-Data Persistence
-************************************
+CHAP 4|5- Batch Layer-Data Persistence
+***************************************
 Write in bulk, read many
 must be scalable, immutable, compressible.
 	
@@ -112,3 +114,125 @@ must be scalable, immutable, compressible.
 		eg 'HDFS' 
 			file split into datanodes (64-256 MB blocks) and namenodes to track 'block-file' mapping.
 		vertical partitioning can help (splitting facts data by say person-age/date/)	
+
+illustration with HDFS and Pail:
+----------------------------------
+	smaller supplier files leads to more map-reduce tasks 
+	needs consolidation with a lib like 'Pail',a thin abstraction over files and folders from the dfs-datastores library
+	Pail is just a Java library that uses the standard Hadoop API s. 
+	It handles the low-level filesystem interaction, providing an API that isolates you from the complexity of Hadoop’s internals
+
+The advantages of Pail for storing the master dataset
+
+'Write'
+--------
+	1 'Efficient appends of newdata'
+	 	Pail has a first-class interface for appending data and prevents you from performing invalid operations—something the raw HDFS API won’t do for you.
+	2 'Scalable storage'
+	 	The namenode holds the entire HDFS namespace in memory and can be taxed if the filesystem contains a vast number of small files. 
+	 	Pail’s consolidate operator decreases the total number of HDFS blocks and eases the demand on the namenode.
+'Read'
+-------
+	1 'Support for parallel processing'
+	 	The number of tasks in a MapReduce job is determined by the number of blocks in the dataset. 
+	 	Consolidating the contents of a pail lowers the number of required tasks and increases the efficiency of processing the data.
+
+	2 'Ability to vertically partition data' 
+		Output written into a pail is automatically partitioned with each fact stored in its appropriate directory. 
+		This directory structure is strictly enforced for all Pail operations.
+'both'
+------
+	1 'Tunable storage/processing costs'
+	 	Pail has built-in support to coerce data into the format specified by the pail structure. 
+	 	This coercion occurs automatically while performing operations on the pail.
+
+	2 'Enforceable immutability'
+		Because Pail is just a thin wrapper around files and folders, you can enforce immutability, 
+		just as you can with HDFS directly, by setting the appropriate permissions.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP 6|7 - Batch Layer
+*********************
+batch views computations:
+---------------------------
+1 -> recomputation 2 -> Incremental
+
+'Performance' 
+	1 Requires computational effort to process the entire master dataset. 
+	2 Requires less computational resources but may generate much larger batch views
+'Human-fault tolerance' 
+	1 Extremely tolerant of human errors because the batch views are continually rebuilt 
+	2 Doesn’t facilitate repairing errors in the batch views; repairs are ad hoc and may require estimates
+'Generality'
+	1 Complexity of the algorithm is addressed during precomputation, resulting in simple batch views and low-latency, on-the-fly processing. 
+	2 Requires special tailoring; may shift complexity to on-the-fly query processing
+'Conclusion' 
+	1 Essential to supporting a robust data processing system 
+	2 Can increase the efficiency of your system, but only as a supplement to recomputation algorithms
+
+scalability
+------------
+system must be linearly scalable
+
+map-reduce
+----------
+1 execute in a fully distributed fashion with no central point of contention.
+2 is scalable: the map and reduce functions you provide are executed in parallel across the cluster.
+3 handles the challenges of concurrency and assigning tasks to machines
+4 fault tolerant - retries the jobs on another node, if it fails in one. The job must be 'deterministic' i.e; for given input, same output
+
+'spark'
+Spark’s computation model is 'resilient distributed datasets'
+Spark isn’t any more general or scalable than MapReduce, 
+but its model allows it to have much higher performance for algorithms that have to repeatedly iterate over the same dataset
+(because Spark is able to cache that data in memory rather than read it from disk every time). 
+Many machine-learning algorithms iterate over the same data repeatedly, making Spark particularly well suited for that use case.
+
+low-level nature of map-reduce
+------------------------------
+1 multistep computation requires multiple jobs talking to each other only via file systems.
+2 linking data sql joins are tedious
+3 map-reduce not very good for modularizing code.
+
+'pipe-diagrams' help in mapping flows as a series of computation steps, outside of map-reduce complexity
+Jcascade is a implementation of pipe-diagrams
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP 8 - Batch Layer - illustration
+************************************
+Three batch views:
+ 'Pageview counts by URL sliced by time'
+	“What were the pageviews for each day over the past year?” 
+	“How many pageviews have there been in the past 12 hours?”
+
+ 'Unique visitors by URL sliced by time'
+ 	“How many unique users frequented this domain in 2010?” 
+ 	“How many unique people visited this domain each hour for the past three days?”
+
+ 'Bounce-rate analysis'
+ 	“What percentage of people visit the page without visiting any other pages on this website?
+
+1 balance between precomputated batch view sizes and realtime computation for a query is critical
+2 precomputation at coarser dimension values helps (say pageview_counts calculated and stored at an hour/day/month)
+3 unique user counts are not additive like pageview counts, must use approximation algos like HyperLogLog here with 2% error factored in.
+4 bounce rate = bounced visits/total visits. visit = group of pageviews within a reasonable timeperiod.
+
+batch_view computation flow:
+-----------------------------
+1 append new data to existing master dataset
+2 standardize urls, names etc
+3 filter duplicates
+4 compute batch_views
+
+pure re-computation is from scratch always need not be done, partial computation can is also ok,but pure must be defined.
+iterative-graph algos help in consolidating user nodes joined by equiv-edges
+	pick the lowest id value from 1 user sub-graph (say 1->3 3->2 4->3, make everything point to 1: 3->1, 2->1)
+	do it repeatedly until output = input
+	this will give the unique users (cookie or user emailid versions)	
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP 8 - Serving Layer
+***********************
+
+
+
