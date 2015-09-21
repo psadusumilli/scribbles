@@ -233,6 +233,35 @@ iterative-graph algos help in consolidating user nodes joined by equiv-edges
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CHAP 8 - Serving Layer
 ***********************
+batch views computed must be sharded and served.
+2 primary metrics -> latency and throughput
 
+'sharding strategy' must take in account the hdd disk-seek-time and network io between servers.
+	if a query returns 20 keys -> 20 seeks &
+	if hdd seek time/disk -> 500 seeks/sec 
+	then 500/20 -> 25 queries/sec is the max/disk 
 
+scans are cheaper than random seeks, best way is to colocate related data together like all batch_views results linearly for a given url in 1 machine of the cluster.
+so for 1 key => 1 seek + 1 scan
 
+'denormalization/normalization'
+batch layer is normalized, but batch_views are highly denormalized with additional aggregations tailored for queries
+denormalization is duplicate copies, if errors happen, recompute from normalized master data again.
+
+'requirements':
+	'Batch writable':
+	The batch views for a serving layer are produced from scratch. 
+	When a new version of a view becomes available, it must be possible to completely swap out the older version with the updated view.
+
+ 	'Scalable'
+	A serving layer database must be capable of handling views of arbitrary size. 
+	As with the distributed filesystems and batch computation framework previously discussed, this requires it to be distributed across multiple machines.
+ 
+ 	'Random reads'
+ 	A serving layer database must support random reads, with indexes providing direct access to small portions of the view. 
+ 	This requirement is necessary to have low latency on queries.
+ 
+ 	'Fault-tolerant'
+ 	Because a serving layer database is distributed, it must be tolerant of machine failures.
+
+ 	'No random writes' are required, it is taken care of by speed layer
