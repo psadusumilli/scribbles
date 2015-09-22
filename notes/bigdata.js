@@ -288,7 +288,32 @@ For example, with 40 shards, 8 servers, and a replication factor of 3, each serv
 shard versioning: servers slowly pulls the latest shard when available.
 after downloading shards, just makes the data available via 'simple key lookup API'
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP 11 - Speed Layer
+***********************
+requirements: random reads, random writes, scalable and fault tolerant.
+Cassandra (Persistence) + ElasticSearch (indexing)
 
+'eventual accuracy' -> Because all data is eventually represented in the batch and serving layer views, any approximations you make in the speed layer are continually corrected.
+'size' -> stores only hours worth of data, avoid online compaction and concurrency issues.
+
+'cap theorem': batch and serving layer chose availability, not even eventually consistent as they lag behind by hours
+
+'sync/asych writes to realtime':
+	synch systems is like regular DB transaction, request waits until transaction completes, needed if human involved, can slow in spike loads
+	aysnch buffer in a queue and do stream processing, best for spike loads, can also batch transactions, good if no human involved.(efm kafka app ingestion)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP 12 - Speed Layer | Cassandra
+***********************************
+datamodel is a sortedmap of sortedmaps
+'columnfamily' ->users
+	'key'->andre 
+		'columns'->name: Andre; age: 25
+	'key'->peter 
+		'columns'->occupation: coder; status: married
+more reading on Cassandra required.		
+	
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 CHAP 14 - Speed Layer - Queues | One-at-a-time Stream processing
 ***************************************************
