@@ -265,3 +265,57 @@ denormalization is duplicate copies, if errors happen, recompute from normalized
  	Because a serving layer database is distributed, it must be tolerant of machine failures.
 
  	'No random writes' are required, it is taken care of by speed layer
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP 14 - Speed Layer - Queues | One-at-a-time Stream processing
+***************************************************
+'Persistent Queues'
+	1 Single Consumer- 1 queue/application; message deleted after acknowledgement; queue keeps track of consumption status
+					rabbitmq, activemq
+	2 Multi Consumer - 1 queue/applications; messages not deleted; applications keeps track of consumption offsets
+					kafka
+
+'Stream processing' messages -> realtime views -> queues and workers
+	1 one-at-a-time,	2 micro-batching	
+
+storm
+-----
+'spouts' -> feed 'tuples' (list-of-name-value pairs -> 'bolts' (process)
+instances of spouts/bolts are called 'tasks' which are inherently parallel, 
+'partitioning' tuples required to balance load across the tasks
+spread of spouts & bolts across machines is called 'topology'
+
+'one-at-time'
+intermediate queues add latency and maintenance headaches
+but you can maintain 'at-least-once' guarantee without intermediate queues
+if something fails, start that tuple from the root again, instead of tracking all intermediate points
+idempotent operations will lead to 'exactly-once' semantics
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+CHAP 16 - Speed Layer - Micro batch processing
+***************************************************
+Small batches of tuples are processed at one time, and if anything in a batch fails, the entire batch is replayed. In addi-
+tion, the batches are processed in a strict order. 
+This approach allows you to make use of new techniques in order to achieve 'exactly-once semantics' in your processing, rather
+than relying on 'inherently idempotent functions as one-at-a-time processing does'.
+micro-batch stream processing can give you the fault-tolerant accuracy you need, at the cost of higher latency.
+
+To achieve exactly-once
+	1 strong ordering
+		store the last processed tuple id, even if it repeats, u get to know its already processed.
+	2 		
+
+
+
+
+
+
+
+
+
+
+
+
