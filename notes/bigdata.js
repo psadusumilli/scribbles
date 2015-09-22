@@ -266,7 +266,27 @@ denormalization is duplicate copies, if errors happen, recompute from normalized
 
  	'No random writes' are required, it is taken care of by speed layer
 
+-----------------------------------------------------------------------------------------------
+ElephantDB
+-----------
+is a key/value database where both keys and values are stored as byte arrays. 
+partitions the batch_views over a fixed number of 'shards', and each Elephant DB server is responsible for some subset of those shards.
+once a batch_view assigned to a shard, the key/value is stored in a local indexing engine, say Berkeley DB.
 
+stage1: 'view-creation'
+shards are created by a MapReduce job whose input is a set of key/value pairs. 
+The number of reducers is configured to be the number of Elephant DB shards, and the keys are partitioned to the reducers using the specified sharding scheme. 
+Consequently, each reducer is responsible for producing exactly one shard of an Elephant DB view. 
+Each shard is then indexed (such as into a Berkeley DB index) and uploaded to the distributed filesystem.
+
+stage2: 'view-serving'
+An Elephant DB cluster is composed of a number of machines that divide the work of serving the shards. 
+To fairly share the load, the shards are evenly distributed among the 'servers'.
+Elephant DB also supports replication, where each shard is redundantly hosted across a predetermined number of servers. 
+For example, with 40 shards, 8 servers, and a replication factor of 3, each server would host 15 shards, and each shard would exist on 3 different servers.
+
+shard versioning: servers slowly pulls the latest shard when available.
+after downloading shards, just makes the data available via 'simple key lookup API'
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -306,7 +326,6 @@ micro-batch stream processing can give you the fault-tolerant accuracy you need,
 To achieve exactly-once
 	1 strong ordering
 		store the last processed tuple id, even if it repeats, u get to know its already processed.
-	2 		
 
 
 
