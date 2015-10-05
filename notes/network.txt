@@ -1223,6 +1223,44 @@ RSTP differs from HTTP in
 	HTTP is stateless but RSTP must maintain session states
 	HTTP is request from client/response server but RSTP anyone can request in any direction
 	
+package com;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+/**
+ * @author cse.dep@equifax.com
+ * @version %I% %G%
+ * @since 1.0
+ */
+public class TestHttpClient {
+
+    public void call() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, IOException {
+        SSLContextBuilder builder = new SSLContextBuilder();
+        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+        SSLConnectionSocketFactory factory = new SSLConnectionSocketFactory(builder.build());
+        CloseableHttpClient client = HttpClients.custom().setSSLSocketFactory(factory).build();
+
+        HttpGet httpGet = new HttpGet("https://some-server");
+        try (CloseableHttpResponse response = client.execute(httpGet)) {
+            System.out.println(response.getStatusLine());
+            HttpEntity entity = response.getEntity();
+            EntityUtils.consume(entity);
+        }
+    }
+}
 
 
 
