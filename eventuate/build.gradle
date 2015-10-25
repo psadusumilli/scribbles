@@ -1,0 +1,17 @@
+apply plugin: 'scala'
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://dl.bintray.com/rbmhtechnology/maven"
+    }
+}
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.useAnt = false
+}
+dependencies {
+    compile 'org.scala-lang:scala-library:2.11.7'
+    compile 'com.rbmhtechnology:eventuate_2.11:0.3'
+}

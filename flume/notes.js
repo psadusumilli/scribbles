@@ -292,3 +292,299 @@ for flume older agents, older avro sources
 ----------------------------------------------------------------------------------------------------------------------------------------------------
 SINKS
 ******
+1 HDFS
+-------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = hdfs
+	a1.sinks.k1.channel = c1
+	a1.sinks.k1.hdfs.path = /flume/events/%y-%m-%d/%H%M/%S
+	a1.sinks.k1.hdfs.filePrefix = events-
+	a1.sinks.k1.hdfs.round = true
+	a1.sinks.k1.hdfs.roundValue = 10
+	a1.sinks.k1.hdfs.roundUnit = minute
+
+2 hive
+------
+	create table weblogs ( id int , msg string )
+    partitioned by (continent string, country string, time string)
+    clustered by (id) into 5 buckets
+    stored as orc;
+
+   	a1.channels = c1
+	a1.channels.c1.type = memory
+	a1.sinks = k1
+	a1.sinks.k1.type = hive
+	a1.sinks.k1.channel = c1
+	a1.sinks.k1.hive.metastore = thrift://127.0.0.1:9083
+	a1.sinks.k1.hive.database = logsdb
+	a1.sinks.k1.hive.table = weblogs
+	a1.sinks.k1.hive.partition = asia,%{country},%y-%m-%d-%H-%M
+	a1.sinks.k1.useLocalTimeStamp = false
+	a1.sinks.k1.round = true
+	a1.sinks.k1.roundValue = 10
+	a1.sinks.k1.roundUnit = minute
+	a1.sinks.k1.serializer = DELIMITED
+	a1.sinks.k1.serializer.delimiter = "\t"
+	a1.sinks.k1.serializer.serdeSeparator = '\t'
+	a1.sinks.k1.serializer.fieldnames =id,,msg 	
+
+3 logger
+---------	
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = logger
+	a1.sinks.k1.channel = c1
+
+4 avro
+-------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = avro
+	a1.sinks.k1.channel = c1
+	a1.sinks.k1.hostname = 10.10.10.10
+	a1.sinks.k1.port = 4545		
+
+5 thrift
+----------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = thrift
+	a1.sinks.k1.channel = c1
+	a1.sinks.k1.hostname = 10.10.10.10
+	a1.sinks.k1.port = 4545	
+
+6 irc
+------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = irc
+	a1.sinks.k1.channel = c1
+	a1.sinks.k1.hostname = irc.yourdomain.com
+	a1.sinks.k1.nick = flume
+	a1.sinks.k1.chan = #flume
+
+7 logger
+---------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = file_roll
+	a1.sinks.k1.channel = c1
+	a1.sinks.k1.sink.directory = /var/log/flume	
+
+8 null
+---------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = null
+	a1.sinks.k1.channel = c1	
+
+9 hbase
+---------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = hbase
+	a1.sinks.k1.table = foo_table
+	a1.sinks.k1.columnFamily = bar_cf
+	a1.sinks.k1.serializer = org.apache.flume.sink.hbase.RegexHbaseEventSerializer
+	a1.sinks.k1.channel = c1	
+
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = asynchbase
+	a1.sinks.k1.table = foo_table
+	a1.sinks.k1.columnFamily = bar_cf
+	a1.sinks.k1.serializer = org.apache.flume.sink.hbase.SimpleAsyncHbaseEventSerializer
+	a1.sinks.k1.channel = c1
+
+10 solr 
+---------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = org.apache.flume.sink.solr.morphline.MorphlineSolrSink
+	a1.sinks.k1.channel = c1
+	a1.sinks.k1.morphlineFile = /etc/flume-ng/conf/morphline.conf
+	# a1.sinks.k1.morphlineId = morphline1
+	# a1.sinks.k1.batchSize = 1000
+	# a1.sinks.k1.batchDurationMillis = 1000	
+
+11 elasticsearch
+----------------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = elasticsearch
+	a1.sinks.k1.hostNames = 127.0.0.1:9200,127.0.0.2:9300
+	a1.sinks.k1.indexName = foo_index
+	a1.sinks.k1.indexType = bar_type
+	a1.sinks.k1.clusterName = foobar_cluster
+	a1.sinks.k1.batchSize = 500
+	a1.sinks.k1.ttl = 5d
+	a1.sinks.k1.serializer = org.apache.flume.sink.elasticsearch.ElasticSearchDynamicSerializer
+	a1.sinks.k1.channel = c1	
+
+12 kafka sink
+----------------
+	a1.sinks.k1.type = org.apache.flume.sink.kafka.KafkaSink
+	a1.sinks.k1.topic = mytopic
+	a1.sinks.k1.brokerList = localhost:9092
+	a1.sinks.k1.requiredAcks = 1
+	a1.sinks.k1.batchSize = 20
+	a1.sinks.k1.channel = c1	
+
+13 custom
+-----------
+	a1.channels = c1
+	a1.sinks = k1
+	a1.sinks.k1.type = org.example.MySink
+	a1.sinks.k1.channel = c1	
+----------------------------------------------------------------------------------------------------------------------------------------------------
+CHANNELS
+*********
+1 memory
+---------
+	a1.channels = c1
+	a1.channels.c1.type = memory
+	a1.channels.c1.capacity = 10000
+	a1.channels.c1.transactionCapacity = 10000
+	a1.channels.c1.byteCapacityBufferPercentage = 20
+	a1.channels.c1.byteCapacity = 800000	
+2 jdbc
+-------
+	a1.channels = c1
+	a1.channels.c1.type = jdbc	
+
+3 kafka
+---------
+	a1.channels.channel1.type = org.apache.flume.channel.kafka.KafkaChannel
+	a1.channels.channel1.capacity = 10000
+	a1.channels.channel1.transactionCapacity = 1000
+	a1.channels.channel1.brokerList=kafka-2:9092,kafka-3:9092
+	a1.channels.channel1.topic=channel1
+	a1.channels.channel1.zookeeperConnect=kafka-1:2181	
+
+4 file
+-------
+	a1.channels = c1
+	a1.channels.c1.type = file
+	a1.channels.c1.checkpointDir = /mnt/flume/checkpoint
+	a1.channels.c1.dataDirs = /mnt/flume/data	
+
+5 spillable memory (disk used when memory is full)
+-------------------
+	a1.channels = c1
+	a1.channels.c1.type = SPILLABLEMEMORY
+	a1.channels.c1.memoryCapacity = 10000
+	a1.channels.c1.overflowCapacity = 1000000
+	a1.channels.c1.byteCapacity = 800000
+	a1.channels.c1.checkpointDir = /mnt/flume/checkpoint
+	a1.channels.c1.dataDirs = /mnt/flume/data	
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+SINK PROCESSORS:
+*****************
+Sink groups allow users to group multiple sinks into one entity. 
+Sink processors can be used to provide load balancing capabilities over all sinks inside the group or to achieve fail over from one sink to another in case of temporal failure.
+
+1 load_balance
+--------------
+	a1.sinkgroups = g1
+	a1.sinkgroups.g1.sinks = k1 k2
+	a1.sinkgroups.g1.processor.type = load_balance
+	a1.sinkgroups.g1.processor.backoff = true
+	a1.sinkgroups.g1.processor.selector = random
+
+2 fail-over
+----------
+	a1.sinkgroups = g1
+	a1.sinkgroups.g1.sinks = k1 k2
+	a1.sinkgroups.g1.processor.type = failover
+	a1.sinkgroups.g1.processor.priority.k1 = 5
+	a1.sinkgroups.g1.processor.priority.k2 = 10
+	a1.sinkgroups.g1.processor.maxpenalty = 10000	
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Interceptors
+*************
+Flume has the capability to modify/drop events in-flight. This is done with the help of interceptors. 
+Interceptors are classes that implement 'org.apache.flume.interceptor.Interceptor' interface. 
+An interceptor can modify or even drop events based on any criteria chosen by the developer of the interceptor. 
+Flume supports chaining of interceptors. This is made possible through by specifying the list of interceptor builder class names in the configuration. 
+Interceptors are specified as a whitespace separated list in the source configuration. 
+The order in which the interceptors are specified is the order in which they are invoked. 
+The list of events returned by one interceptor is passed to the next interceptor in the chain. 
+Interceptors can modify or drop events. 
+If an interceptor needs to drop events, it just does not return that event in the list that it returns. 
+If it is to drop all events, then it simply returns an empty list. Interceptors are named components, here is an example of how they are created through configuration:
+
+	a1.sources = r1
+	a1.sinks = k1
+	a1.channels = c1
+	a1.sources.r1.interceptors = i1 i2
+	a1.sources.r1.interceptors.i1.type = org.apache.flume.interceptor.HostInterceptor$Builder
+	a1.sources.r1.interceptors.i1.preserveExisting = false
+	a1.sources.r1.interceptors.i1.hostHeader = hostname
+	a1.sources.r1.interceptors.i2.type = org.apache.flume.interceptor.TimestampInterceptor$Builder
+	a1.sinks.k1.filePrefix = FlumeData.%{CollectorHost}.%Y-%m-%d
+	a1.sinks.k1.channel = c1
+
+1 TimestampInterceptor
+----------------------
+inserts timestamp into each flume event.
+	a1.sources = r1
+	a1.channels = c1
+	a1.sources.r1.channels =  c1
+	a1.sources.r1.type = seq
+	a1.sources.r1.interceptors = i1
+	a1.sources.r1.interceptors.i1.type = timestamp	
+
+2 HostInterceptor
+-------------------
+	a1.sources = r1
+	a1.channels = c1
+	a1.sources.r1.interceptors = i1
+	a1.sources.r1.interceptors.i1.type = host
+	a1.sources.r1.interceptors.i1.hostHeader = hostname	
+
+3 StaticInterceptor
+-------------------
+	a1.sources = r1
+	a1.channels = c1
+	a1.sources.r1.channels =  c1
+	a1.sources.r1.type = seq
+	a1.sources.r1.interceptors = i1
+	a1.sources.r1.interceptors.i1.type = static
+	a1.sources.r1.interceptors.i1.key = datacenter
+	a1.sources.r1.interceptors.i1.value = NEW_YORK	
+
+4 UUID interceptor emdeds uuid into each event	
+5 Morphline interceptor does all morphline transformations
+
+6 Search and Replace Interceptor - regex replace
+	a1.sources.avroSrc.interceptors = search-replace
+	a1.sources.avroSrc.interceptors.search-replace.type = search_replace
+
+	# Remove leading alphanumeric characters in an event body.
+	a1.sources.avroSrc.interceptors.search-replace.searchPattern = ^[A-Za-z0-9_]+
+	a1.sources.avroSrc.interceptors.search-replace.replaceString =
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Log4j Appender
+*************
+
+A flume appender is available where Log4j events are wired to a flume agent’s avro source
+
+#
+log4j.appender.flume = org.apache.flume.clients.log4jappender.Log4jAppender
+log4j.appender.flume.Hostname = example.com
+log4j.appender.flume.Port = 41414
+log4j.appender.flume.UnsafeMode = true
+
+# configure a class logger to output to the flume appender
+log4j.logger.org.example.MyClass = DEBUG,flume
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Monitoring
+-----------
+export JAVA_OPTS=”-Dcom.sun.management.jmxremote 
+-Dcom.sun.management.jmxremote.port=5445 
+-Dcom.sun.management.jmxremote.authenticate=false 
+-Dcom.sun.management.jmxremote.ssl=false”
