@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.vijayrc.agent.util.Logger.*;
+import static com.vijayrc.agent.util.Logger.log;
 
 public class ShellAction extends BaseAction {
 

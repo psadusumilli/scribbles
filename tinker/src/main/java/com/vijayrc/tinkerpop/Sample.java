@@ -1,6 +1,9 @@
 package com.vijayrc.tinkerpop;
 
-import org.apache.tinkerpop.gremlin.tinkergraph.structure.*;
+import com.tinkerpop.gremlin.process.T;
+import com.tinkerpop.gremlin.structure.Graph;
+import com.tinkerpop.gremlin.structure.Vertex;
+import com.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 
 /**
  * Created by vijayrc on 6/29/15.
@@ -8,7 +11,7 @@ import org.apache.tinkerpop.gremlin.tinkergraph.structure.*;
 public class Sample {
 
     public void makeAGraph(){
-        Graph graph = TinkerGraph.open();
+        Graph graph = EmptyGraph.instance();
         Vertex marko = graph.addVertex(T.label, "person", T.id, 1, "name", "marko", "age", 29);
         Vertex vadas = graph.addVertex(T.label, "person", T.id, 2, "name", "vadas", "age", 27);
         Vertex lop = graph.addVertex(T.label, "software", T.id, 3, "name", "lop", "lang", "java");
