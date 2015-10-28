@@ -3,6 +3,7 @@ package com.vijayrc.eventuate
 import scala.util._
 import akka.actor._
 import com.rbmhtechnology.eventuate.EventsourcedActor
+
 /**
  * Created by vijayrc on 10/24/15.
  */

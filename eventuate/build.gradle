@@ -1,10 +1,9 @@
 apply plugin: 'scala'
-apply plugin: 'maven'
 
 repositories {
     mavenCentral()
     maven {
-        url "https://dl.bintray.com/rbmhtechnology/maven"
+        url 'https://dl.bintray.com/rbmhtechnology/maven'
     }
 }
 
