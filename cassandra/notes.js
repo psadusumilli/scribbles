@@ -76,8 +76,6 @@
         and without the need for any one "master" database or two-phase commit), Cassandra offers a way to ensure a transaction isolation level similar to the serializable level offered by relational database.
 
 
-
-
 -------------------------------------------------------------------------------------------------------------------------------------------
 1 QUICKSTART
 *************
