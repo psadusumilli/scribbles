@@ -1,4 +1,4 @@
-Akka Persistence
+Akka Persistence - AKKA 2.4
 *****************
 enables stateful actors to persist their internal state so that it can be recovered when 
 	1 an actor is started, 
@@ -39,6 +39,9 @@ When the persistent actor needs to be recovered, only the persisted events are r
 In other words, events cannot fail when being replayed to a persistent actor, in contrast to commands. 
 Event sourced actors may of course also process commands that do not change application state, such as 'query commands', for example.
 
+---------------------------------------------------------------------------------------------------------------------------------------
+PersistentActor
+***************
 Trait:
 ------
 'PersistentActor'
@@ -67,3 +70,93 @@ If there is a problem with recovering the state of the actor from the journal wh
 Deletion => rarely used, but mostly in conjuction with snapshotting
 --------
 Stopping a PersistentActor with PoisonPill message can cause stahed commands to be lost prematurely
+
+snapshots
+----------
+Persistent actors can save snapshots of internal state by calling the saveSnapshot method (SaveSnapshotSuccess message, otherwise a SaveSnapshotFailure message
+
+		var state: Any = _
+		 
+		override def receiveCommand: Receive = {
+		  case "snap"                                => saveSnapshot(state)
+		  case SaveSnapshotSuccess(metadata)         => // ...
+		  case SaveSnapshotFailure(metadata, reason) => // ...
+		}
+		override def receiveRecover: Receive = {
+		  case SnapshotOffer(metadata, offeredSnapshot) => state = offeredSnapshot
+		  case RecoveryCompleted                        =>
+		  case event                                    => // ...
+		}
+snapshots can be deleted, have a lifecycle on its own
+---------------------------------------------------------------------------------------------------------------------------------------
+Persistence Query
+*****************
+PersistentView is deprecated. Use Persistence Query instead. 
+PersistentView is tied to reading from one entity event stream, 
+but Query API allows using 'Akka Streams' module for querying the journal and retrieving streams of events.
+
+object StreamingJournalQueries {
+ 
+  def main(args: Array[String]): Unit = {
+    implicit val system = ActorSystem()
+    implicit val materializer = ActorMaterializer()
+ 
+    // create a ReadJournal for LevelDB journal backend
+    val readJournal =
+      PersistenceQuery(system).readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
+ 
+    // create a query for all events associated with a specific persistent entity as a Source of events
+    val source: Source[EventEnvelope, Unit] =
+      readJournal.eventsByPersistenceId("entity-1234", 0, Long.MaxValue)
+ 
+    // materialize the query with a Sink printing out events
+    source.runForeach(envelope ⇒ println(envelope.event))
+  }
+}
+---------------------------------------------------------------------------------------------------------------------------------------
+at-least-once delivery
+***********************
+To send messages with at-least-once delivery semantics to destinations you can mix-in AtLeastOnceDelivery trait to your PersistentActor on the sending side. It takes care of re-sending messages when they have not been confirmed within a configurable timeout.
+
+		import akka.actor.{ Actor, ActorSelection }
+		import akka.persistence.AtLeastOnceDelivery
+		 
+		case class Msg(deliveryId: Long, s: String)
+		case class Confirm(deliveryId: Long)
+		 
+		sealed trait Evt
+		case class MsgSent(s: String) extends Evt
+		case class MsgConfirmed(deliveryId: Long) extends Evt
+		 
+		class MyPersistentActor(destination: ActorSelection)
+		  extends PersistentActor with AtLeastOnceDelivery {
+		 
+		  override def persistenceId: String = "persistence-id"
+		 
+		  override def receiveCommand: Receive = {
+		    case s: String           => persist(MsgSent(s))(updateState)
+		    case Confirm(deliveryId) => persist(MsgConfirmed(deliveryId))(updateState)
+		  }
+		 
+		  override def receiveRecover: Receive = {
+		    case evt: Evt => updateState(evt)
+		  }
+		 
+		  def updateState(evt: Evt): Unit = evt match {
+		    case MsgSent(s) =>
+		      deliver(destination)(deliveryId => Msg(deliveryId, s))
+		 
+		    case MsgConfirmed(deliveryId) => confirmDelivery(deliveryId)
+		  }
+		}
+		 
+		class MyDestination extends Actor {
+		  def receive = {
+		    case Msg(deliveryId, s) =>
+		      // ...
+		      sender() ! Confirm(deliveryId)
+		  }
+		}
+---------------------------------------------------------------------------------------------------------------------------------------
+EventAdaptor=>separate journal event schema from domain event 
+FSM Actors => domain events change state of actor
