@@ -146,3 +146,9 @@ EventAdaptor=>separate journal event schema from domain event
 FSM Actors => domain events change state of actor
 Storage Plugins => community plugins available for Cassandra, Kafka, MySQL
 A journal plugin extends AsyncWriteJournal, AsyncRecovery
+'------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+'Schema Evolution'
+
+Default is java serialization, dont use it for Prod.
+pluggable schema mechanisms -> Avro, Thrift, ProtocolBuf..
+serialization bindings can be at each message type level.
