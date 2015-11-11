@@ -183,7 +183,9 @@ Using Companion objects is good practice.
 ActorSystem is a heavy object: create only one per application
 Check out examples in scribbles/akka
 
-If the current actor behavior does not match a received message, unhandled is called, which by default publishes an 'akka.actor.UnhandledMessage(message, sender, recipient)' on the actor system’s event stream  (set configuration item 'akka.actor.debug.unhandled' to on to have them converted into actual Debug messages).
+If the current actor behavior does not match a received message, unhandled is called,
+which by default publishes an 'akka.actor.UnhandledMessage(message, sender, recipient)' on the actor system’s event stream
+(set configuration item 'akka.actor.debug.unhandled' to on to have them converted into actual Debug messages).
 
 An 'ActorRef' always represents an incarnation (path and UID) not just a given path.
 Therefore if an actor is stopped and a new one with the same name is created an ActorRef of the old incarnation will not point to the new one. But restarts on failure, point to the same old one.
