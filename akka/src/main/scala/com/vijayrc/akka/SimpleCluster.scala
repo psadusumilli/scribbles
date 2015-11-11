@@ -5,6 +5,9 @@ import akka.cluster.Cluster
 import akka.cluster.ClusterEvent._
 import Util._
 
+/**
+ * listens to actor pre-create events hwen joining a cluster
+ */
 class Listener extends Actor with ActorLogging {
   def receive = {
     case state: CurrentClusterState => log.info("Current members: {}", state.members.mkString(", "))

@@ -1,8 +1,8 @@
-AKKA:
+AKKA
 ******
 Chapter1:
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-An actor is a container for State, Behavior, a Mailbox, Children and a Supervisor Strategy. 
+An actor is a container for State, Behavior, a Mailbox, Children and a Supervisor Strategy.
 All of this is encapsulated behind an Actor Reference.
 
 #1 Supervision:
@@ -26,7 +26,7 @@ Actor restart happens for failures like:
 	• Corrupt internal state of the actor
 New instance of the underlying Actor class and replacing the failed instance with the fresh one inside the child’s ActorRef; the ability to do this is one of the reasons for
 encapsulating actors within special references. The new actor then resumes processing its mailbox, meaning that the restart is not visible outside of the actor itself with the notable exception that the message during which the failure occurred is not re-processed.
-The precise sequence of events during a restart is the following: 
+The precise sequence of events during a restart is the following:
 	1. suspend the actor (which means that it will not process normal messages until resumed), and recursively suspend all children
 	2. call the old instance’s preRestart hook (defaults to sending termination requests to all children and calling postStop)
 	3. wait for all children which were requested to terminate (using context.stop()) during preRestart to actually terminate; this—
@@ -35,7 +35,7 @@ The precise sequence of events during a restart is the following:
 	5. invoke postRestart on the new instance (which by default also calls preStart)
 	6. send restart request to all children which were not killed in step 3; restarted children will follow the same process recursively, from step 2
 	7.resume the actor
-#1.4 
+#1.4
 Lifecycle Monitoring:
 	Any actor can monitor the other for this deathWatch using ActorContext.watch(targetActorRef), ActorContext.unwatch(targetActorRef).
 	message will be delivered irrespective of the order in which the monitoring request and target’s termination occur.
@@ -46,12 +46,12 @@ Supervision strategies:
 
 #2 Actor References:
 ***********************
-An actor reference is a subtype of ActorRef, whose foremost purpose is to support sending messages to the actor it represents. 
+An actor reference is a subtype of ActorRef, whose foremost purpose is to support sending messages to the actor it represents.
 Each actor has access to its canonical (local) reference through the 'self' field; this reference is also included as 'sender' reference by default for all messages sent to other actor.
-#2.1 
+#2.1
 Types of actors:
 	Purely local actor references without remoting, used for talking in the same jvm
-	Local actor references with remoting, used as gateways into their jvm, local mirror to remote on the opposite side 
+	Local actor references with remoting, used as gateways into their jvm, local mirror to remote on the opposite side
 	Remote actor references point to actors in other JVM with message serialisation
 	Router references, will just send the message to their children without any processing from their side.
 	Local Special:
@@ -59,15 +59,15 @@ Types of actors:
 		DeadLetterActorRef is the default implementation of the dead letters service to which Akka routes all messages whose destinations are shut down or non-existent.
 		EmptyLocalActorRef is what Akka returns when looking up a non-existent local actor path:
 #2.2
-Actor Path: 
+Actor Path:
 consists of an anchor, which identifies the actor system, followed by the concatenation of the path elements, from root guardian to the designated actor; the path elements are the names of the traversed actors and are separated by slashes.
 	"akka://my-sys/user/service-a/worker1" // purely local
 	"akka.tcp://my-sys@host.example.com:5678/user/service-b" // remote
 	"cluster://my-cluster/service-c" // clustered (Future Extension)
 akka.tcp is the default remote transport for the 2.2 release; other transports are pluggable
-types:	
+types:
 	"Logical path": From each parent to child, a complete ancestry path
-	"Physical path": Parent and child can exist in different jvms, so the path is actually wiring up network jumping info. 
+	"Physical path": Parent and child can exist in different jvms, so the path is actually wiring up network jumping info.
 				  However, a child can be directly accessed instead of going via parent to avoid needless routing
 	"Virtual path": WIP, moving clusters as a whole from system to another since everything is virtual.
 
@@ -83,8 +83,8 @@ Actor creation:
 	1 "ActorSystem.actorOf" =>  actorOf only ever creates a new actor, and it creates it as a direct child of the actor context on which this method is invoked.
 	2 "ActorContext.actorOf" => get existing actor and with that actor context, access its children, parent.
 	3 "ActorSystem.actorSelection" =>  only ever looks up existing actors with path startinng from root, when messages are delivered.Does not create/verify
-	4 "ActorContext.actorSelection" => similar to 3, but path starts from current actor instead of root. 
-								For eg: 
+	4 "ActorContext.actorSelection" => similar to 3, but path starts from current actor instead of root.
+								For eg:
 								context.actorSelection("../brother") ! msg => send to sibling
 								context.actorSelection("../*") ! msg => send to all children including himself
 	5 "actorFor" => (deprecated in favor of actorSelection) only ever looks up an existing actor, i.e. does not create one.
@@ -94,7 +94,7 @@ Actor equality:
 	Restart of an actor caused by a failure still means that it is the same actor, while terminated actor is not.
 
 #3 Location Transparency:
-****************************** 	
+******************************
 Distributed by default: design from keeping everything remote, then move to local by optimising. The reverse way is bad.
 Its asynchronous messaging with serialised messages over the wire, including closures.
 scaling up with routers and uses parallel cores
@@ -104,7 +104,7 @@ scaling up with routers and uses parallel cores
 #4.1 Actors & JMM:
 To prevent visibility and reordering problems on actors, Akka guarantees the following two "happens before" rules:
 	• The "actor send rule": the send of the message to an actor happens before the receive of that message by the same actor.
-	• The "actor subsequent processing rule": processing of one message happens before processing of the next message by the same actor. 
+	• The "actor subsequent processing rule": processing of one message happens before processing of the next message by the same actor.
 	   So actor state need not be declared volatile.
 #4.2 Futures & JMM:
 	The completion of a Future “happens before” the invocation of any callbacks registered to it are executed.
@@ -117,10 +117,10 @@ To prevent visibility and reordering problems on actors, Akka guarantees the fol
 • "at-most-once" delivery means that for each message handed to the mechanism, that message is delivered zero or one times
 	messages may be lost.
 	good performance and cheap
-• "at-least-once" 
-	delivery means that for each message handed to the mechanism potentially multiple attempts are made at delivering it, such that at least one succeeds; 
+• "at-least-once"
+	delivery means that for each message handed to the mechanism potentially multiple attempts are made at delivering it, such that at least one succeeds;
  	messages may be duplicated but not lost.
-• "exactly-once" delivery means that for each message handed to the mechanism exactly one delivery is made to the recipient; 
+• "exactly-once" delivery means that for each message handed to the mechanism exactly one delivery is made to the recipient;
 	the message can neither be lost nor duplicated.
 	very expensive,state to be kept at the receiving end in order to filter out duplicate deliveries.
 
@@ -143,7 +143,7 @@ This means that:
 #5.3 Local (within single JVM) messaging
 	Local sends can fail in Akka-specific ways:
 	• if the mailbox does not accept the message (e.g. full BoundedMailbox)
-	• if the receiving actor fails while processing the message or is already terminated. 
+	• if the receiving actor fails while processing the message or is already terminated.
 	  The sender of a message does not get feedback if there was an exception while processing, that notification goes to the supervisor instead.
 
 #5.4 Dead Letters
@@ -163,7 +163,7 @@ Things that can be configured
 All configuration for Akka is held within instances of ActorSystem
 The default is to parse all "application.conf, application.json and application.properties" in root classpath and merge with library "reference.conf"
 The philosophy is that code never contains default values, but instead relies upon their presence in the "reference.conf" supplied with the library in question.
-If you are writing an Akka application, keep you configuration in "application.conf" at the root of the classpath. 
+If you are writing an Akka application, keep you configuration in "application.conf" at the root of the classpath.
 If you are writing an Akka-based library, keep its configuration in "reference.conf" at the root of the JAR file.
 
 #6.1 good practice: have a file "dev.conf" which imports "application.conf" with defaults and overrides selectively.
@@ -185,7 +185,8 @@ Check out examples in scribbles/akka
 
 If the current actor behavior does not match a received message, unhandled is called, which by default publishes an 'akka.actor.UnhandledMessage(message, sender, recipient)' on the actor system’s event stream  (set configuration item 'akka.actor.debug.unhandled' to on to have them converted into actual Debug messages).
 
-An 'ActorRef' always represents an incarnation (path and UID) not just a given path. Therefore if an actor is stopped and a new one with the same name is created an ActorRef of the old incarnation will not point to the new one. But restarts on failure, point to the same old one. 
+An 'ActorRef' always represents an incarnation (path and UID) not just a given path.
+Therefore if an actor is stopped and a new one with the same name is created an ActorRef of the old incarnation will not point to the new one. But restarts on failure, point to the same old one.
 'ActorSelection' on the other hand points to the path. Send an 'Identity' to the 'ActorSelection', it will reply back with an 'ActorIdentity'
 
 Actors may be 'restarted' in case an exception is thrown while processing a message. Involves hooks 'preRestart,preStart,actorOf,postRestart'
@@ -199,74 +200,3 @@ In restarts, the mailbox is intact, so processing of remaining messages starts e
 
 #2.1 Ask
 The ask operation involves creating an internal actor for handling this reply, which needs to have a timeout after which it is destroyed in order not to leak resources.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-	
-
-	
-
-
-
-
-	
- 
-
-
-	
-
-
-
-
-
-
-
-
-
