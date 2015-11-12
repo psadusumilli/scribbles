@@ -93,12 +93,19 @@ Also, it supports event aggregation from several (even globally distributed)  pr
       'ordering' - strong in local storage, no guarantees of global ordering among many replicated local storage
       'cqrs' : command => validation => events persisted to journal => change state of actor => take journal snapshot
       "event collaboration" can be for state synch between actors of same type, or for a business flow between actors of different types.
+      'versioned state' => state can be versioned with vector timestamps
+      "batching" =>  uses batching to optimize read and write throughput.
+      "conflict resolution" => can be automated or manual intervention.
+         If an EA’s internal state is a CRDT, for example, the conflict can be resolved automatically (see also Eventuate’s operation-based CRDTs).
+         If internal state is not a CRDT, Eventuate provides further means to track and resolve conflicts, either automatically or interactively.
+      Eventuate the ConfirmedDelivery trait.
 
 'Event source views'
      can read replicated events from actors but not produce.
      can persist to a datastore like cassandra for the query layer in CQRS.
+     can read events of one actor if given a aggregate id, if not, can read all events of all actors
 
-Eventuate internally uses batching to optimize read and write throughput.
+
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
