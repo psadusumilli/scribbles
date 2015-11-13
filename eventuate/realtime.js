@@ -67,7 +67,7 @@ STREAMING
    'Flow': something with exactly one input and one output stream
    'BidirectionalFlow': something with exactly two input streams and two output streams that conceptually behave like two Flows of opposite direction
    'Graph': a packaged stream processing topology that exposes a certain set of input and output ports, characterized by an object of type Shape.
-
+   'Materializer' : decides how the flow is implemented (akka actors or spark..)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 HTTP
 'Spray' is deprecated, akka-http is the Spray 2.0
@@ -148,3 +148,7 @@ Also, it supports event aggregation from several (even globally distributed)  pr
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 PATTERNS
 1 Actors serving as source ingestion agents  (file readers) : kafka => spray => router actor => processing actor => cassandra actor
+2 modelling domain around cqrs ->
+         aggregates like order, customer,
+         derive aggregate lifecycle states as events
+         one transaction /aggregate with compensating transactions. If compensation not ok, merge the aggregates into one.
