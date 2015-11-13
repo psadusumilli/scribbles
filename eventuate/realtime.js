@@ -100,13 +100,50 @@ Also, it supports event aggregation from several (even globally distributed)  pr
          If internal state is not a CRDT, Eventuate provides further means to track and resolve conflicts, either automatically or interactively.
       Eventuate the ConfirmedDelivery trait.
 
+      "replication" via akka remoting - netty tcp
+
 'Event source views'
      can read replicated events from actors but not produce.
      can persist to a datastore like cassandra for the query layer in CQRS.
      can read events of one actor if given a aggregate id, if not, can read all events of all actors
 
+     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+     EVENTUATE VS AKKA-PERSISTENCE
+     0 persistactor/Eventsourcedactor, AtLeastOnceDelivery/ConfirmedDelivery
+     1 PA must be singletons, EAs can be replicated
+     2 No causality or global ordering of events of multiple PAs.
 
+     3 'CAP':
+       The write availability of an Akka Persistence application is constrained by the write availability of the underlying storage backend.
+       According to the CAP theorem, write availability of a strongly consistent, distributed storage backed is limited.
+       Consequently, the command side of an Akka Persistence application chooses CP from CAP.
 
+       EAs and their underlying event logs remain writeable even during inter-location network partitions.
+       From this perspective, a multi-location Eventuate application chooses AP from CAP.
+
+     4 'Query':
+       akka-persistence: persistence-view replaced with persistence-query
+       storage plugins may provide support for 'aggregating events from multiple PAs' and serve the result as Akka Streams
+
+       Eventuate: the query side can be implemented with EventsourcedViews (EVs).
+       An EV can consume events from 'all EAs that share an event log', even if they are globally distributed.
+       Events are always consumed 'in correct causal order'.
+       An application can either have a single replicated event log or several event logs, organized around topics, for example.
+       Future extensions will allow EVs to consume events from multiple event logs.
+       An Akka Streams API in Eventuate is also planned.
+
+     5 'storage':
+       akka-persistence: 1 index per PA persistenceId
+       Aggregating events from several PAs requires either the creation of an additional index in the storage backend or
+       an on-the-fly event stream composition when serving a query
+
+       eventuate: EAs without aggregateId share same event log
+
+     6 'throughput':
+       A consequence of synchronizing internal state with an event log is decreased throughput.
+       Synchronizing internal state has a stronger impact in Akka Persistence because of the details how event batch writes are implemented.
+       In Akka Persistence, events are batched on PA level, but only when using persistAsync.
+       In Eventuate there’s a separate batching layer between EAs and the storage plugin, so that events emitted by different EA instances, even if they sync their internal state with the event log, can be batched for writing.
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 PATTERNS
