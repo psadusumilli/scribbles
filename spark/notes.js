@@ -93,8 +93,7 @@ split into partitions that are spread across nodes in cluster for execution
 'parallelize'
      rdd.reducebyKey((x,y) => x+y, 10) //fixing number of partitions per rdd instead of spark default
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'loading data into rdd'
-
+LOADING/WRITING DATA
       1 //text
       sc.textFile("file://") => json (each line is a json record, use your preferred json lib like jackson ), text, csv (OpenCSV to parse), tsv;
       rdd.saveAsTextFile => to write rdd to file
@@ -126,7 +125,8 @@ split into partitions that are spread across nodes in cluster for execution
                                                         (streamingContext, [map of Kafka parameters], [set of topics to consume])
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'broadcast and accumulator'
+BROADCAST AND ACCUMULATOR
+
 val globalcount = sc.accumulator(0) // accumulator aggregates data from across all nodes,
 custom accumulator is by extending AccumulatorParam
 
@@ -137,21 +137,22 @@ broadcast is good for large variables to be passed in bittorrent like efficient 
 pipe() is used to external programs written in languages like R
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'cluster'
+CLUSTER
 
 1 driver program main()
   => action
       => directed acyclic graph of transformations
         => spark scheduler launches a 'job' per action
-        =>  job has 1-N 'stages'. stages are pipelined together, executed in order - 'serial'
-         => stage has N 'tasks', tasks are 'parallel'
+        =>  job has 1-* 'stages'. stages are pipelined together, executed in order - 'serial'
+         => stage has * 'tasks', tasks are 'parallel', 1 task/1 core
           => tasks are run on Y 'executors'(jvm) on Z 'nodes'(machines)
 
  driver program schedules tasks and manages executors.
  executors run tasks and store cached copies of RDD
 driver: http://localhost:4040/
 
- 'cluster managers'
+ CLUSTER MANAGER
+
 1 'spark cluster manager'
   install spark on all nodes
   edit conf/slaves on master
@@ -179,7 +180,109 @@ driver: http://localhost:4040/
     'coarse mode' =>  fixed number of CPU per executor
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PERFORMANCE
 
-.persist helps in the truncation of rdd execution pipelining by saving processed forms.
-.cache is spark optimizing behind the scenes will reduce the stages
-http://localhost:4040 on the driver machine helps in analyzing
+      .persist helps in the truncation of rdd execution pipelining by saving processed forms.
+      .cache is spark optimizing behind the scenes will reduce the stages
+      http://localhost:4040 on the driver machine helps in analyzing
+      each RDD maintains a pointer to parent RDD making a DAG, .toDebugString()
+
+'parallelism'
+       1 task for data stored in 1 partition
+       inputRDD picks parallel partitions based on storage, for eg in 1 partition/ 1 HDFS block
+       rdd.repartition() to choose number of partitions
+       rdd.coalesce() to reduce number of partitions. //a filter to remove blank lines in a 95% blank-line file.
+       rdd.getNumPartitions()
+'serialization'
+        spark default is java serialization aint great, use kyro serialization, register your classes with kryo.
+'memory'
+        rdd storage via persist, cache in JVM heap => spark.storage.memoryFraction
+        rdd shuffle intermediate storage => spark.shuffle.memoryFraction
+        default 60% rdd storage, 20% user program, 20% shuffle storage
+        cache() is always MEMORY_ONLY, so better to persist in MEMORY_AND_DISK for large rdd objects which will definitely spill-over
+        cache/persist MEMORY_ONLY_SER/MEMORY_AND_DISK_SER to use serialization to avoid GC pauses. serialization will group objects in  a giant buffer.
+        JVM GC is dependent on number of objects than the size in bytes.
+'hardware'
+          spark.executor.memory, --executor-memory
+          spark.executor.cores, --executor-cores
+          YARN can limit number of executors --num-executors
+          STANDALONE and MESOS will greedily consume all cores, limit by spark.cores.max
+          spark does linear scaling with more cores and memory.
+          'disk' best to use local disk rdd storage for a node
+              YARN has it own way for this
+              STANDALONE use SPARK_LOCAL_DIRS env variable in spark-env.sh in each node to point to list of local storage locations
+          too much 'memory' can use large GC pauses in executors, < 64GB is ok
+          MESOS and YARN makes sure to have small sized executors
+          STANDALONE can have multiple executors per node by starting them inidividually.
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SPARK SQL
+
+spark works with structured data using SchemaRDD by
+  loading it from json, hive, Parquet
+  makes it available in spark program, for general sql clients
+  merges with sql to join results.
+  even from regular RDD by assigning schema (scala implicits) (rdd.registerTempTable("tweets"))
+
+uses 'SchemaRDD', enhanced RDD to support a schema on RDD
+rdd.get("column")
+
+spark sql can be used with/without HIVE, the hadoop sql engine.
+  1 'with Hive' default
+      org.apache.spark:spark-hive_2.10 : 1.2.0
+      supports HIVE tables, UDF, SerDes (serialization/deserialization), HQL (hive query language)
+      entry => HiveContext
+  2 'without Hive'
+      org.apache.spark:spark-sql_2.10 : 1.2.0
+      subset of features given by 1
+      entry => SQLContext
+
+Spark SQL is based on HiveQL
+
+rdd = hiveCtx.jsonFile("tweets.json").
+rdd.registerTempTable("tweets")
+topTweets = hiveCtx.sql("select * from tweets order by retweetcount limit 10")
+val textsRDD =  topTweets.map(row => row.getString(0))
+
+SchemaRDD similar to jdbc resultset, now upgrading to 'DataFrames' in future Spark version.
+
+'caching'
+hiveCtx.cacheTable("tweets")// stores in columnar format, transient until driver programs exits.
+sql
+  CACHE TABLE tweets
+  UNCACHE TABLE tweets
+
+'jdbc server'
+Spark can run a sql server that will provide other client tools to access SchemaRDD
+sbin/start-thriftserver.sh => localhost:10000
+Beeline is the packaged jdbc client, gives a sql shell.
+
+ 'UDF' //tbd
+ 'performance' //tbd
+
+ //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ SPARK STREAMING
+
+DStream -> discretized stream of RDDs over a time interval built from sources like Kafka, Flume or HDFS.
+'Transformations' => yield new DStreams,
+'output operations' => write the data
+
+SAMPLE
+to listen on socket 7777 and filter out lines containing ERROR
+      val ssc = new StreaminContext(conf, Seconds(1)) // 1 sec batch
+      val lines  = ssc.socketTextStream("localhost",7777)
+      val errors = lines.filter( x => x.contains("ERROR"));
+      errors.print() //output action
+
+      ssc.start() //will start tasks for consuming and creating RDDs
+      ssc.awaitTermination()
+
+step 0: streamingContext starts 2 tasks
+step 1: one long receiver task to collect data , converts into RDDs in one executor
+step 2: RDDs are cached into another executor where the real short tasks are run like transformations and actions are done.
+step 4: 'checkpointing' replicates ~4-5 batches of data for fault tolerance in HDFS, S3
+
+ STATELESS TRANSFORMATION
+ The transformations are scoped within the RDD of a single batch.
+ Similar to basic RDD, map(), filter(), groupbyKey, reducebyKey
+ Joins can be done on other RDDs only in the same time batch.
+ 
