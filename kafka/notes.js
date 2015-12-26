@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 reference:
 **********
 http://kafka.apache.org/documentation.html

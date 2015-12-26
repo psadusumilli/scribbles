@@ -132,7 +132,7 @@ Also, it supports event aggregation from several (even globally distributed)  pr
        Future extensions will allow EVs to consume events from multiple event logs.
        An Akka Streams API in Eventuate is also planned.
 
-     5 'storage': 
+     5 'storage':
        akka-persistence: 1 index per PA persistenceId
        Aggregating events from several PAs requires either the creation of an additional index in the storage backend or
        an on-the-fly event stream composition when serving a query
