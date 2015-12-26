@@ -1,5 +1,4 @@
-package com.vjiayrc.spark
-
+package com.vijayrc.spark
 
 import org.apache.log4j.Logger
 import org.apache.spark.{SparkConf, SparkContext}
