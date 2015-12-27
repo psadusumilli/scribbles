@@ -1,3 +1,9 @@
+http://spark.apache.org/docs/latest/streaming-programming-guide.html
+https://databricks.com/blog/2015/03/30/improvements-to-kafka-integration-of-spark-streaming.html
+http://blog.cloudera.com/blog/2015/03/exactly-once-spark-streaming-from-apache-kafka/
+http://www.michael-noll.com/blog/2014/10/01/kafka-spark-streaming-integration-example-tutorial/
+
+
 'Old Receiver Approach'
     At a high-level, the earlier Kafka integration worked with Write Ahead Logs (WALs) as follows:
         The Kafka data is continuously received by 'Kafka Receivers running in the Spark workers/executors'.

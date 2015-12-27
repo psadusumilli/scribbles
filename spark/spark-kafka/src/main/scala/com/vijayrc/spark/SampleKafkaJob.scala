@@ -15,8 +15,10 @@ object SampleKafkaJob {
    * run all samples
    */
   def main(args: Array[String]): Unit = {
-    if (args.nonEmpty && args{0}.equalsIgnoreCase("stream")) runStreamJob()
-    else  runBatchJob()
+    if (args.nonEmpty && args {
+      0
+    }.equalsIgnoreCase("stream")) runStreamJob()
+    else runBatchJob()
   }
 
 
@@ -25,14 +27,15 @@ object SampleKafkaJob {
    * Each batch corresponds to a KafkaRDD
    */
   def runStreamJob(): Unit = {
-    val ssc = new StreamingContext(new SparkConf, Seconds(60))
+    val ssc = new StreamingContext(new SparkConf, Seconds(5))
     val kafkaParams = Map("metadata.broker.list" -> "localhost:9092") // hostname:port for kafka brokers, not zookeeper; host1:port1, host2:port2
     val topics = Set("test") // topic1, topic2
     val stream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics)
 
-    /**
-     * show the offset range details of each rdd in a stream
-     */
+    stream.foreachRDD { rdd =>
+      showRDDdetails(rdd)
+    }
+
     def showRDDdetails(rdd: RDD[(String, String)]) = {
 
       //show messages
@@ -40,24 +43,14 @@ object SampleKafkaJob {
 
       //show offset details
       val offsets: Array[OffsetRange] = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
-
-      rdd.mapPartitionsWithIndex { (i, iter) =>
-        val osr: OffsetRange = offsets(i) // index to get the correct offset range for the rdd partition we're working on
-      val topic = osr.topic
-        val kafkaPartitionId = osr.partition
-        val begin = osr.fromOffset
-        val end = osr.untilOffset
-        println(topic + "|" + kafkaPartitionId + "|" + begin + "-" + end)
+      rdd.mapPartitionsWithIndex { (i, iter) => // index to get the correct offset range for the rdd partition we're working on
+        val osr: OffsetRange = offsets(i)
+        println(osr.topic + "|" + osr.partition + "|" + osr.fromOffset + "-" + osr.untilOffset)
         Iterator.empty
       }
     }
 
-    stream.foreachRDD { rdd =>
-      showRDDdetails(rdd)
-
-    }
   }
-
 
   /**
    * to create kafkaRDDs from fixed batch windows in topics
