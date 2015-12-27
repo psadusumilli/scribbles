@@ -26,3 +26,4 @@ test-output/
 **/build/
 *.bak
 *.swp
+*.jar
