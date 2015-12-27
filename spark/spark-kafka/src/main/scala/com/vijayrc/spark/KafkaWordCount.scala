@@ -3,6 +3,7 @@ package com.vijayrc.spark
 
 import java.util
 
+import _root_.kafka.serializer.StringDecoder
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming._
@@ -45,7 +46,51 @@ object KafkaWordCount {
   }
 }
 
-// Produces some random words between 1 and 100.
+/**
+ * Consumes messages from one or more topics in Kafka and does wordcount.
+ * Usage: DirectKafkaWordCount <brokers> <topics>
+ *   <brokers> is a list of one or more Kafka brokers
+ *   <topics> is a list of one or more kafka topics to consume from
+ *
+ * Example:
+ *  $ bin/run-example streaming.DirectKafkaWordCount broker1-host:port,broker2-host:port   topic1,topic2
+ */
+object DirectKafkaWordCount {
+  def main(args: Array[String]) {
+    if (args.length < 2) {
+      System.err.println( s"""
+                             |Usage: DirectKafkaWordCount <brokers> <topics>
+                             | <brokers> is a list of one or more Kafka brokers
+                             | <topics> is a list of one or more kafka topics to consume from
+                             |
+        """.stripMargin)
+      System.exit(1)
+    }
+
+    val Array(brokers, topics) = args
+
+    // Create context with 2 second batch interval
+    val sparkConf = new SparkConf().setAppName("DirectKafkaWordCount")
+    val ssc = new StreamingContext(sparkConf, Seconds(2))
+
+    // Create direct kafka stream with brokers and topics
+    val topicsSet = topics.split(",").toSet
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
+    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
+
+    val lines = messages.map(_._2)
+    val words = lines.flatMap(_.split(" "))
+    val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
+    wordCounts.print()
+
+    ssc.start()
+    ssc.awaitTermination()
+  }
+}
+
+/**
+ * Produces some random words between 1 and 100.
+ */
 object KafkaWordCountProducer {
 
   def main(args: Array[String]) {
@@ -67,7 +112,7 @@ object KafkaWordCountProducer {
         val str = (1 to wordsPerMessage.toInt).map(x => scala.util.Random.nextInt(10).toString).mkString(" ")
         val message = new ProducerRecord[String, String](topic, null, str)
         producer.send(message)
-        println("sent "+message)
+        println("sent " + message)
         Thread.sleep(1000)
       }
     }
