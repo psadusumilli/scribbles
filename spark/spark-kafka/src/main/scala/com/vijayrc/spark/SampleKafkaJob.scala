@@ -47,7 +47,7 @@ object SampleKafkaJob {
         val osr: OffsetRange = offsets(i)
         println(osr.topic + "|" + osr.partition + "|" + osr.fromOffset + "-" + osr.untilOffset)
         Iterator.empty
-      }
+      }.count()
     }
     ssc.start()
     ssc.awaitTermination()

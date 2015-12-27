@@ -19,9 +19,7 @@ import org.apache.spark.streaming.kafka._
  * <numThreads> is the number of threads the kafka consumer should use
  *
  * Example:
- * `$ bin/run-example \
- * org.apache.spark.examples.streaming.KafkaWordCount zoo01,zoo02,zoo03 \
- * my-consumer-group topic1,topic2 1`
+ * $ bin/run-example org.apache.spark.examples.streaming.KafkaWordCount zoo01,zoo02,zoo03 my-consumer-group topic1,topic2 1
  */
 object KafkaWordCount {
   def main(args: Array[String]) {
@@ -30,11 +28,11 @@ object KafkaWordCount {
       System.exit(1)
     }
     val Array(zkQuorum, group, topics, numThreads) = args
+    val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
+
     val sparkConf = new SparkConf().setAppName("KafkaWordCount")
     val ssc = new StreamingContext(sparkConf, Seconds(2))
     ssc.checkpoint("checkpoint")
-
-    val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
 
     val lines = KafkaUtils.createStream(ssc, zkQuorum, group, topicMap).map(_._2)
     val words = lines.flatMap(_.split(" "))
@@ -69,6 +67,7 @@ object KafkaWordCountProducer {
         val str = (1 to wordsPerMessage.toInt).map(x => scala.util.Random.nextInt(10).toString).mkString(" ")
         val message = new ProducerRecord[String, String](topic, null, str)
         producer.send(message)
+        println("sent "+message)
         Thread.sleep(1000)
       }
     }
