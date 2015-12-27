@@ -49,6 +49,8 @@ object SampleKafkaJob {
         Iterator.empty
       }
     }
+    ssc.start()
+    ssc.awaitTermination()
 
   }
 
