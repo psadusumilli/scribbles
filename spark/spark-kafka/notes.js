@@ -18,8 +18,12 @@
         Direct API eliminates the need for both WALs and Receivers for Kafka, while ensuring that each Kafka record is effectively received by Spark Streaming exactly once.
         1:1 mapping with kafka and RDD partitions
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-APIs
+        DirectKafkaInputStream runs on driver, reads batch offsets
+        KafkaRDD runs on executors, reads the corresponding batch messages
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 'API'
+-****-
 
 'KafkaRDD'
     Recall that an RDD is defined by:
@@ -45,12 +49,34 @@ APIs
     offset ranges are defined in advance on the driver, then read directly from Kafka by executors, the messages returned by a particular KafkaRDD are 'deterministic'
     Safe to re-try a task if it fails. If a Kafka leader is lost, for instance, the compute method will just sleep for the amount of time defined by the refresh.leader.backoff.ms
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 'DirectKafkaInputStream'
 
-The KafkaRDD returned by KafkaUtils.createRDD is usable in batch jobs if you have existing code to obtain and manage offsets.
-In most cases however, you’ll probably be using KafkaUtils.createDirectStream, which returns a DirectKafkaInputDStream.
-Similar to an RDD, a DStream is defined by:
+    The KafkaRDD returned by KafkaUtils.createRDD is usable in batch jobs if you have existing code to obtain and manage offsets.
+    In most cases however, you’ll probably be using KafkaUtils.createDirectStream, which returns a DirectKafkaInputDStream.
+    Similar to an RDD, a DStream is defined by:
 
-    A list of parent DStreams. Again, this is an input DStream, not a transformation, so it has no parents.
-    A time interval at which the stream will generate batches. This stream uses the interval of the streaming context.
-    A method to generate an RDD for a given time interval (compute)
+        A list of parent DStreams. Again, this is an input DStream, not a transformation, so it has no parents.
+        A time interval at which the stream will generate batches. This stream uses the interval of the streaming context.
+        A method to generate an RDD for a given time interval (compute)
+
+    The compute method runs on the driver.
+    It connects to the leader for each topic and partition, not to read messages, but just to get the latest available offset.
+    It then defines a KafkaRDD with offset ranges spanning from the ending point of the last batch until the latest leader offsets.
+
+     three choices of delivery options
+         1 Don’t worry about it if you don’t care about lost or duplicated messages, and just restart the stream from the earliest or latest offset.
+         2 Checkpoint the stream, in which case the offset ranges (not the messages, just the offset range definitions) will be stored in the checkpoint.
+         3 Store the offset ranges yourself, and provide the correct starting offsets when restarting the stream.
+
+    No consumer offsets are stored in ZooKeeper.
+    If you want interop with existing Kafka monitoring tools that talk to ZK directly, you’ll need to store the offsets into ZK yourself
+    (this doesn’t mean it needs to be your system of record for offsets, you can just duplicate them there).
+
+     1 consumer delivery semantics are up to you, not Kafka.
+     2 understand that Spark does not guarantee exactly-once semantics for output actions.
+        When the Spark streaming guide talks about exactly-once, it’s only referring to a given item in an RDD being included in a calculated value once, in a purely functional sense.
+        Any side-effecting output operations (i.e. anything you do in foreachRDD to save the result) may be repeated, because any stage of the process might fail and be retried.
+     3 understand that Spark checkpoints may not be recoverable, for instance in cases where you need to change the application code in order to get the stream restarted.
+        This situation may improve by 1.4
