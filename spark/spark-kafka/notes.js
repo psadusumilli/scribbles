@@ -95,3 +95,27 @@ http://www.michael-noll.com/blog/2014/10/01/kafka-spark-streaming-integration-ex
         Any side-effecting output operations (i.e. anything you do in foreachRDD to save the result) may be repeated, because any stage of the process might fail and be retried.
      3 understand that Spark checkpoints may not be recoverable, for instance in cases where you need to change the application code in order to get the stream restarted.
         This situation may improve by 1.4
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'Notes on old Receiver Approach'
+
+if a topic has N partitions, then your application can only consume this topic with a maximum of N threads in parallel.
+All consumers that are part of the same consumer group share the burden of reading from a given Kafka topic,
+Only a maximum of N (= number of partitions) threads across all the consumers in the same group will be able to read from the topic.
+Any excess threads will sit idle - 'point'
+Only one consumer is guranteed to receive a message in a group, no duplicate receipt
+'point': if all consumers belong to same group, they are load balanced within group for every message
+'broadcast': if all consumers belong to different groups , they are distributed across groups for every message
+
+1 'Read parallellism'
+    Two options
+     1.1 'Increase the number of Dstreams' (KafkaUtils.createStream) across many machines as reading is network-io dependent.
+             The streams share the same consumer group, so the kafka partitions are divided among them.
+     1.2 'increase the number of threads inside a Dstream' - loading a single machine more by reading from multiple partitions of a topic
+     combine 1.1, 1.2 to make N streams with 1 thread for N partitions in 1 topic to maximize throughput.
+
+2 'Processing parallelism'
+    After getting the streams RDDs, use it as such,or use 'union','coalesce','repartition' according to your needs.
+
+3 'Writing to kafka'
+    Best to use a pooled producers to avoid swarming connections  
