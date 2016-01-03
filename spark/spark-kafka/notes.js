@@ -118,4 +118,4 @@ Only one consumer is guranteed to receive a message in a group, no duplicate rec
     After getting the streams RDDs, use it as such,or use 'union','coalesce','repartition' according to your needs.
 
 3 'Writing to kafka'
-    Best to use a pooled producers to avoid swarming connections  
+    Best to use a pooled producers to avoid swarming connections
