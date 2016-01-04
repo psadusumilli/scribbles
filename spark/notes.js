@@ -281,8 +281,79 @@ step 1: one long receiver task to collect data , converts into RDDs in one execu
 step 2: RDDs are cached into another executor where the real short tasks are run like transformations and actions are done.
 step 4: 'checkpointing' replicates ~4-5 batches of data for fault tolerance in HDFS, S3
 
+'points'
+Once a context has been started, no new streaming computations can be set up or added to it.
+Once a context has been stopped, it cannot be restarted.
+Only one StreamingContext can be active in a JVM at the same time.
+stop() on StreamingContext also stops the SparkContext. To stop only the StreamingContext, set the optional parameter of stop() called stopSparkContext to false.
+A SparkContext can be re-used to create multiple StreamingContexts, as long as the previous StreamingContext is stopped (without stopping the SparkContext) before the next StreamingContext is created.
+
+Every input DStream (except file stream, discussed later in this section) is associated with a 'Receiver'
+      Receiver is long running task to collect data
+      Processors are short-lived tasks to work on data
+      use 'local[N]' where N > number of receivers, when running local streaming samples,bcos 'local' will local the 1 main thread just for receiving.
+      'Reliable Receiver' - A reliable receiver correctly sends acknowledgment to a reliable source when the data has been received and stored in Spark with replication.
+      'Unreliable Receiver' - An unreliable receiver does not send acknowledgment to a source.
+      This can be used for sources that do not support acknowledgment, or even for reliable sources when one does not want or need to go into the complexity of acknowledgment.
+
+Spark Streaming provides two categories of built-in streaming sources.
+    'Basic sources': Sources directly available in the StreamingContext API. Examples: file systems, socket connections, and Akka actors.
+    'Advanced sources': Sources like Kafka, Flume, Kinesis, Twitter, etc. are available through extra utility classes.
+    'samples'
+        streamingContext.fileStream[KeyClass, ValueClass, InputFormatClass](dataDirectory)
+        streamingContext.actorStream(actorProps, actor-name)
+        streamingContext.queueStream(queueOfRDDs)
+
  STATELESS TRANSFORMATION
  The transformations are scoped within the RDD of a single batch.
  Similar to basic RDD, map(), filter(), groupbyKey, reducebyKey
- Joins can be done on other RDDs only in the same time batch.
- 
+ Joins can be done on other RDDs
+ 'sample'
+         val spamInfoRDD = ssc.sparkContext.newAPIHadoopRDD(...) // RDD containing spam information
+         val cleanedDStream = wordCounts.transform(rdd => {
+           rdd.join(spamInfoRDD).filter(...) // join data stream with spam information to do data cleaning
+           ...
+         })
+
+
+STATEFUL TRANSFORMATION
+https://github.com/apache/spark/blob/master/examples/src/main/scala/org/apache/spark/examples/streaming/StatefulNetworkWordCount.scala
+The 'updateStateByKey' operation allows you to maintain arbitrary state while continuously updating it with new information.
+To use this, you will have to do two steps.
+      Define the state - The state can be an arbitrary data type.
+      Define the state update function - Specify with a function how to update the state using the previous state and the new values from an input stream.
+'sample'
+      def updateFunction(newValues: Seq[Int], runningCount: Option[Int]): Option[Int] = {
+          val newCount = ...  // add the new values with the previous running count to get the new count
+          Some(newCount)
+      }
+      val runningCounts = pairs.updateStateByKey[Int](updateFunction _) //pairs is word occurence pair before reducing => (word, 1)
+
+WINDOW OPERATIONS
+apply transformations over a sliding window of data.
+'window length' - The duration of the window,  say 3 batches
+'sliding interval' - The interval at which the window operation is performed, say 2 batches
+so the common overlay is 3-2=1 batch between windows
+      'sample' // Reduce last 30 seconds of data, every 10 seconds
+      val windowedWordCounts = pairs.reduceByKeyAndWindow((a:Int,b:Int) => (a + b), Seconds(30), Seconds(10))
+
+1 'window(windowLength, slideInterval)' =>
+         Return a new DStream which is computed based on windowed batches of the source DStream.
+2 'countByWindow(windowLength, slideInterval)' =>
+         Return a sliding window count of elements in the stream.
+3 'reduceByWindow(func, windowLength, slideInterval)' =>
+         Return a new single-element stream, created by aggregating elements in the stream over a sliding interval using func.
+         The function should be associative so that it can be computed correctly in parallel.
+4 'reduceByKeyAndWindow(func, windowLength, slideInterval, [numTasks])' =>
+         When called on a DStream of (K, V) pairs, returns a new DStream of (K, V) pairs where the values for each key are aggregated using the given reduce function func over batches in a sliding window.
+         Note: By default, this uses Sparks default number of parallel tasks (2 for local mode, and in cluster mode the number is determined by the config property spark.default.parallelism) to do the grouping.
+         You can pass an optional numTasks argument to set a different number of tasks.
+5 'reduceByKeyAndWindow(func, invFunc, windowLength, slideInterval, [numTasks])' =>
+         A more efficient version of the above reduceByKeyAndWindow() where the reduce value of each window is calculated incrementally using the reduce values of the previous window.
+         This is done by reducing the new data that enters the sliding window, and “inverse reducing” the old data that leaves the window.
+         An example would be that of “adding” and “subtracting” counts of keys as the window slides.
+         However, it is applicable only to “invertible reduce functions”, that is, those reduce functions which have a corresponding “inverse reduce” function (taken as parameter invFunc). 
+         Like in reduceByKeyAndWindow, the number of reduce tasks is configurable through an optional argument. Note that checkpointing must be enabled for using this operation.
+6 'countByValueAndWindow(windowLength, slideInterval, [numTasks])' =>
+         When called on a DStream of (K, V) pairs, returns a new DStream of (K, Long) pairs where the value of each key is its frequency within a sliding window.
+         Like in reduceByKeyAndWindow, the number of reduce tasks is configurable through an optional argument.

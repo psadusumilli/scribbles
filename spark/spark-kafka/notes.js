@@ -49,7 +49,8 @@ http://www.michael-noll.com/blog/2014/10/01/kafka-spark-streaming-integration-ex
             Optionally, a list of preferred hosts for a given partition, in order to push computation to where the data is (getPreferredLocations).
 
     Takes in a cluster of Kafka of kafka brokers
-    Maps 1 KafkaRDD/1 partition/1 topic/1 offset range
+    1 RDD partition -> 1 Kafka partition
+    Maps 1 KafkaRDD partition/1 kafka partition/1 topic/1 offset range
 
 
     methods:
@@ -112,10 +113,71 @@ Only one consumer is guranteed to receive a message in a group, no duplicate rec
      1.1 'Increase the number of Dstreams' (KafkaUtils.createStream) across many machines as reading is network-io dependent.
              The streams share the same consumer group, so the kafka partitions are divided among them.
      1.2 'increase the number of threads inside a Dstream' - loading a single machine more by reading from multiple partitions of a topic
-     combine 1.1, 1.2 to make N streams with 1 thread for N partitions in 1 topic to maximize throughput.
+     combine 1.1, 1.2 to make N streams with 1 thread, for each of N partitions in 1 topic to maximize throughput.
 
 2 'Processing parallelism'
     After getting the streams RDDs, use it as such,or use 'union','coalesce','repartition' according to your needs.
 
 3 'Writing to kafka'
     Best to use a pooled producers to avoid swarming connections
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'Producer writing patterns'
+http://allegro.tech/2015/08/spark-kafka-integration.html
+
+'problem'
+        dstream.foreachRDD { rdd =>
+          val producer = createKafkaProducer() //executed on driver machine
+          rdd.foreach { message =>
+            producer.send(message) //executed  on executor machine
+          }
+          producer.close()
+        }
+
+Since Producer holds to a live socket connection, cannot be serialized over the wire.
+
+'slow solution1'
+         dstream.foreachRDD { rdd =>
+           rdd.foreach { message =>
+             val producer = createKafkaProducer()
+             producer.send(message)
+             producer.close() //create and close for every message
+           }
+         }
+
+'slow solution2'
+        dstream.foreachRDD { rdd =>
+          rdd.foreachPartition { partitionOfRecords => //create and close a producer for every partition. still slow owing to partition count
+            val producer = createKafkaProducer()
+            partitionOfRecords.foreach { message =>
+              connection.send(record))
+            }
+            producer.close()
+          }
+        }
+
+'good solution - use lazy evaluation of a broadcasted Producer wrapper KafkaClient, which does not send a live producer, but a function to create one for each executor'
+        val kafkaSink = sparkContext.broadcast(KafkaSink(conf))
+
+        dstream.foreachRDD { rdd =>
+          rdd.foreach { message =>
+            kafkaSink.value.send(message)
+          }
+        }
+        class KafkaSink(createProducer: () => KafkaProducer[String, String]) extends Serializable {
+          lazy val producer = createProducer()
+          def send(topic: String, value: String): Unit = producer.send(new ProducerRecord(topic, value))
+        }
+        object KafkaSink {
+          def apply(config: Map[String, Object]): KafkaSink = {
+            val f = () => {
+              val producer = new KafkaProducer[String, String](config)
+              sys.addShutdownHook {
+                producer.close()
+              }
+              producer
+            }
+            new KafkaSink(f)
+          }
+        }
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
