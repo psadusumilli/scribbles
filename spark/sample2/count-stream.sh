@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #echo "copying jar..."
 #cp ../spark-kafka/target/spark-kafka-1.0-SNAPSHOT-jar-with-dependencies.jar .
 

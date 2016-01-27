@@ -8,8 +8,12 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 /**
  * Created by vijayrc on 12/26/15.
+ *
+ * $ cd scribbles/spark/spark-kafka
+ * $ spark-submit --class  com.vijayrc.spark.KafkaReadJob ./target/spark-kafka-1.0-SNAPSHOT-jar-with-dependencies.jar stream
+ *
  */
-object SampleKafkaJob {
+object KafkaReadJob {
 
   /**
    * run all samples
