@@ -1,6 +1,7 @@
 package com.vijayrc.spark
 
 import kafka.serializer.StringDecoder
+import org.apache.log4j.Logger
 import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.kafka.{HasOffsetRanges, KafkaUtils, OffsetRange}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
@@ -14,6 +15,8 @@ import org.apache.spark.{SparkConf, SparkContext}
  *
  */
 object KafkaReadJob {
+
+  val logger = Logger.getLogger(this.getClass)
 
   /**
    * run all samples
@@ -49,7 +52,7 @@ object KafkaReadJob {
       val offsets: Array[OffsetRange] = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
       rdd.mapPartitionsWithIndex { (i, iter) => // index to get the correct offset range for the rdd partition we're working on
         val osr: OffsetRange = offsets(i)
-        println(osr.topic + "|" + osr.partition + "|" + osr.fromOffset + "-" + osr.untilOffset)
+        logger.info(osr.topic + "|" + osr.partition + "|" + osr.fromOffset + "-" + osr.untilOffset)
         Iterator.empty
       }.count()
     }
@@ -71,4 +74,7 @@ object KafkaReadJob {
     val rdd = KafkaUtils.createRDD[String, String, StringDecoder, StringDecoder](sc, kafkaParams, offsetRanges)
     rdd.values.foreach(println)
   }
+
+
+
 }

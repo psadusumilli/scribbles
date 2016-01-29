@@ -99,7 +99,6 @@ object KafkaWordCountProducer {
     }
     val Array(brokers, topic, messagesPerSec, wordsPerMessage) = args
 
-    // Zookeeper connection properties
     val props = new util.HashMap[String, Object]()
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")

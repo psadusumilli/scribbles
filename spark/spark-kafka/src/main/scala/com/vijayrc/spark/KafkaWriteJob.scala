@@ -23,7 +23,6 @@ object KafkaWriteJob {
       writeBatch()
   }
 
-
   def writeBatch(): Unit = {
     val sc = new SparkContext(new SparkConf().setAppName("kafka-write-job"))
     logger.info("=> jobName = kafka-write-job")
@@ -57,6 +56,5 @@ object KafkaWriteJob {
     (x: String) => new KeyedMessage[String, String]("test", x) //topic is 'test'
     // (x: String) => new KeyedMessage[String,Array[Byte]]("default", "key-string",x.getBytes))
   }
-
 
 }
