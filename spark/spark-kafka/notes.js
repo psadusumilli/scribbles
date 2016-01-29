@@ -181,3 +181,14 @@ Since Producer holds to a live socket connection, cannot be serialized over the 
           }
         }
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+'Strategy'
+stream mode 
+Mapping between kafka partition and RDD partition - 'write an example '
+Data locality Strategy  -> Kafka leader broker and Spark node, if same partition keying is used, it would be the same.
+Balancing in Kafka vs Spark repartitioning
+Avro serialization and Spark kyro - 'write an example '
+how much batch (fixed offsets ) and streaming in Sath
+
+Failure scenarios:
+--------------------------
