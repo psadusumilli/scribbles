@@ -44,11 +44,8 @@ object KafkaReadJob {
     }
 
     def showRDDdetails(rdd: RDD[(String, String)]) = {
-
-      //show messages
       rdd.values.foreach(println)
 
-      //show offset details
       val offsets: Array[OffsetRange] = rdd.asInstanceOf[HasOffsetRanges].offsetRanges
       rdd.mapPartitionsWithIndex { (i, iter) => // index to get the correct offset range for the rdd partition we're working on
         val osr: OffsetRange = offsets(i)
