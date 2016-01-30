@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-#kafka-start.sh
-# for stream example start netcat server
-#ncat -l -p 7777
-#then keep typing lines
+# this sample is to write a stream of string data from a socket server to kafka using cloudera spark-writer
+# socket-server => spark => kafka broker  => kafka consumer
+
+# kafka-start.sh
+# for stream example start netcat server ncat -l -p 7777
+# then keep typing lines
 
 echo "SPARK START"
 spark-submit --class com.vijayrc.spark.KafkaWriteJob ../spark-kafka/target/spark-kafka-1.0-SNAPSHOT-jar-with-dependencies.jar stream
