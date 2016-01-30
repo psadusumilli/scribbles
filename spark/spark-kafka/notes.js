@@ -3,6 +3,8 @@ https://databricks.com/blog/2015/03/30/improvements-to-kafka-integration-of-spar
 http://blog.cloudera.com/blog/2015/03/exactly-once-spark-streaming-from-apache-kafka/
 http://www.michael-noll.com/blog/2014/10/01/kafka-spark-streaming-integration-example-tutorial/
 http://capykoa.com/articles/14
+https://github.com/databricks/spark-avro
+https://github.com/cloudera/spark-kafka-writer
 
 'kafka'
         bin/zookeeper-server-start.sh config/zookeeper.properties
@@ -187,8 +189,15 @@ Since Producer holds to a live socket connection, cannot be serialized over the 
 Mapping between kafka partition and RDD partition - 'write an example  - need many nodes'
 Data locality Strategy  -> Kafka leader broker and Spark node, if same partition keying is used, it would be the same.
 Balancing in Kafka vs Spark repartitioning
-Avro serialization and Spark kyro - 'write an example '
+Avro serialization and Spark kyro - 'done '
 how much batch (fixed offsets ) and streaming in Sath
 
-Failure scenarios:
---------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'spark and avro'
+https://github.com/databricks/spark-avro
+spark-avro supports reading and writing of Avro data from Spark SQL.
+
+Automatic schema conversion: spark-avro supports most conversions between Spark SQL and Avro records, making Avro a first-class citizen in Spark.
+Partitioning: This library allows developers to easily read and write partitioned data witout any extra configuration. Just pass the columns you want to partition on, just like you would for Parquet.
+Compression: You can specify the type of compression to use when writing Avro out to disk. The supported types are uncompressed, snappy, and deflate. You can also specify the deflate level.
+Specifying record names: You can specify the record name and namespace to use by passing a map of parameters with recordName and recordNamespace.
