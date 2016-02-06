@@ -1,6 +1,5 @@
 GENERATIONAL HEAP
   Any generational heap is broken into
-
     1 | Eden
         New objs created here, frequent GC
         TLAB (thread local allocation buffers) makes sure each threads gets it own contiguous allocation space
@@ -31,7 +30,6 @@ GENERATIONAL HEAP
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 COLLECTIONS
-
   1 'Minor Collection'
     Collecting garbage from the Young space is called Minor GC
     1.1
@@ -53,6 +51,9 @@ COLLECTIONS
      So focus on finding out whether the GC at hand stopped all the application threads or was able to progress concurrently with the application threads.
 
   jstat -gc -t 4235 1s (statistics on GC given a process-id with an polling interval of 1 sec)
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+GC ALGORITHMS
+
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 GARBAGE COLLECTORS
@@ -90,12 +91,26 @@ GARBAGE COLLECTORS
         will be default for JDK 9
 
 //-------------------------------------------------------------------------------------------------------------------
+VM AND SWAPPING
+  hacksaw pattern is normal GC cycle with minor collections whenever ~80% usage is reached
+  Full GC is needed when it cant cope up.
+
+  'How to get right heap size?'
+  The heap usage should look something like a saw-tooth pattern, going up and up until it reaches 100% and then drop down to a value below 100%.
+  These "drops" are caused by garbage collection.  Check the percentage at the bottom of each "drop".
+  This is how much of your Java heap is occupied by live objects.
+  Say for example that 25% of a 2 GB heap is occupied after each garbage collection, which means that you have 0.5 GB of live objects.
+  A simple rule-of-thumb minimum heap size is  0.5 *2 = 1 GB
+
+  'JVM release memory? Nope'
+  It wont  typically release much memory once its warmed up, even when the application is lightly loaded or even idle at a later time.
+  Though -XX:+UseSerialGC can occasionally shrink the heap and return memory,  almost never used in production for an obvious performance reason.
+  The parallel collector and the concurrent mark sweep (CMS) collector, which are often used in production, almost never shrink the heap and return memory.
+  
+//-------------------------------------------------------------------------------------------------------------------
 REFERENCE
 https://plumbr.eu/handbook/garbage-collection-in-java#survivor-spaces
 https://plumbr.eu/blog/garbage-collection/minor-gc-vs-major-gc-vs-full-gc
-
-
-//-------------------------------------------------------------------------------------------------------------------
-JVM AND SWAPPING
-      hacksaw pattern is normal GC cycle with minor collections whenever ~80% usage is reached
-      Full GC is needed when it cant cope up.
+https://blogs.oracle.com/jrockitdetails/entry/on_java_heap_sizing_migrated
+http://psy-lob-saw.blogspot.com/2014/10/the-jvm-write-barrier-card-marking.html
+http://hiroshiyamauchi.blogspot.com/2013/06/making-jvm-release-memory.html
