@@ -1,3 +1,9 @@
+Reference
+http://blog.inflinx.com/2013/12/29/maven-bill-of-materials/
+https://medium.com/java-user-group-malta/maven-s-bill-of-materials-bom-b430ede60599#.2ori07vww
+
+
+
 CHAP 1 Dependency management
 .......................................................................................................................................................................................................................................................
 1 TRANSITIVE DEPENDENCIES
@@ -44,12 +50,31 @@ CHAP 1 Dependency management
             All X+Y dependencyManagement dependencies would be imported
             If common found, X takes precedence because of declaration order
 4 'BOM- Bill of Materials'
+   4.1 create a BOM
     - Create a library of artifacts that can be used
-    The root of the project is the BOM pom. It defines the versions of all the artifacts that will be created in the library.
-    - artifact=bom | packaging=pom | dependencies=project1+project2 | modules=parent
-        - artifact=parent | parent=bom | dependencies=some open libs | modules=project1, project2
-          - artifact=project1 | parent=parent | dependencies=some open libs
-          - artifact=project2 | parent=parent | dependencies=some open libs
+          The root of the project is the BOM pom. It defines the versions of all the artifacts that will be created in the library.
+            - artifact=bom | packaging=pom | dependencies=project1+project2 | modules=parent
+                  - artifact=parent | parent=bom | dependencies=some open libs | modules=project1, project2
+                        - artifact=project1 | parent=parent | dependencies=some open libs
+                        - artifact=project2 | parent=parent | dependencies=some open libs
+    4.2 use the BOM
+          artifact=client | dependencyManagement=bom (import) | dependencies=project1,project2
 
-    The project that follows shows how the library can now be used in another project without having to specify the dependent projects versions.
-    
+   4.3 A better example, say you want same version of spring libraries, then import spring BOM
+         http://mvnrepository.com/artifact/org.springframework/spring-framework-bom/4.2.4.RELEASE
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-framework-bom</artifactId>
+                        <version>4.0.0.RC2</version>
+                        <type>pom</type>
+                        <scope>import</scope>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+            then all the spring dependencies like spring-orm and their transitive dependencies will be from the imported BOM
+            <dependency>
+               <groupId>org.springframework</groupId>
+               <artifactId>spring-context</artifactId>
+            </dependency>
