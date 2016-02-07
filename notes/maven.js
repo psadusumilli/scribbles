@@ -1,7 +1,7 @@
 Reference
 http://blog.inflinx.com/2013/12/29/maven-bill-of-materials/
 https://medium.com/java-user-group-malta/maven-s-bill-of-materials-bom-b430ede60599#.2ori07vww
-
+https://books.sonatype.com/mvnref-book/reference/pom-relationships-sect-pom-syntax.html
 
 
 CHAP 1 Dependency management
@@ -78,3 +78,24 @@ CHAP 1 Dependency management
                <groupId>org.springframework</groupId>
                <artifactId>spring-context</artifactId>
             </dependency>
+
+CHAP 2 Versioning
+......................................................................................................................................................................................................................................................
+Standard scheme is
+      '<major version>.<minor version>.<incremental version>-<qualifier>'
+      1.3.4-alpha
+qualifier is compared as String while the major/minor/incremental are compared as Integers
+Active developement uses snapshots
+      1.0-SNAPSHOT
+      Maven would expand this version to UTC timezone “1.0-20080207-230803-1”
+      if you were to deploy a release at 11:08 PM on February 7th, 2008 UTC
+
+'versoning ranges'
+(, ) =>Exclusive quantifiers
+[, ] =>Inclusive quantifiers
+samples
+   [3.8,4.0) => 3.8 >= x < 4
+   [,3.8.1]  =>  x < = 3.8.1
+   [4.0,) => x >= 4.0
+   [1.2]  => x = 1.2
+   (,1.0],[1.2,) => x <= 1.0 or x >= 1.2. (multiple sets separated by comma here)
