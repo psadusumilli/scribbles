@@ -31,7 +31,7 @@ Chapter2: Configuration
 Chapter3: Parallelism
 ***********************
 1) A machine in a cluster can run 1-* worker process for 1-* topologies.
-2) A worker process can run many 1-* executors backed the workers' child threads.
+2) A worker process can run many 1-* executors backed the worker child threads.
 3) A executor can run 1-* tasks of the same component(bolt/spout).
 4) Cluster -> Machines -> Worker Process -> Executors (thread pools) -> tasks (bolt/spout running instance)
 5) Parallelism hint given in setBolt/setSpout is the initial number of executors.
