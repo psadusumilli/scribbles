@@ -99,3 +99,9 @@ samples
    [4.0,) => x >= 4.0
    [1.2]  => x = 1.2
    (,1.0],[1.2,) => x <= 1.0 or x >= 1.2. (multiple sets separated by comma here)
+.......................................................................................................................................................................................................................................................
+CHAP 3 MAVEN RELEASE
+https://dzone.com/articles/why-i-never-use-maven-release
+The Maven release plugin just tries to do too much stuff at once:
+      build your software, tag it, build it again, deploy it, build the site (triggering yet another build in the process) and deploy the site.
+Just get away from it.
