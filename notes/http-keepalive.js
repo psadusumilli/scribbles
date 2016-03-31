@@ -5,3 +5,14 @@ Under HTTP 1.0, there is no official specification for how keepalive operates. I
 Connection: keep-alive
 
 In HTTP 1.1, all connections are considered persistent unless declared otherwise.[1] The HTTP persistent connections do not use separate keepalive messages, they just allow multiple requests to use a single connection. However, the default connection timeout of Apache httpd 1.3 and 2.0 is as little as 15 seconds[2][3] and just 5 seconds for Apache httpd 2.2 and above.[4][5] The advantage of a short timeout is the ability to deliver multiple components of a web page quickly while not consuming resources to run multiple server processes or threads for too long.[6]
+
+Advantages[edit]
+Lower CPU and memory usage (because fewer connections are open simultaneously).
+Enables HTTP pipelining of requests and responses.
+Reduced network congestion (fewer TCP connections).
+Reduced latency in subsequent requests (no handshaking).
+Errors can be reported without the penalty of closing the TCP connection.
+These advantages are even more important for secure HTTPS connections, because establishing a secure connection needs much more CPU time and network round-trips.
+
+
+http://httpd.apache.org/docs/current/mod/core.html#keepalive
