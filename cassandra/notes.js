@@ -1,9 +1,15 @@
 
 0 INTRODUCTION
 ***************
+“Apache Cassandra is an open source, distributed, decentralized, elastically scalable,
+highly available, fault-tolerant, tuneably consistent, column-oriented database that
+bases its distribution design on Amazon’s Dynamo and its data model on Google’s
+Bigtable. Created at Facebook, it is now used at some of the most popular sites on the
+Web.”
+
     highly available, AP from CAP
     no master, a ring of similar nodes talking via 'gossip'
-    linear scalability by more nodes 
+    linear scalability by more nodes
     nodes that fail can easily be restored or replaced.
     multi-datacente spread
     flexible data model
@@ -12,6 +18,12 @@
     cql
     apple, facebook, twitter, comcast, spotify
 
+0.0 general rdbms
+    ACID,
+    2 phase commit  to scale across machines
+    sharding - feature-based, key-based, lookup table
+    ORM & schema not matching real domain entities
+    denormalizing
 
 0.1 rdbms comparision
 ----------------------
@@ -39,40 +51,40 @@
 
 0.4 data model
 --------------
-    Cassandra is a wide-row-store database that uses a highly denormalized model designed to capture and query data performantly. 
-    Although Cassandra has objects that resemble a relational database (e.g., tables, primary keys, indexes, etc.), 
+    Cassandra is a wide-row-store database that uses a highly denormalized model designed to capture and query data performantly.
+    Although Cassandra has objects that resemble a relational database (e.g., tables, primary keys, indexes, etc.),
     Cassandra data modeling techniques necessarily depart from the relational tradition.
     Can have 1000+ columns unlike rdbms
 
     Cassandra includes:
         'Keyspace'
-            a container for data tables and indexes; analogous to a database in many relational databases. 
+            a container for data tables and indexes; analogous to a database in many relational databases.
             It is also the level at which replication is defined.
         'Table'
-            somewhat like a relational table, but capable of holding vastly large volumes of data. 
+            somewhat like a relational table, but capable of holding vastly large volumes of data.
             A table is also able to provide very fast row inserts and column level reads.
         'Primary key'
             used to identity a row uniquely in a table and also distribute a table’s rows across multiple nodes in a cluster.
         'Index'
             similar to a relational index in that it speeds some read operations; also different from relational indices in important ways.
 
-    'cql'        
-    DDL (CREATE, ALTER, DROP), DML (INSERT, UPDATE, DELETE, TRUNCATE), and query (SELECT) operations are all supported.        
+    'cql'
+    DDL (CREATE, ALTER, DROP), DML (INSERT, UPDATE, DELETE, TRUNCATE), and query (SELECT) operations are all supported.
 
 
 0.5 transactions
 ----------------
-    Only 'AID' portion of 'ACID'. Writes to Cassandra are atomic, isolated, and durable. 
+    Only 'AID' portion of 'ACID'. Writes to Cassandra are atomic, isolated, and durable.
     The 'C' of ACID—​consistency—​does not apply to Cassandra, as there is no concept of referential integrity or foreign keys.
-    tunable data consistency across a database cluster. 
-    You might want a particular request to complete if just one node responds, or you might want to wait until all nodes respond. 
+    tunable data consistency across a database cluster.
+    You might want a particular request to complete if just one node responds, or you might want to wait until all nodes respond.
     'Tunable data consistency' is supported across single or multiple data centers, and you have a number of different consistency options from which to choose.
-    Consistency is 'configurable on a per-query basis', meaning you can decide how strong or eventual consistency should be per SELECT, INSERT, UPDATE, and DELETE operation. 
-    For example, if you need a particular transaction to be available on all nodes throughout the world, you can specify that all nodes must respond before a transaction is marked complete. 
+    Consistency is 'configurable on a per-query basis', meaning you can decide how strong or eventual consistency should be per SELECT, INSERT, UPDATE, and DELETE operation.
+    For example, if you need a particular transaction to be available on all nodes throughout the world, you can specify that all nodes must respond before a transaction is marked complete.
     On the other hand, a less critical piece of data (e.g., a social media update) may only need to be propagated eventually, so in that case, the consistency requirement can be greatly relaxed.
-    
-    Cassandra also supplies 'lightweight transactions', or a compare-and-set mechanism. 
-    Using and extending the Paxos consensus protocol (which allows a distributed system to agree on proposed data modifications with a quorum-based algorithm, 
+
+    Cassandra also supplies 'lightweight transactions', or a compare-and-set mechanism.
+    Using and extending the Paxos consensus protocol (which allows a distributed system to agree on proposed data modifications with a quorum-based algorithm,
         and without the need for any one "master" database or two-phase commit), Cassandra offers a way to ensure a transaction isolation level similar to the serializable level offered by relational database.
 
 
@@ -81,7 +93,7 @@
 *************
 
 'step-0: download the tar, untar in some tools folder'
-    apache-cassandra-2.2.3:  cd bin 
+    apache-cassandra-2.2.3:  cd bin
     ➜  bin  ls
     cassandra         cassandra.in.sh  cqlsh.bat  debug-cql.bat  source-conf.ps1  sstableloader      sstablescrub.bat    sstableverify      stop-server.bat
     cassandra.bat     cassandra.ps1    cqlsh.py   nodetool       sstablekeys      sstableloader.bat  sstableupgrade      sstableverify.bat  stop-server.ps1
@@ -92,7 +104,7 @@
 
 
 'step-2: talk using cql shell'
-    ➜  bin  ./cqlsh    
+    ➜  bin  ./cqlsh
     Connected to Test Cluster at 127.0.0.1:9042.
     [cqlsh 5.0.1 | Cassandra 2.2.3 | CQL spec 3.3.1 | Native protocol v4]
     Use HELP for help.
@@ -121,7 +133,7 @@
 
     (3 rows)
     cqlsh:mykeyspace> CREATE INDEX ON users (lname);
-    cqlsh:mykeyspace> 
+    cqlsh:mykeyspace>
     cqlsh:mykeyspace> SELECT * FROM users WHERE lname = 'smith';
 
      user_id | fname | lname
@@ -130,7 +142,7 @@
         1746 |  john | smith
 
     (2 rows)
-    cqlsh:mykeyspace> 
+    cqlsh:mykeyspace>
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -354,6 +366,3 @@ A 'snitch' defines groups of machines into data centers and racks (the topology)
       172.106.12.120 =DC3:RAC1
       172.106.12.121 =DC3:RAC1
     'ec2snitch, ec2multiregionsnitch, googlecloudsnitch, cloudstacksnitch' => meant for aws, google cloud and apache cloudstack
-
-
-    
