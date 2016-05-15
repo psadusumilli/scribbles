@@ -48,19 +48,11 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
     Use HELP for help.
     cqlsh> CREATE KEYSPACE mykeyspace
        ... WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
-    cqlsh> use mykeyspace
-       ... ;
-    cqlsh:mykeyspace> CREATE TABLE users (
-                  ...   user_id int PRIMARY KEY,
-                  ...   fname text,
-                  ...   lname text
-                  ... );
-    cqlsh:mykeyspace> INSERT INTO users (user_id,  fname, lname)
-                  ...   VALUES (1745, 'john', 'smith');
-    cqlsh:mykeyspace> INSERT INTO users (user_id,  fname, lname)
-                  ...   VALUES (1744, 'john', 'doe');
-    cqlsh:mykeyspace> INSERT INTO users (user_id,  fname, lname)
-                  ...   VALUES (1746, 'john', 'smith');
+    cqlsh> use mykeyspace;
+    cqlsh:mykeyspace> CREATE TABLE users (user_id int PRIMARY KEY,fname text,lname text);
+    cqlsh:mykeyspace> INSERT INTO users (user_id,  fname, lname) VALUES (1745, 'john', 'smith');
+    cqlsh:mykeyspace> INSERT INTO users (user_id,  fname, lname) VALUES (1744, 'john', 'doe');
+    cqlsh:mykeyspace> INSERT INTO users (user_id,  fname, lname) VALUES (1746, 'john', 'smith');
     cqlsh:mykeyspace> SELECT * FROM users;
 
      user_id | fname | lname
@@ -151,6 +143,8 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
 
  //.........................................................................................
  'schema free'
+
+ git config --global alias.logline "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 
 
