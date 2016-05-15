@@ -1,20 +1,21 @@
 
-0 INTRODUCTION
-***************
+//FROM DEFINITIVE GUIDE
+
+
+CHAP1-INTRODUCTION
+*******************
 “Apache Cassandra is an open source, distributed, decentralized, elastically scalable,
 highly available, fault-tolerant, tuneably consistent, column-oriented database that
 bases its distribution design on Amazon’s Dynamo and its data model on Google Bigtable.
 Created at Facebook, it is now used at some of the most popular sites on the Web.”
 
-0.0 general rdbms
-----------------------
+0.0 'general rdbms'
     ACID, 2 phase commit  to scale across machines
     sharding - feature-based, key-based, lookup table
     ORM & schema not matching real domain entities
     denormalizing & star schemas
 
-0.1 rdbms comparision
-----------------------
+0.1 'rdbms comparision'
     Handles moderate incoming data velocity / Handles high incoming data velocity
     Data arriving from one/few locations / Data arriving from many locations
     Manages primarily structured data / Manages all types of data
@@ -27,8 +28,8 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
     Deployed in vertical scale up fashion / Deployed in horizontal scale out fashion
 
 //.........................................................................................................................................................
-1 QUICKSTART
-*************
+CHAP2-QUICKSTART
+****************
 
 'step-0: download the tar, untar in some tools folder'
     apache-cassandra-2.2.3:  cd bin
@@ -76,9 +77,10 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
 
 //.........................................................................................................................................................
 
-2 ARCHITECTURE
-***************
-2 FEATURES
+CHAP3-DATA MODEL
+*****************
+3.1 features
+------------
   'distributed & elastic scalability',
     no-master, gossip protocol
     scales well with multi-core and multiple datacenters.
@@ -89,7 +91,7 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
     sharding and replication auto-balance on adding/removing nodes
     scale up and down by adding nodes, balances automatically
     highly available and fault tolerant
-//.........................................................................................
+
   'Tunable data consistency'
     is supported across single or multiple data centers, and you have a number of different consistency options from which to choose.
     Consistency is 'configurable on a per-query basis', meaning you can decide how strong or eventual consistency should be per SELECT, INSERT, UPDATE, and DELETE operation.
@@ -101,7 +103,6 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
             consistency factor < replication factor => available system
             consistency factor = replication factor => strict consistency
             consistency factor > replication factor => not possible.
-//.........................................................................................
  'CAP'
       CA -> many nodes with replicated data, must block for every write to synch all nodes to be consistent.
       CP -> many nodes with partitioned data, can lose a shard when the node goes down.
@@ -115,7 +116,6 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
       Using and extending the Paxos consensus protocol (which allows a distributed system to agree on proposed data modifications with a quorum-based algorithm,
           and without the need for any one "master" database or two-phase commit), Cassandra offers a way to ensure a transaction isolation level similar to the serializable level offered by relational database.
 
-//.........................................................................................
  'data store'
       Cassandra is a wide-row-store database that uses a highly denormalized model designed to capture and query data performantly.
       Although Cassandra has objects that resemble a relational database (e.g., tables, primary keys, indexes, etc.),
@@ -138,19 +138,109 @@ Created at Facebook, it is now used at some of the most popular sites on the Web
           'Index'
               similar to a relational index in that it speeds some read operations; also different from relational indices in important ways.
 
-      'cql'
+  'cql'
       DDL (CREATE, ALTER, DROP), DML (INSERT, UPDATE, DELETE, TRUNCATE), and query (SELECT) operations are all supported.
 
- //.........................................................................................
- 'schema free'
+3.2 columns, family, super columns
+----------------------------------
+  [Keyspace][ColumnFamily][Key][Column]
+  [Keyspace][ColumnFamily][Key][SuperColumn][SubColumn]
 
- git config --global alias.logline "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+  'column and column family'
+    a big list of different types of maps
+    the basic unit is a key-value pair called column(rdbms column),
+    bunch of them make a columnfamily(rdbms table)
+    list of related columns is row(must be wholly saved in 1 node)
+    unlike rdbms the column-name can be any datatype in adddition to string since its a map key
+    no null values, just no entry for the key, hence Sparse
+    column-family has attributes like 'keys-cached, rows-cached, comment, read-repair-chance, preload-row-cache'
 
+  'timestamp'
+    each column entry must have a last-updated timestamp
+    the row (list of related columns in the table) is not associated with the timestamp
+    timestamp needed for conflict resolution
+    not automatic provided metadata, but should be given by client everytime
 
+  'super-column family' - map of maps
+    say person is a map of address, employment, dependents column families with its own row key to club them all together
+
+  'keyspace'
+    related column families with set of attributes like
+      Replication factor - how many node copies
+      Replica placement strategy - simple, oldnetworktopologystrategy, NetworkTopologyStrategy
+
+  'sorting'
+    column sorting is controllable, but key sorting isn’t; row keys always sort in byte order.
+    columns are sorted by the 'compare_with' type defined on their enclosing column famil
+    types => AsciiType, BytesType, LexicalUUIDType, Integer Type, LongType, TimeUUIDType, or UTF8Type
+    in rdbms, sorting order (ascending or descending) can be specified at query time, but in cassandra its fixed at table design
+    though 'Slicerange' query can help in sort order change
+
+  'no-joins | denormalized'
+    there are no joins..period.
+    no referential integrity
+    design your tables with queries as pivot -
+    invoice table will have copied fields from order and customer tables
+
+3.3 Patterns
+--------------
+  'materialized views'
+    -> if you have a 'user' column family
+    user_name(PK) | first_name | city | state ...
+    and you want to find users in a particular city, create  then column family called 'user_city'
+    city (PK) | user_name
+  'valueless column'
+    above example in 'user_city', if user had an UUID row key user_id
+    city (PK) | user_id
+  'aggregate keys'
+    combine 2+ more columns
+    state:city (PK) | user_id
 
 //.......................................................................................................................................................
-INTERNALS
+CHAP4-SAMPLE APP
+*****************
+Hotel Search Site
 
+'queries come first unlike rdbms where entities and relations come first'
+• Find hotels in a given area.
+• Find information about a given hotel, such as its name and location.
+• Find points of interest near a given hotel.
+• Find an available room in a given date range.
+• Find the rate and amenities for a room.
+• Book the selected room by entering guest information.
+
+
+step 4.1. Schema definition in cassandra.yaml
+keyspaces:
+- name: Hotelier
+  replica_placement_strategy: org.apache.cassandra.locator.RackUnawareStrategy replication_factor: 1
+column_families:
+  - name: Hotel
+    compare_with: UTF8Type
+  - name: HotelByCity
+    compare_with: UTF8Type
+  - name: Guest
+    compare_with: BytesType
+  - name: Reservation
+    compare_with: TimeUUIDType
+  - name: PointOfInterest
+    column_type: Super
+    compare_with: UTF8Type
+    compare_subcolumns_with: UTF8Type
+  - name: Room
+    column_type: Super
+    compare_with: BytesType
+    compare_subcolumns_with: BytesType
+  - name: RoomAvailability
+    column_type: Super
+    compare_with: BytesType
+    compare_subcolumns_with: BytesType
+
+Outdated code from 'definitive guide book' but is raw and in-synch with column families, no SQL syntax to make u feel comfortable.
+
+//.......................................................................................................................................................
+CHAP5- ARCHITECTURE
+*********************
 2.0
  'How READ/WRITE happens'
     'write': client =>commit log (disk)=>memtable(memory)=>spill over to SStable(disk)=>compact sstables periodically
