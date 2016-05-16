@@ -241,69 +241,96 @@ Outdated code from 'definitive guide book' but is raw and in-synch with column f
 //.......................................................................................................................................................
 CHAP5- ARCHITECTURE
 *********************
-2.0
- 'How READ/WRITE happens'
-    'write': client =>commit log (disk)=>memtable(memory)=>spill over to SStable(disk)=>compact sstables periodically
-    'read': client=>bloom filter(memory)=>partition summary(memory)=>partition index(disk)=>compression offsets(memory)=>data(disk)=>client
+5.1 'System keyspace'
+        'Schema' column family holds user keyspace and schema definitions
+        'Migrations' column family records the changes made to a keyspace.
+5.2 'peer-to-peer'
+        add nodes, give them time to become full fledged ring member
+5.3 'replication and failure tolerance'
+        state replication and failure detection via 'gossip' protocol
+        When a server node is started, it registers itself with the gossiper to receive endpoint state information.
+        org.apache .cassandra.gms.Gossiper class is responsible for managing gossip for the local node.
 
-    Nodes persist WRITE to a 'commit log'.
-    Data is then indexed and written to an in-memory structure, called a 'memtable', which resembles a write-back cache.
-    Once the memory structure is full, the data is written to disk in an 'SSTable' data file.
-    A sorted string table (SSTable) is an immutable data file to which Cassandra writes memtables periodically.
-    SSTables are append only and stored on disk sequentially and maintained for each Cassandra table.
-    All writes are automatically 'partitioned and replicated' throughout the cluster using 'gossip' every second.
-    Using 'compaction' Cassandra periodically consolidates SSTables, discarding obsolete data and tombstones (an indicator that data was deleted).
+        1. Periodically (according to the settings in its TimerTask), the G=gossiper will choose a random node in the ring and initialize a gossip session with it. Each round of gossip requires three messages.
+        2. The gossip initiator sends its chosen friend a GossipDigestSynMessage.
+        3. When the friend receives this message, it returns a GossipDigestAckMessage.
+        4. When the initiator receives the ack message from the friend, it sends the friend a GossipDigestAck2Message to complete the round of gossip.
 
-    commit log=>memtable=>sstable
-    node=>datacenter(group of nodes in a location)=>cluster(across datacenters)
+        'Phi Accrual Failure Detection'
+        not just simple heartbeat but more intelligent to work flexible and also be suspicious
+        org.apache.cassandra.gms .FailureDetector
+        org.apache.cassandra.gms.IFailureDetector
 
-2.1
-'gossip' is a peer-to-peer protocol that transmits state data every sec to synch up.
-approx 3 seed nodes are required per datacenter to bootstrap gossip during restarts.
+5.4 'anti-entropy'
+        anti-entropy is the opposite of gossip, corrects whatever gossip misses out
+        org.apache.cassandra.service.AntiEntropyService
+        One'merkle tree' per column is built during compaction
+          merkle trees are hash trees wherethe leaves are the data blocks (typically files on a filesystem) to be summarized.
+          Every parent node in the tree is a hash of its direct child node, which tightly compacts the summary.
+        during each update, checksum of tree is compared across nodes
+        if mismatch, then tree is shared and corrected
+        This requires using a 'time window' to ensure that peers have had a chance to receive the most recent update so that the system is not constantly and unnecessarily executing anti-entropy.
+        To keep the operation fast, nodes internally maintain an 'inverted index keyed by timestamp' and only exchange the most recent updates.
+5.5 'read-repair'
+        when data read from multiple node replicas, if they are found not be in synch, latest is always returned to client.
+        then read-repair happens based on client consistency level
+          ONE -> just return latest from one node, do correction across all nodes in background
+          QUORUM -> block until read-repair is done in quorum nodes, then return
+          ALL -> block until read-repair is done in all nodes
 
-2.2 failure
-'node failure' is determined by gossip quality
-'phi_convict_threshold' is used to tune the failure determination sensitivity.
-'hinted handoff' is done by replicas of died node which gather WRITE hints
-'nodetool' is used to start/stop nodes and resynch state
+5.6 'Memtables, SSTables, and Commit Logs'
+      On write
+          1 write to commit log
+              1 commit log per column family for entire server
+              1 bit flag in commit log, which will be set to 0 once memtable is flushed to disk
+              has rollover mechanisms
+          2 write to memory tables.
+              multiple memtables exists per column family, 1 current, rest waiting to flush
+          3 flush to storage tables in disk once memory table threshold is reached
+              immutable
+              each SSTable also has an associated 'Bloom filter' for performance
+              When a query is performed, the Bloom filter is checked first before accessing disk. Because false-negatives are not possible, if the filter indicates that the element does not exist in the set, it certainly doesn’t; but if the filter thinks that the element is in the set, the disk is accessed to make sure.
 
-2.3 partition
-'partitioner' spreads the data using the hash of PK of every row.
-Each node has multiple tokens leading to multiple 'vnodes'.
-This leads to non-contiguous data distribution of partitioned data.
-• 'Murmur3Partitioner' (default): uniformly distributes data across the cluster based on MurmurHash hash values.
-    64-bit hash value, possible range of hash values is from 2^-63 to 2^+63-1.
-• 'RandomPartitioner': uniformly distributes data across the cluster based on MD5 hash values. 0-(2^127-1)
-• 'ByteOrderedPartitioner': keeps an ordered distribution of data lexically by key bytes
+      'fast writes'
+          just plain sequential append gives fast insertion, since random seek to update data
+          Compaction is intended to amortize the reorganization of data for better read performance, but it uses sequential IO to do so
+      'on reads'
+          will check the memtable first to find the value
 
-2.4 replication
-'replication_factor'=1 means only 1 copy in 1 node, 2 means 2 copies in 2 nodes. there is no primary version, all are copies since no master.
-'SimpleStrategy' => single data center
-'NetworkTopologyStrategy' => multiple data centers
-  •'Two replicas in each data center':
-   This configuration tolerates the failure of a single node per replication group and still allows local reads at a consistency level of ONE.
-  •'Three replicas in each data center':
-  This configuration tolerates either the failure of a one node per replication group at a strong consistency level of LOCAL_QUORUM or multiple node failures per data center using consistency level ONE.
+5.7 'hinted handoffs'
+    when node A receives a write meant for node B which is dead
+    it will create a 'hint' (write packaged) for node B to take up when it comes back
+    problem: all nodes can pile up hints which can flood the node B once its comes up
 
-2.5 snitch
-A 'snitch' defines groups of machines into data centers and racks (the topology) that the replication strategy uses to place replicas.
-  'dynamic snitch'=>snitch layer that monitors read latency and, when possible, routes requests away from poorly-performing nodes.
-  'simple snitch'=>single data center
-  'rackinferring snitch'=>determines the location of nodes by rack and data center, which are assumed to correspond to the 3rd and 2nd octet of the node IP address.
-  'propertyfile snitch'=>use /etc/cassandra/cassandra-topology.properties to map names to IPs
-   SAMPLE
-   If you had non-uniform IPs and two physical data centers with two racks in each, and a third logical data center for replicating analytics data, the cassandra-topology.properties file might look like this:
+5.8 'compaction'
+    A compaction operation in Cassandra is performed in order to merge SSTables.
+    During compaction, the data in SSTables is merged: the keys are merged, columns are com- bined, tombstones are discarded, and a new index is created.
 
-      Note: Data center and rack names are case-sensitive.
-      # Data Center One
-      175.56.12.105 =DC1:RAC1
-      120.53.24.101 =DC1:RAC2
-      # Data Center Two
-      110.56.12.120 =DC2:RAC1
-      110.54.35.184 =DC2:RAC1
-      50.33.23.120 =DC2:RAC2
-      50.45.14.220 =DC2:RAC2
-      # Analytics Replication Group
-      172.106.12.120 =DC3:RAC1
-      172.106.12.121 =DC3:RAC1
-    'ec2snitch, ec2multiregionsnitch, googlecloudsnitch, cloudstacksnitch' => meant for aws, google cloud and apache cloudstack
+5.9 'tombstone'
+    is like a soft-delete tag on data,
+    stays around for Garbage Collection Grace Seconds (10 days), then wiped out.
+
+5.10 'Staged Event-Driven Architecture (SEDA)'
+    similar to actor based concurrency
+    each stage is a unit for work which could be done by a different thread pool managed by java.util.ExecutorService
+    The following operations are represented as stages in Cassandra:
+      • Read
+      • Mutation
+      • Gossip
+      • Response
+      • Anti-Entropy
+      • Load Balance
+      • Migration
+      • Streaming
+
+5.11 'Cassandra Daemon'
+    The org.apache.cassandra.service.CassandraDaemon interface represents the life cycle of the Cassandra service running on a single node.
+    It includes the typical life cycle operations that you might expect: start, stop, activate, deactivate, and destroy.
+
+5.12 'Storage Service'
+    The Cassandra database service is represented by org.apache.cassandra.service .StorageService.
+    The storage service contains the node’s 'token', which is a marker indicating the range of data that the node is responsible for.
+
+5.14 'MessagingService'
+    The purpose of org.apache.cassandra.net.MessagingService is to create socket listeners for inbound/outbound message exchanges.
+    Message streaming is Cassandra’s optimized way of sending sections of SSTable files from one node to another; all other communication between nodes occurs via serialized messages. 
