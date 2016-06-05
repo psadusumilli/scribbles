@@ -333,4 +333,55 @@ CHAP5- ARCHITECTURE
 
 5.14 'MessagingService'
     The purpose of org.apache.cassandra.net.MessagingService is to create socket listeners for inbound/outbound message exchanges.
-    Message streaming is Cassandra’s optimized way of sending sections of SSTable files from one node to another; all other communication between nodes occurs via serialized messages. 
+    Message streaming is Cassandra’s optimized way of sending sections of SSTable files from one node to another; all other communication between nodes occurs via serialized messages.
+
+//.......................................................................................................................................................
+CHAP6-CONFIGURATION
+*****************
+6.1 'Replication'
+  Each node in the ring is assigned a single, unique token.
+  Each node claims ownership of the range of values from its token to the token of the previous node.
+  This is captured in the org.apache.cassandra.dht.Range class.
+        'SimpleStrategy | RackUnawareStrategy' => replicate within 1 datacenter, but hardware rack unaware within it.
+        'Oldnetworktopologystrategy | RackAwareStrategy' => specifically for when nodes in the same Cassandra cluster spread over 2  data centers and using a replication factor of 3
+        'NewNetworkTopologyStrategy' -=> allows you to specify more evenly than the RackAwareStrategy how replicas should be placed across data centers.
+        To use it, you supply parameters in which you indicate the desired replication strategy for each data center
+
+        'replication factor' is set per keyspace, and is specified in the server’s config file.
+        indicates how many nodes you want to use to store a value during each write operation.
+
+        'consistency level' ispecified per query, by the client.
+        specifies how many nodes the client has decided must respond in order to feel confident of a successful read or write operation
+
+        restart nodes after changing replication level
+        clients need to wait until replication is complete when fresh after a change
+
+6.2 'Partitioning'
+      only for the row-key
+
+        'random partitioner',
+              is the default;  It uses a BigIntegerToken with an MD5 hash applied to it to determine where to place the keys on the node ring.
+              'advantage' of spreading your keys evenly across your cluster, because the distribution is random.
+              'disadvantage' of causing inefficient range queries, because keys within a specified range might be placed in a variety of disparate locations in the ring, and key range queries will return data in an essentially random order.
+              order-preserving partitioner
+              collating order-preserving partitioner.
+              custom using org.apache.cassandra.dht.IPartitioner
+        'order-preserving partitioner'
+              implements IPartitioner<StringToken>, the token is a UTF-8 string, based on a key
+              'advantage' -> Configuring your column family to use order-preserving partitioning (OPP) allows you to perform range slices.
+              'disadvantage' -> lopsided nodes, some heavy, some light like names grouped with starting alphabet A-Z, need to rebalance manually
+        'Collating Order-Preserving Partitioner'
+              orders keys according to a United States English locale (EN_US). Like OPP, it requires that the keys are UTF-8 strings
+              rarely used
+        'Byte-Ordered Partitioner'
+              treats the data as raw bytes, instead of converting them to strings the way the order-preserving partitioner and collating order-preserving partitioner do
+
+6.3 'Snitches'
+        The job of a snitch is simply to determine relative host proximity. Snitches gather some information about your network topology so that Cassandra can efficiently route requests.
+        The snitch will figure out where nodes are in relation to other nodes. Inferring data centers is the job of the replication strategy.
+        'Simple Snitch'
+              compares 2 (same datacenter) and 3 (same rack) octets of IP to decide machine proximity
+        'PropertyFileSnitch'
+              write out machines explicitly
+6.4 'Security'
+         The default is any , next is 'SimpleAuthenticator' using name/passwd with plain text/MD5 hash, then 'Custom'
