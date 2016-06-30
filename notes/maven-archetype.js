@@ -114,7 +114,8 @@ NFO] Parameter: groupId, Value: com.equifax.dep
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
 //.................................................................................................................
-step#8
+step#8:  test artifact generation from local .m2
+
 mkdir <home>/test-artifact/
 cd <home>/test-artifact/
 
@@ -123,3 +124,12 @@ Choose archetype:
 1: local -> com.equifax.cse.dep:job-archetype-archetype (job-archetype 1.0.0-SNAPSHOT)
 2: local -> com.equifax.cse.dep:build-batch-job-archetype (job-archetype 1.0.0-SNAPSHOT)
 Choose a number or apply filter (format: [groupId:]artifactId, case sensitive contains): : 2
+
+//.................................................................................................................
+step#8:  test artifact generation from nexus
+make a jenkins job for <home>/archetype
+do mvn install in the job
+
+mkdir home>/test-artifact-2/
+cd <home>/test-artifact-2/
+mvn archetype:generate -DarchetypeGroupId=com.equifax.cse.dep -DarchetypeArtifactId=build-batch-job-archetype -DarchetypeVersion=1.0.0-SNAPSHOT
